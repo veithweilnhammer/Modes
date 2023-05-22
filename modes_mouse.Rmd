@@ -4308,7 +4308,7 @@ This study did not generate new unique reagents.
 
 ### Data and code availability
 
-All custom code and behavioral data are available on <https://osf.io/ru78n/>. This manuscript was created using the *R Markdown* framework, which integrates all data-related computations and the formatted text within one document. With this, we wish to make our approach fully transparent and reproducible for reviewers and future readers.
+All custom code and behavioral data are available on <https://github.com/veithweilnhammer/Modes>. This manuscript was created using the *R Markdown* framework, which integrates all data-related computations and the formatted text within one document. With this, we wish to make our approach fully transparent and reproducible for reviewers and future readers.
 
 ## Experimental model and subject details
 
