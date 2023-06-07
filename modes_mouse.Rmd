@@ -6193,7 +6193,7 @@ assign(paste("plot_controlled", acf_to_plot[1,plot_idx], sep = "_"), p_acf)
 
 acf_to_plot = rbind(c("diff_acf_Difficulty", "diff_acf_External"), 
                 c("./Results/M_Summary_acf_session_Difficulty_corrected_normalized_3SD_new_preproc.csv", "./Results/M_Summary_acf_session_External_corrected_normalized_3SD_new_preproc.csv"),
-                c("D           Difficulty (Mice)", "E           External stimulation (Mice)"))
+                c("C           Difficulty (Mice)", "D           External stimulation (Mice)"))
 
 for (plot_idx in c(1:ncol(acf_to_plot))){
  
@@ -6407,13 +6407,13 @@ When controlling for the autocorrelation of external stimulation, stimulus-congr
 and history-congruence remained significantly autocorrelated for `r min(which(Summary_acf_Corrected_diff_acf_External[Summary_acf_Corrected_diff_acf_External$Variable == "diff_acf_History",]$p == "> 0.05")) - 1` consecutive trials (`r (sum(Summary_acf_Corrected_diff_acf_External[Summary_acf_Corrected_diff_acf_External$Variable == "diff_acf_History" & Summary_acf_Corrected_diff_acf_External$Trial <= 25,]$p == "< 0.05")/25)*100`% of trials within the displayed time window).
 At the level of individual participants, the autocorrelation of external stimulation exceeded the respective autocorrelation of randomly permuted within a lag of `r mean(ID_Summary_acf$lag_significant_External, na.rm = TRUE)` ± `r sd(ID_Summary_acf$lag_significant_External, na.rm = TRUE)/nrow(ID_Summary_acf)` consecutive trials (lower panel).
 
-D. In mice, task difficulty showed an significant autocorrelated for the first `r min(which(M_Summary_acf[M_Summary_acf$Variable == "diff_acf_Difficulty",]$p == "> 0.05")) - 1` consecutive trials (upper panel). 
+C. In mice, task difficulty showed an significant autocorrelated for the first `r min(which(M_Summary_acf[M_Summary_acf$Variable == "diff_acf_Difficulty",]$p == "> 0.05")) - 1` consecutive trials (upper panel). 
 When controlling for task difficulty, linear mixed effects modeling indicated a significant auto-correlation of stimulus-congruence for the first `r min(which(M_Summary_acf_Corrected_diff_acf_Difficulty[M_Summary_acf_Corrected_diff_acf_Difficulty$Variable == "diff_acf_Stimulus",]$p == "> 0.05")) - 1` consecutive trials (middle panel). 
 In total, `r (sum(M_Summary_acf_Corrected_diff_acf_Difficulty[M_Summary_acf_Corrected_diff_acf_Difficulty$Variable == "diff_acf_Stimulus" & M_Summary_acf_Corrected_diff_acf_Difficulty$Trial <= 25,]$p == "< 0.05")/25)*100`% of trials within the displayed time window remained significantly autocorrelated.
 The autocorrelation of history-congruence remained significant for the first `r min(which(M_Summary_acf_Corrected_diff_acf_Difficulty[M_Summary_acf_Corrected_diff_acf_Difficulty$Variable == "diff_acf_History",]$p == "> 0.05")) - 1` consecutive trials, with `r (sum(M_Summary_acf_Corrected_diff_acf_Difficulty[M_Summary_acf_Corrected_diff_acf_Difficulty$Variable == "diff_acf_History" & M_Summary_acf_Corrected_diff_acf_Difficulty$Trial <= 25,]$p == "< 0.05")/25)*100`% significantly autocorrelated trials within the displayed time window. 
 At the level of individual mice, autocorrelation coefficients for difficulty were elevated above randomly permuted data within a lag of `r mean(ID_M_Summary_acf$lag_significant_Difficulty, na.rm = TRUE)` ± `r sd(ID_M_Summary_acf$lag_significant_Difficulty, na.rm = TRUE)/nrow(ID_M_Summary_acf)` consecutive trials (lower panel).
 
-E. In mice, the sequence of external stimulation (i.e., which of the two binary outcomes was supported by the presented stimuli) was negatively autocorrelated for `r min(which(M_Summary_acf[M_Summary_acf$Variable == "diff_acf_External",]$p == "> 0.05")) - 1` consecutive trials (upper panel). 
+D. In mice, the sequence of external stimulation (i.e., which of the two binary outcomes was supported by the presented stimuli) was negatively autocorrelated for `r min(which(M_Summary_acf[M_Summary_acf$Variable == "diff_acf_External",]$p == "> 0.05")) - 1` consecutive trials (upper panel). 
 When controlling for the autocorrelation of external stimulation, stimulus-congruence remained significantly autocorrelated for `r min(which(M_Summary_acf_Corrected_diff_acf_External[M_Summary_acf_Corrected_diff_acf_External$Variable == "diff_acf_Stimulus",]$p == "> 0.05")) - 1` consecutive trials (`r (sum(M_Summary_acf_Corrected_diff_acf_External[M_Summary_acf_Corrected_diff_acf_External$Variable == "diff_acf_Stimulus" & M_Summary_acf_Corrected_diff_acf_External$Trial <= 25,]$p == "< 0.05")/25)*100`% of trials within the displayed time window; middle)
 and history-congruence remained significantly autocorrelated for `r min(which(M_Summary_acf_Corrected_diff_acf_External[M_Summary_acf_Corrected_diff_acf_External$Variable == "diff_acf_History",]$p == "> 0.05")) - 1` consecutive trials (`r (sum(M_Summary_acf_Corrected_diff_acf_External[M_Summary_acf_Corrected_diff_acf_External$Variable == "diff_acf_History" & M_Summary_acf_Corrected_diff_acf_External$Trial <= 25,]$p == "< 0.05")/25)*100`% of trials within the displayed time window).
 At the level of individual mice, autocorrelation coefficients for external stimulation were elevated above randomly permuted data within a lag of `r mean(ID_M_Summary_acf$lag_significant_External, na.rm = TRUE)` ± `r sd(ID_M_Summary_acf$lag_significant_External, na.rm = TRUE)/nrow(ID_M_Summary_acf)` consecutive trials (lower panel).
@@ -7338,7 +7338,7 @@ Control_sim_p_acf <- ggplot() +
   x = "Lag (Trials)",
   y =
   paste("Autocorrelation coefficient"),
-  subtitle = NULL,
+  subtitle = "B",
   color = "Congruence to",
   shape = "p value"
   ) + scale_color_brewer(palette = "Set1", direction = -1) + theme(legend.position = c(0.35, 0.9), legend.box = "horizontal") + ylim(-0.01, 0.03) + scale_x_continuous(

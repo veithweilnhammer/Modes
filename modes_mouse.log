@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.8.15)  22 MAY 2023 15:07
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2023.5.31)  7 JUN 2023 11:34
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -954,46 +954,46 @@ Package pdftex.def Info: modes_mouse_files/figure-latex/Supplemental_Figure_S6-
 (pdftex.def)             Requested size: 465.73886pt x 319.19171pt.
  [75 <./modes_mouse_files/figure-latex/Supplemental_Figure_S6-1.pdf>]
 <modes_mouse_files/figure-latex/Supplemental_Figure_S7-1.pdf, id=665, 465.74pt 
-x 322.20375pt>
+x 320.19624pt>
 File: modes_mouse_files/figure-latex/Supplemental_Figure_S7-1.pdf Graphic file 
 (type pdf)
 <use modes_mouse_files/figure-latex/Supplemental_Figure_S7-1.pdf>
 Package pdftex.def Info: modes_mouse_files/figure-latex/Supplemental_Figure_S7-
 1.pdf  used on input line 2739.
-(pdftex.def)             Requested size: 465.75307pt x 322.21278pt.
+(pdftex.def)             Requested size: 465.74596pt x 320.20033pt.
 
 [76 <./modes_mouse_files/figure-latex/Supplemental_Figure_S7-1.pdf>] [77]
 [78]
 <modes_mouse_files/figure-latex/Supplemental_Figure_S8-1.pdf, id=699, 465.74pt 
-x 322.20375pt>
+x 320.19624pt>
 File: modes_mouse_files/figure-latex/Supplemental_Figure_S8-1.pdf Graphic file 
 (type pdf)
 <use modes_mouse_files/figure-latex/Supplemental_Figure_S8-1.pdf>
 Package pdftex.def Info: modes_mouse_files/figure-latex/Supplemental_Figure_S8-
 1.pdf  used on input line 2824.
-(pdftex.def)             Requested size: 465.75307pt x 322.21278pt.
+(pdftex.def)             Requested size: 465.74596pt x 320.20033pt.
  [79 <./modes_mouse_files/figure-latex/Supplemental_Figure_S8-1.pdf>]
-[80] [81]
-<modes_mouse_files/figure-latex/Supplemental_Figure_S9-1.pdf, id=734, 465.74pt 
-x 322.20375pt>
+[80]
+<modes_mouse_files/figure-latex/Supplemental_Figure_S9-1.pdf, id=730, 465.74pt 
+x 320.19624pt>
 File: modes_mouse_files/figure-latex/Supplemental_Figure_S9-1.pdf Graphic file 
 (type pdf)
 <use modes_mouse_files/figure-latex/Supplemental_Figure_S9-1.pdf>
 Package pdftex.def Info: modes_mouse_files/figure-latex/Supplemental_Figure_S9-
 1.pdf  used on input line 2907.
-(pdftex.def)             Requested size: 465.75307pt x 322.21278pt.
- [82 <./modes_mouse_files/figure-latex/Supplemental_Figure_S9-1.pdf>]
-[83] [84]
-<modes_mouse_files/figure-latex/Supplemental_Figure_S10-1.pdf, id=769, 465.74pt
- x 322.20375pt>
+(pdftex.def)             Requested size: 465.74596pt x 320.20033pt.
+ [81 <./modes_mouse_files/figure-latex/Supplemental_Figure_S9-1.pdf>]
+[82] [83]
+<modes_mouse_files/figure-latex/Supplemental_Figure_S10-1.pdf, id=764, 465.74pt
+ x 320.19624pt>
 File: modes_mouse_files/figure-latex/Supplemental_Figure_S10-1.pdf Graphic file
  (type pdf)
 <use modes_mouse_files/figure-latex/Supplemental_Figure_S10-1.pdf>
 Package pdftex.def Info: modes_mouse_files/figure-latex/Supplemental_Figure_S10
 -1.pdf  used on input line 2998.
-(pdftex.def)             Requested size: 465.75307pt x 322.21278pt.
- [85 <./modes_mouse_files/figure-latex/Supplemental_Figure_S10-1.pdf>] [86] [87
-] [88] [89]
+(pdftex.def)             Requested size: 465.74596pt x 320.20033pt.
+ [84 <./modes_mouse_files/figure-latex/Supplemental_Figure_S10-1.pdf>] [85] [86
+] [87] [88]
 Underfull \hbox (badness 10000) in paragraph at lines 3186--3192
 
  []
@@ -1053,7 +1053,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 3263--3269
 
  []
 
-[90]
+[89]
 Underfull \hbox (badness 10000) in paragraph at lines 3270--3276
 
  []
@@ -1120,7 +1120,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 3339--3345
 
  []
 
-[91]
+[90]
 Underfull \hbox (badness 10000) in paragraph at lines 3346--3353
 
  []
@@ -1175,7 +1175,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 3419--3425
 
  []
 
-[92]
+[91]
 Underfull \hbox (badness 10000) in paragraph at lines 3426--3432
 
  []
@@ -1235,7 +1235,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 3503--3509
 
  []
 
-[93]
+[92]
 Underfull \hbox (badness 10000) in paragraph at lines 3510--3517
 
  []
@@ -1285,7 +1285,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 3578--3585
 
  []
 
-[94]
+[93]
 Underfull \hbox (badness 10000) in paragraph at lines 3586--3592
 
  []
@@ -1345,7 +1345,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 3659--3665
 
  []
 
-[95]
+[94]
 Underfull \hbox (badness 10000) in paragraph at lines 3666--3673
 
  []
@@ -1400,7 +1400,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 3741--3747
 
  []
 
-[96]
+[95]
 Underfull \hbox (badness 10000) in paragraph at lines 3748--3754
 
  []
@@ -1415,11 +1415,11 @@ Underfull \hbox (badness 10000) in paragraph at lines 3763--3768
 
  []
 
-[97] (./modes_mouse.aux) ) 
+[96] (./modes_mouse.aux) ) 
 Here is how much of TeX's memory you used:
- 18243 strings out of 478287
- 302892 string characters out of 5849289
- 648275 words of memory out of 5000000
+ 18242 strings out of 478287
+ 302885 string characters out of 5849289
+ 648273 words of memory out of 5000000
  35404 multiletter control sequences out of 15000+600000
  540991 words of font info for 247 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -1435,10 +1435,10 @@ blic/lm/lmr8.pfb></usr/share/texmf/fonts/type1/public/lm/lmri12.pfb></usr/share
 /texmf/fonts/type1/public/lm/lmri7.pfb></usr/share/texmf/fonts/type1/public/lm/
 lmss8.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy10.pfb></usr/share/texmf/
 fonts/type1/public/lm/lmsy8.pfb>
-Output written on modes_mouse.pdf (97 pages, 8016238 bytes).
+Output written on modes_mouse.pdf (96 pages, 8015372 bytes).
 PDF statistics:
- 1359 PDF objects out of 1440 (max. 8388607)
- 1172 compressed objects within 12 object streams
- 330 named destinations out of 1000 (max. 500000)
+ 1354 PDF objects out of 1440 (max. 8388607)
+ 1168 compressed objects within 12 object streams
+ 329 named destinations out of 1000 (max. 500000)
  33310 words of extra memory for PDF output out of 35830 (max. 10000000)
 
