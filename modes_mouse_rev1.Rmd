@@ -373,7 +373,7 @@ if (load_data){
 
 # Title Page
 
-**Bimodal inference in humans and mice** \
+**Bimodal Inference in Mice and Men** \
 \
 
 <br/><br/>
@@ -402,7 +402,7 @@ Veith Weilnhammer, Department of Psychiatry, Charité Campus Mitte, Charitéplat
 
 # Abstract
 
-Perception is known to cycle through periods of enhanced and reduced sensitivity to external information. Here, we asked whether such infra-slow fluctuations arise as a noise-related epiphenomenon of limited processing capacity or, alternatively, represent a structured mechanism of perceptual inference. Using two large-scale datasets, we found that humans and mice waver between alternating intervals of externally- and internally-oriented modes of sensory analysis. During external mode, perception aligned more closely with the external sensory information, whereas internal mode was characterized by enhanced biases toward perceptual history. Computational modeling indicated that dynamic changes in mode are enabled by two interlinked factors: (i), the integration of subsequent inputs over time and, (ii), infra-slow anti-phase oscillations in the perceptual impact of external sensory information versus internal predictions that are provided by perceptual history. Simulated data suggested that between-mode fluctuations may benefit perception by generating unambiguous error signals that enable robust learning and metacognition in volatile environments.
+Perception is known to cycle through periods of enhanced and reduced sensitivity to external information. Here, we asked whether such slow fluctuations arise as a noise-related epiphenomenon of limited processing capacity or, alternatively, represent a structured mechanism of perceptual inference. Using two large-scale datasets, we found that humans and mice waver between alternating intervals of externally- and internally-oriented modes of sensory analysis. During external mode, perception aligned more closely with the external sensory information, whereas internal mode was characterized by enhanced biases toward perceptual history. Computational modeling indicated that dynamic changes in mode are enabled by two interlinked factors: (i), the integration of subsequent inputs over time and, (ii), slow anti-phase oscillations in the perceptual impact of external sensory information versus internal predictions that are provided by perceptual history. **We propose that between-mode fluctuations may benefit perception by generating unambiguous error signals that enable optimal inference and learning in volatile environments.**
 
 # One sentence summary
 
@@ -418,7 +418,7 @@ The capacity to respond to changes in the environment is a defining feature of l
 
 What could be the reason for these fluctuations in perceptual performance[@Monto2008]? First, periodic fluctuations in the ability to parse external information[@ClareKelly2008; @Monto2008; @Hesselmann2008] may arise simply due to bandwidth limitations and noise. Second, it may be advantageous to actively reduce the costs of neural processing by seeking sensory information only in recurring intervals[@Schroeder2010a; @VanRullen2016], otherwise relying on random or stereotypical responses to the external world. Third, spending time away from the ongoing stream of sensory inputs may also reflect a functional strategy that facilitates flexible behavior and learning[@Honey2017]: Intermittently relying more strongly on information acquired from past experiences may enable agents to build up stable internal predictions about the environment despite an ongoing stream of external sensory signals[@Weilnhammer2021a]. By the same token, recurring intervals of enhanced sensitivity to external information may help to detect changes in both the state of the environment and the amount of noise that is inherent in sensory encoding[@Weilnhammer2021a]. 
 
-In this work, we sought to elucidate whether periodicities in the sensitivity to external information represent an epiphenomenon of limited processing capacity or, alternatively, result from a structured and adaptive mechanism of perceptual inference. To this end, we analyzed two large-scale datasets on perceptual decision-making in humans[@Rahnev2020] and mice[@Aguillon-Rodriguez2020]. When less sensitive to external stimulus information, humans and mice showed stronger serial dependencies[@fischer_serial_2014; @Liberman2014; @Abrahamyan2016; @Cicchini2014; @Cicchini2017; @Fritsche2020; @Urai2017; @Akrami2018; @Braun2018; @Bergen2019; @Urai2019; @Hsu2020], which have been conceptualized as internal predictions that reflect the auto-correlation of natural environments[@Dong1995] and bias perceptual decisions toward preceding choices[@Burr2014; @Braun2018; @Bergen2019]. Computational modeling indicated that ongoing changes in perceptual performance may be driven by systematic fluctuations between externally- and internally-oriented modes of sensory analysis. Model simulations suggested that such bimodal inference may improve, (i), the ability to robustly determine the statistical properties of volatile environments and, (ii), the ability to calibrate internal beliefs about the degree of noise inherent in the encoding of sensory information.
+In this work, we sought to elucidate whether periodicities in the sensitivity to external information represent an epiphenomenon of limited processing capacity or, alternatively, result from a structured and adaptive mechanism of perceptual inference. To this end, we analyzed two large-scale datasets on perceptual decision-making in humans[@Rahnev2020] and mice[@Aguillon-Rodriguez2020]. When less sensitive to external stimulus information, humans and mice showed stronger serial dependencies[@fischer_serial_2014; @Liberman2014; @Abrahamyan2016; @Cicchini2014; @Cicchini2017; @Fritsche2020; @Urai2017; @Akrami2018; @Braun2018; @Bergen2019; @Urai2019; @Hsu2020], which have been conceptualized as internal predictions that reflect the auto-correlation of natural environments[@Dong1995] and bias perceptual decisions toward preceding choices[@Burr2014; @Braun2018; @Bergen2019]. Computational modeling indicated that ongoing changes in perceptual performance may be driven by systematic fluctuations between externally- and internally-oriented modes of sensory analysis. **We propose that that such bimodal inference may improve, (i), the ability to robustly determine the statistical properties of volatile environments and, (ii), the ability to calibrate internal beliefs about the precision of sensory information relative to prior (Bayesian) beliefs.**
 
 # Results
 
@@ -832,7 +832,7 @@ if (!load_summary_data) {
 ```
 
 These results confirm that the ability to process sensory signals is not constant over time, but unfolds in multi-trial epochs of enhanced and reduced sensitivity to external information[@Dehaene1993]. As a consequence of this autocorrelation, the dynamic probability of stimulus-congruent perception (i.e., computed in sliding windows of ± 5 trials; Figure 1C) fluctuated considerably within participants (average minimum: `r mean(Behav$Min_Accuracy, na.rm = TRUE)`% ± `r sd(Behav$Min_Accuracy, na.rm = TRUE)/sqrt(length(Behav$Min_Accuracy))`%, maximum: `r mean(Behav$Max_Accuracy, na.rm = TRUE)`% ± `r sd(Behav$Max_Accuracy, na.rm = TRUE)/sqrt(length(Behav$Max_Accuracy))`%). 
-In line with previous findings[@Gilden1995], such fluctuations in the sensitivity to external information had a power density that was inversely proportional to the frequency in the infra-slow spectrum[@Monto2008] (power ~ 1/$f^\beta$, $\beta$ = $`r STAT.lmer_power_freq_Stimulus$coefficients[2,1]`$ ± $`r STAT.lmer_power_freq_Stimulus$coefficients[2,2]`$, T($`r STAT.lmer_power_freq_Stimulus$coefficients[2,3]`$) = $`r STAT.lmer_power_freq_Stimulus$coefficients[2,4]`$, p = $`r STAT.lmer_power_freq_Stimulus$coefficients[2,5]`$; Figure 2D). This feature, which is also known as *1/f noise*[@Montroll1982; @Bak1987], represents a characteristic of ongoing fluctuations in complex dynamic systems such as the brain[@Chialvo2010] and the cognitive processes it entertains[@Gilden1995; @Gilden1995a; @Gilden2001; @Wagenmakers2004; @VanOrden2005]. 
+In line with previous findings[@Gilden1995], such fluctuations in the sensitivity to external information had a power density that was inversely proportional to the frequency in the slow spectrum[@Monto2008] (power ~ 1/$f^\beta$, $\beta$ = $`r STAT.lmer_power_freq_Stimulus$coefficients[2,1]`$ ± $`r STAT.lmer_power_freq_Stimulus$coefficients[2,2]`$, T($`r STAT.lmer_power_freq_Stimulus$coefficients[2,3]`$) = $`r STAT.lmer_power_freq_Stimulus$coefficients[2,4]`$, p = $`r STAT.lmer_power_freq_Stimulus$coefficients[2,5]`$; Figure 2D). This feature, which is also known as *1/f noise*[@Montroll1982; @Bak1987], represents a characteristic of ongoing fluctuations in complex dynamic systems such as the brain[@Chialvo2010] and the cognitive processes it entertains[@Gilden1995; @Gilden1995a; @Gilden2001; @Wagenmakers2004; @VanOrden2005]. 
 
 ## Human perception fluctuates between external and internal modes of sensory processing
 
@@ -893,12 +893,12 @@ STAT.full_logit_Sum <- summary(full_logit_Sum)
 First, we ensured that perceptual history played a significant role in perception despite the ongoing stream of external information. With a global average of `r mean(Behav$History, na.rm = TRUE)`% ± `r sd(Behav$History, na.rm = TRUE)/sqrt(length(Behav$History))`% history-congruent trials, we found a small but highly significant perceptual bias towards preceding experiences ($\beta$ = $`r STAT.Global_History_Accuracy$coefficients[1,1]`$ ± $`r STAT.Global_History_Accuracy$coefficients[1,2]`$, T($`r STAT.Global_History_Accuracy$coefficients[1,3]`$) = $`r STAT.Global_History_Accuracy$coefficients[1,4]`$, p = $`r STAT.Global_History_Accuracy$coefficients[1,5]`$; Figure 2A) that was largely consistent across studies (Supplemental Figure 1B) and more pronounced in participants who were less sensitive to external sensory information (Supplemental Figure 1C). 
 Logistic regression confirmed the internal information provided by perceptual history made a significant contribution to perception ($\beta$ = $`r STAT.full_logit_Sum$coefficients[3,1]`$ ± $`r STAT.full_logit_Sum$coefficients[3,2]`$, z = $`r STAT.full_logit_Sum$coefficients[3,3]`$, p = $`r STAT.full_logit_Sum$coefficients[3,4]`$) over and above the ongoing stream of external sensory information ($\beta$ = $`r STAT.full_logit_Sum$coefficients[2,1]`$ ± $`r STAT.full_logit_Sum$coefficients[2,2]`$, z = $`r STAT.full_logit_Sum$coefficients[2,3]`$, p = $`r STAT.full_logit_Sum$coefficients[2,4]`$) and general response biases toward one of the two potential outcomes ($\beta$ = $`r STAT.full_logit_Sum$coefficients[1,1]`$ ± $`r STAT.full_logit_Sum$coefficients[1,2]`$, z = $`r STAT.full_logit_Sum$coefficients[1,3]`$, p = $`r STAT.full_logit_Sum$coefficients[1,4]`$; see Supplemental Figure S4A for model comparisons within individual participants). 
 
-In addition, we confirmed that history-congruence was not a corollary of the sequence of presented stimuli: History-congruent perceptual choices were more frequent at trials when perception was stimulus-incongruent (`r mean(Behav_diff[Behav_diff$Accuracy == 0,]$History, na.rm = TRUE)`% ± `r sd(Behav_diff[Behav_diff$Accuracy == 0,]$History, na.rm = TRUE)/sqrt(length(Behav_diff[Behav_diff$Accuracy == 0,]$History))`%) as opposed to stimulus-congruent (`r mean(Behav_diff[Behav_diff$Accuracy == 1,]$History, na.rm = TRUE)`% ± `r sd(Behav_diff[Behav_diff$Accuracy == 1,]$History, na.rm = TRUE)/sqrt(length(Behav_diff[Behav_diff$Accuracy == 1,]$History))`%, $\beta$ = $`r STAT.diff_History_Accuracy$coefficients[2,1]`$ ± $`r STAT.diff_History_Accuracy$coefficients[2,2]`$, T($`r STAT.diff_History_Accuracy$coefficients[2,3]`$) = $`r STAT.diff_History_Accuracy$coefficients[2,4]`$, p = $`r STAT.diff_History_Accuracy$coefficients[2,5]`$; Figure 2A, lower panel). Despite being adaptive in auto-correlated real-world environments[@Dong1995; @Burr2014; @Cicchini2018; @Weilnhammer2021a], perceptual history thus represented a source of error in the randomized experimental designs studied here[@Kiyonaga2017; @Urai2017; @Braun2018; @Abrahamyan2016; @Bergen2019]. 
+In addition, we confirmed that history-congruence was not a corollary of the sequence of presented stimuli: History-congruent perceptual choices were more frequent at trials when perception was stimulus-incongruent (`r mean(Behav_diff[Behav_diff$Accuracy == 0,]$History, na.rm = TRUE)`% ± `r sd(Behav_diff[Behav_diff$Accuracy == 0,]$History, na.rm = TRUE)/sqrt(length(Behav_diff[Behav_diff$Accuracy == 0,]$History))`%) as opposed to stimulus-congruent (`r mean(Behav_diff[Behav_diff$Accuracy == 1,]$History, na.rm = TRUE)`% ± `r sd(Behav_diff[Behav_diff$Accuracy == 1,]$History, na.rm = TRUE)/sqrt(length(Behav_diff[Behav_diff$Accuracy == 1,]$History))`%, $\beta$ = $`r STAT.diff_History_Accuracy$coefficients[2,1]`$ ± $`r STAT.diff_History_Accuracy$coefficients[2,2]`$, T($`r STAT.diff_History_Accuracy$coefficients[2,3]`$) = $`r STAT.diff_History_Accuracy$coefficients[2,4]`$, p = $`r STAT.diff_History_Accuracy$coefficients[2,5]`$; Figure 2A, lower panel). Despite being adaptive in auto-correlated real-world environments[@Dong1995; @Burr2014; @Cicchini2018; @Weilnhammer2021a], perceptual history thus represented a source of bias in the randomized experimental designs studied here[@Kiyonaga2017; @Urai2017; @Braun2018; @Abrahamyan2016; @Bergen2019]. 
 
 Second, we asked whether perception cycles through multi-trial epochs during which perception is characterized by stronger or weaker biases toward preceding experiences. Indeed, in close analogy to stimulus-congruence, history-congruence was significantly autocorrelated for up to `r min(which(Summary_acf[Summary_acf$Variable == "diff_acf_History",]$p == "> 0.05")) - 1` trials (Figure 2B). Following a peak at the first trial, the respective autocorrelation coefficients decreased exponentially over time (rate $\gamma$ = $`r STAT.lmer_acf_History$coefficients[2,1]`$ ± $`r STAT.lmer_acf_History$coefficients[2,2]`$, T($`r STAT.lmer_acf_History$coefficients[2,3]`$) = $`r STAT.lmer_acf_History$coefficients[2,4]`$, p = $`r STAT.lmer_acf_History$coefficients[2,5]`$). 
 History-congruence remained significantly autocorrelated when controlling for task difficulty (Supplemental Figure S2A) and the sequence of presented stimuli (Supplemental Figure S2B). In individual participants, the autocorrelation of history-congruence was elevated above randomly permuted data for a lag of `r mean(ID_Summary_acf$lag_significant_History, na.rm = TRUE)` ± `r sd(ID_Summary_acf$lag_significant_History, na.rm = TRUE)/nrow(ID_Summary_acf)` trials (Figure 2C), confirming that the autocorrelation of history-congruence was not only a group-level phenomenon. The autocorrelation of history-congruence was confirmed by logistic regression models that successfully predicted the history-congruence of perception at an index trial $t = 0$ from the history-congruence at the preceding trials within a lag of `r min(which(Group_Tw_LogReg_long[Group_Tw_LogReg_long$Variable == "History",]$p_value > 0.05))` trials (Supplemental Figure S3).  
 
-Third, we asked whether the impact of internal information fluctuates as 1/f noise (i.e., a noise characteristic classically associated with fluctuations in the sensitivity to external information[@Gilden1995; @Gilden1995a; @Gilden2001; @Wagenmakers2004; @VanOrden2005]). The dynamic probability of history-congruent perception (i.e., computed in sliding windows of ± 5 trials; Figure 1C) varied considerably over time, ranging between a minimum of `r mean(Behav$Min_History, na.rm = TRUE)`% ± `r sd(Behav$Min_History, na.rm = TRUE)/sqrt(length(Behav$Min_History))`% and a maximum `r mean(Behav$Max_History, na.rm = TRUE)`% ± `r sd(Behav$Max_History, na.rm = TRUE)/sqrt(length(Behav$Max_History))`%. In analogy to stimulus-congruence, we found that history-congruence fluctuated as 1/f noise, with power densities that were inversely proportional to the frequency in the infra-slow spectrum[@Monto2008] (power ~ 1/$f^\beta$, $\beta$ = $`r STAT.lmer_power_freq_History$coefficients[2,1]`$ ± $`r STAT.lmer_power_freq_History$coefficients[2,2]`$, T($`r STAT.lmer_power_freq_History$coefficients[2,3]`$) = $`r STAT.lmer_power_freq_History$coefficients[2,4]`$, p = $`r STAT.lmer_power_freq_History$coefficients[2,5]`$; Figure 2D). 
+Third, we asked whether the impact of internal information fluctuates as **a scale-invariant process with a 1/f power law (i.e., a feature typically associated with fluctuations in the sensitivity to external information**[@Gilden1995; @Gilden1995a; @Gilden2001; @Wagenmakers2004; @VanOrden2005]). The dynamic probability of history-congruent perception (i.e., computed in sliding windows of ± 5 trials; Figure 1C) varied considerably over time, ranging between a minimum of `r mean(Behav$Min_History, na.rm = TRUE)`% ± `r sd(Behav$Min_History, na.rm = TRUE)/sqrt(length(Behav$Min_History))`% and a maximum `r mean(Behav$Max_History, na.rm = TRUE)`% ± `r sd(Behav$Max_History, na.rm = TRUE)/sqrt(length(Behav$Max_History))`%. In analogy to stimulus-congruence, we found that history-congruence fluctuated as **a scale-invariant process with a 1/f power law**, with power densities that were inversely proportional to the frequency in the slow spectrum[@Monto2008] (power ~ 1/$f^\beta$, $\beta$ = $`r STAT.lmer_power_freq_History$coefficients[2,1]`$ ± $`r STAT.lmer_power_freq_History$coefficients[2,2]`$, T($`r STAT.lmer_power_freq_History$coefficients[2,3]`$) = $`r STAT.lmer_power_freq_History$coefficients[2,4]`$, p = $`r STAT.lmer_power_freq_History$coefficients[2,5]`$; Figure 2D). 
 
 ```{r slider_History_Accuracy, cache = TRUE}
 ##
@@ -922,7 +922,7 @@ STAT.slider_History_vs_Accuracy <- summary(slider_History_vs_Accuracy)
 ```
 
 Finally, we ensured that fluctuations in stimulus- and history-congruence are linked to each other. When perceptual choices were less biased toward external information, participants relied more strongly on internal information acquired from perceptual history (and vice versa, $\beta$ = $`r STAT.slider_History_vs_Accuracy$coefficients[2,1]`$ ± $`r STAT.slider_History_vs_Accuracy$coefficients[2,2]`$, T($`r STAT.slider_History_vs_Accuracy$coefficients[2,3]`$) = $`r STAT.slider_History_vs_Accuracy$coefficients[2,4]`$, p = $`r STAT.slider_History_vs_Accuracy$coefficients[2,5]`$). 
-Thus, while sharing the characteristic of 1/f noise, fluctuations in stimulus- and history-congruence were shifted against each other by approximately half a cycle and showed a squared coherence of `r mean(Summary_Power_Spectra$mean_coherence, na.rm = TRUE)` ± `r sd(Summary_Power_Spectra$mean_coherence, na.rm = TRUE)/length(Summary_Power_Spectra$mean_coherence)`% (Figure 2E and F; we report the average phase and coherence for frequencies below 0.1 $1/N_{trials}$; see Methods for details).
+Thus, while sharing the characteristic of **a scale-invariant process with a 1/f power law**, fluctuations in stimulus- and history-congruence were shifted against each other by approximately half a cycle and showed a squared coherence of `r mean(Summary_Power_Spectra$mean_coherence, na.rm = TRUE)` ± `r sd(Summary_Power_Spectra$mean_coherence, na.rm = TRUE)/length(Summary_Power_Spectra$mean_coherence)`% (Figure 2E and F; we report the average phase and coherence for frequencies below 0.1 $1/N_{trials}$; see Methods for details).
 
 ```{r summary_internal_external_mode, cache = TRUE}
 ##
@@ -958,7 +958,7 @@ ID_mode <-  ddply(
 }
 ```
 
-In sum, our analyses indicate that perceptual decisions may result from a competition between external sensory signals with internal predictions provided by perceptual history. Crucially, we show that the impact of these external and internal sources of information is not stable over time, but fluctuates systematically, emitting overlapping autocorrelation curves and antiphase 1/f noise profiles.
+In sum, our analyses indicate that perceptual decisions may result from a competition between external sensory signals with internal predictions provided by perceptual history. Crucially, we show that the impact of these external and internal sources of information is not stable over time, but fluctuates systematically, emitting overlapping autocorrelation curves and antiphase 1/f profiles.
 
 These links between stimulus- and history-congruence suggest that the fluctuations in the impact of external and internal information may be generated by a unifying mechanism that causes perception to alternate between two opposing *modes*[@Honey2017] (Figure 1D): During *external mode*, perception is more strongly driven by the available external stimulus information. Conversely, during *internal mode*, participants rely more heavily on internal predictions that are implicitly provided by preceding perceptual experiences. Fluctuations in mode (i.e., the degree of bias toward external versus internal information) may thus provide a novel explanation for ongoing fluctuations in the sensitivity to external information[@Palva2011; @VanRullen2016; @Honey2017].
 
@@ -2874,7 +2874,7 @@ The empirical data presented above indicate that, for both humans and mice, perc
 
 Previous work has shown that such internal predictions are built by dynamically updating the estimated probability of being in a particular perceptual state from the sequence of preceding experiences[@Burr2014; @Glaze2015; @St.John-Saaltink2016]. The integration of sequential inputs may lead to accumulating effects of perceptual history that progressively override incoming sensory information, enabling internal mode processing[@Weilnhammer2021a]. However, since such a process would lead to internal biases that may eventually become impossible to overcome[@Wexler2015], we assumed that changes in mode may additionally be driven by ongoing wave-like fluctuations[@Gilden1995; @Gilden2001] in the perceptual impact of external and internal information that occur *irrespective* of the sequence of previous experiences and temporarily de-couple the decision variable from implicit internal representations of the environment[@Weilnhammer2021a]. 
 
-Following Bayes' theorem, we reasoned that binary perceptual decisions depend on the posterior log ratio $L$ of the two alternative states of the environment that participants learn about via noisy sensory information[@Glaze2015]. We computed the posterior by combining the sensory evidence available at time-point $t$ (i.e., the log likelihood ratio $LLR$) with the prior probability $\psi$:
+Following Bayes' theorem, we reasoned that binary perceptual decisions depend on the posterior log ratio $L$ of the two alternative states of the environment that participants learn about via noisy sensory information[@Glaze2015]. We computed the posterior by combining the sensory evidence available at time-point $t$ (i.e., the log likelihood ratio $LLR$) with the prior probability $\psi$**, weighted by the respective precision terms $\omega_{LLR}$ and $\omega_{\psi}$**:
 
 \begin{equation}
 L_t = LLR_t * \omega_{LLR} + \psi_t(L_{t-1}, H) * \omega_{\psi}
@@ -2896,7 +2896,7 @@ u_t = \frac{1}{1 + exp(-\alpha * s_t)}
 LLR_t = log(\frac{u_t}{1-u_t})
 \end{equation}
 
-To allow for *bimodal inference*, i..e, alternating periods of internally- and externally-biased modes of perceptual processing that occur irrespective of the sequence of preceding experiences, we assumed that the relative influences of likelihood and prior show coherent anti-phase fluctuations governed by $\omega_{LLR}$ and $\omega_{\psi}$ that are determined by amplitude $a$, frequency $f$ and phase $p$:
+To allow for *bimodal inference*, i..e, alternating periods of internally- and externally-biased modes of perceptual processing that occur irrespective of the sequence of preceding experiences, we assumed that the relative influences of likelihood and prior show coherent anti-phase fluctuations governed by $\omega_{LLR}$ and $\omega_{\psi}$ that are determined by amplitude $a$, frequency $f$ and phase $p$. **This implements a hyperprior in which the sensory and prior precisions fluctuate at a particular time scale**:
 
 \begin{equation}
 \omega_{LLR} = a_{LLR} * sin(f * t + p) + 1
@@ -3253,12 +3253,12 @@ STAT.Optim_History_Confidence_minus_1 <- summary(Optim_History_Confidence_minus_
 if (!load_summary_data) {
   
   type_list = c(#"export_data",
-              "fit_glaze_osc_zeta_v1_no_integration_mouse",
               "fit_glaze_osc_zeta_v1_mouse", 
               "fit_glaze_osc_zeta_v1_one_amp_mouse",
               "fit_glaze_osc_zeta_v1_LLR_amp_mouse",
               "fit_glaze_osc_zeta_v1_Prior_amp_mouse",
-              "fit_glaze_osc_zeta_v1_no_amp_mouse"#,
+              "fit_glaze_osc_zeta_v1_no_amp_mouse",
+              "fit_glaze_osc_zeta_v1_no_integration_mouse"
               ) 
 
 
@@ -3478,12 +3478,12 @@ Summary_M_Compare_Optim_Subj_AIC
 M_Optim <- read.csv("./Results/Optim_mouse_free_phase_zeta.csv") 
 }
 
-M_Summary_Compare_Optim <-
+M_Summary_Compare_Optim<-
   ddply(
     M_Lbits,
     .(model),
     summarise,
-    mean_Lbits = mean(M_Lbits, na.rm = TRUE),
+    mean_Lbits = mean(exclude_3SD(M_Lbits), na.rm = TRUE),
     error_Lbits = sd(M_Lbits, na.rm = TRUE) / sqrt(length(M_Lbits)))
 
 M_Optim <- M_Optim[M_Optim$subject_id %in% M_Behav$subject_id,]
@@ -3996,7 +3996,129 @@ Sim_STAT.Confidence_vs_mode <- summary(Sim_Confidence_vs_mode)
 }
 ```
 
-Simulations from the bimodal inference model (based on the posterior model parameters obtained in humans; see Methods for details) closely matched the empirical results outlined above: Simulated perceptual decisions resulted from a competition of perceptual history with incoming sensory signals (Figure 6A). Stimulus- and history-congruence were significantly auto-correlated (Figure 6B-C), fluctuating in anti-phase as 1/f noise (Figure 6D-F). Simulated posterior certainty[@Kepecs2008; @Urai2017; @Braun2018] (i.e., the absolute of the posterior log ratio $|L_t|$) showed a quadratic relationship to the mode of sensory processing (Figure 6H), mirroring the relation of RTs and confidence reports to external and internal biases in perception (Figure 2G-H and Figure 4G-H). Crucially, the overlap between empirical and simulated data broke down when we removed the anti-phase oscillations ($\omega_{LLR}$ and/or $\omega_{\psi}$) or the accumulation of evidence over time (i.e., setting $H$ to 0.5) from the bimodal inference model (see Supplemental Figure S7-10).
+```{r evaluate_mouse, cache = TRUE}
+
+type_list = c(
+  "fit_glaze_osc_zeta_v1_mouse",
+  "fit_glaze_osc_zeta_v1_one_amp_mouse",
+  "fit_glaze_osc_zeta_v1_LLR_amp_mouse",
+  "fit_glaze_osc_zeta_v1_Prior_amp_mouse",
+  "fit_glaze_osc_zeta_v1_no_amp_mouse",
+  "fit_glaze_osc_zeta_v1_no_integration_mouse"
+)
+
+eval_list = c(
+  "eval_glaze_osc_zeta_v1_mouse",
+  "eval_glaze_osc_zeta_v1_one_amp_mouse",
+  "eval_glaze_osc_zeta_v1_LLR_amp_mouse",
+  "eval_glaze_osc_zeta_v1_Prior_amp_mouse"
+)
+
+
+# available models
+source("./Functions/eval_glaze_osc_zeta_v1_mouse.R",
+       local = knitr::knit_global())
+source("./Functions/eval_glaze_osc_zeta_v1_one_amp_mouse.R",
+       local = knitr::knit_global())
+source("./Functions/eval_glaze_osc_zeta_v1_LLR_amp_mouse.R",
+       local = knitr::knit_global())
+source("./Functions/eval_glaze_osc_zeta_v1_Prior_amp_mouse.R",
+       local = knitr::knit_global())
+
+for (type_idx in c(1:length(type_list))) {
+  load_M_Optim <-
+    read.csv(paste("./Results/", type_list[type_idx], ".csv", sep = ""))
+  
+  Optim_eval = data.frame()
+  for (id in unique(MwData$subject_id)) {
+    for (session_id in unique(MwData[MwData$subject_id == id, ]$session_id)) {
+      Input_Data = MwData[MwData$subject_id == id &
+                            MwData$session_id == session_id, c("Stimulus", "Response", "Difficulty")]
+      
+      Input_Data$Stimulus <-
+        (Input_Data$Stimulus * 2 - 1) * Input_Data$Difficulty
+      Input_Data$Stimulus[Input_Data$Difficulty == 0] = 0
+      Input_Data = Input_Data[!is.na(Input_Data$Stimulus) &
+                                !is.na(Input_Data$Response), ]
+      
+      
+      if (type_list[type_idx] == "fit_glaze_osc_zeta_v1_mouse") {
+        param = as.numeric(load_M_Optim[load_M_Optim$subject_id == id &
+                                          load_M_Optim$session_id == session_id, 1:7])
+        par = param[6]
+        lower = 0
+        upper = 2 * pi
+        
+      } else  if (type_list[type_idx] == "fit_glaze_osc_zeta_v1_one_amp_mouse" |
+                  type_list[type_idx] == "fit_glaze_osc_zeta_v1_LLR_amp_mouse" |
+                  type_list[type_idx] == "fit_glaze_osc_zeta_v1_Prior_amp_mouse") {
+        param = as.numeric(load_M_Optim[load_M_Optim$subject_id == id &
+                                          load_M_Optim$session_id == session_id, 1:6])
+        par = param[5]
+        lower = 0
+        upper = 2 * pi
+        
+      } else if (type_list[type_idx] == "fit_glaze_osc_zeta_v1_no_amp_mouse") {
+        param = as.numeric(load_M_Optim[load_M_Optim$subject_id == id &
+                                          load_M_Optim$session_id == session_id, 1:3])
+        
+      } else if (type_list[type_idx] == "fit_glaze_osc_zeta_v1_no_integration_mouse") {
+        param = as.numeric(load_M_Optim[load_M_Optim$subject_id == id &
+                                          load_M_Optim$session_id == session_id, 1:2])
+      }
+      
+      log_evidence = c()
+      for (trial_idx in seq(
+        from = 1,
+        to = nrow(Input_Data) - 2 * sliding_window + 1,
+        by = 1
+      )) {
+        train =  Input_Data[seq(from = trial_idx,
+                                to = trial_idx + sliding_window - 1,
+                                by = 1), ]
+        
+        test = Input_Data[seq(
+          from = trial_idx + sliding_window,
+          to = trial_idx + 2 * sliding_window - 1,
+          by = 1
+        ), ]
+        
+        if (type_list[type_idx] == "fit_glaze_osc_zeta_v1_mouse" |
+            type_list[type_idx] == "fit_glaze_osc_zeta_v1_one_amp_mouse" |
+            type_list[type_idx] == "fit_glaze_osc_zeta_v1_LLR_amp_mouse" |
+            type_list[type_idx] == "fit_glaze_osc_zeta_v1_Prior_amp_mouse") {
+          
+          train_O =  optimx(
+            par,
+            match.fun(eval_list[type_idx]),
+            Input_Data = train,
+            param = param,
+            lower = lower,
+            upper = upper
+          )
+          
+          log_evidence = c(log_evidence,
+                           -match.fun(eval_list[type_idx])(train_O$p1, test, param))
+        } else {
+          log_evidence = c(log_evidence,
+                           -match.fun(type_list[type_idx])(param, test))
+        }
+      }
+      
+      add_Optim_eval = data.frame(
+        subject_id = id,
+        session_id = session_id,
+        LL = mean(log_evidence, na.rm = TRUE),
+        N = nrow(Input_Data),
+        type = type_list[type_idx]
+      )
+      Optim_eval = rbind(Optim_eval, add_Optim_eval)
+      print(Optim_eval)
+    }
+  }
+}
+```
+Simulations from the bimodal inference model (based on the posterior model parameters obtained in humans; see Methods for details) closely matched the empirical results outlined above: Simulated perceptual decisions resulted from a competition of perceptual history with incoming sensory signals (Figure 6A). Stimulus- and history-congruence were significantly auto-correlated (Figure 6B-C), fluctuating in anti-phase as a scale-invariant process with a 1/f power law (Figure 6D-F). Simulated posterior certainty[@Kepecs2008; @Urai2017; @Braun2018] (i.e., the absolute of the posterior log ratio $|L_t|$) showed a quadratic relationship to the mode of sensory processing (Figure 6H), mirroring the relation of RTs and confidence reports to external and internal biases in perception (Figure 2G-H and Figure 4G-H). Crucially, the overlap between empirical and simulated data broke down when we removed the anti-phase oscillations ($\omega_{LLR}$ and/or $\omega_{\psi}$) or the accumulation of evidence over time (i.e., setting $H$ to 0.5) from the bimodal inference model (see Supplemental Figure S7-10).
 
 <!-- These qualitative results were confirmed by a formal comparison in which we tested the explanatory power of the bimodal inference model against the reduced versions of itself. We conducted group-level random-effects Bayesian model selection using Variational Bayesian Analysis (VBA[@Stephan2009]), which indicated that the bimodal inference model achieved the highest log model evidence, yielding an exceedance probability of 100% in humans and mice (see Supplemental Figure SX2C for a visualization of the log model evidence in bits per trial across models).  -->
 
@@ -4240,7 +4362,7 @@ This indicates that the benefits of bimodal inference are limited to situations 
 \newpage
 # Discussion
 
-This work investigates the behavioral and computational characteristics of ongoing fluctuations in perceptual decision-making using two large-scale datasets in humans[@Rahnev2020] and mice[@Aguillon-Rodriguez2020]. We found that humans and mice cycle through recurring intervals of reduced sensitivity to external sensory information, during which they relied more strongly on perceptual history, i.e., an internal prediction that is provided by the sequence of preceding choices. Computational modeling indicated that these infra-slow periodicities are governed by two interlinked factors: (i), the dynamic integration of sensory inputs over time and, (ii), anti-phase oscillations in the strength at which perception is driven by internal versus external sources of information. These cross-species results suggest that ongoing fluctuations in perceptual decision-making arise not merely as a noise-related epiphenomenon of limited processing capacity, but result from a structured and adaptive mechanism that fluctuates between internally- and externally-oriented modes of sensory analysis.
+This work investigates the behavioral and computational characteristics of ongoing fluctuations in perceptual decision-making using two large-scale datasets in humans[@Rahnev2020] and mice[@Aguillon-Rodriguez2020]. We found that humans and mice cycle through recurring intervals of reduced sensitivity to external sensory information, during which they relied more strongly on perceptual history, i.e., an internal prediction that is provided by the sequence of preceding choices. Computational modeling indicated that these slow periodicities are governed by two interlinked factors: (i), the dynamic integration of sensory inputs over time and, (ii), anti-phase oscillations in the strength at which perception is driven by internal versus external sources of information. These cross-species results suggest that ongoing fluctuations in perceptual decision-making arise not merely as a noise-related epiphenomenon of limited processing capacity, but result from a structured and adaptive mechanism that fluctuates between internally- and externally-oriented modes of sensory analysis.
 
 ## Serial dependencies represent a pervasive and adaptive aspect of perceptual decision-making in humans and mice
 
@@ -4268,15 +4390,9 @@ Third, our computational modeling results provide further evidence against both 
 
 Of note, a recent computational study[@Ashwood2021] has used a Hidden Markov Model (HMM) to investigate perceptual decision-making in the IBL database[@Aguillon-Rodriguez2020]. In analogy to our findings, the authors observed that mice switch between temporally extended *strategies* that last for more than 100 trials: During *engaged* states, perception was highly sensitive to external sensory information. During *disengaged* states, in turn, choice behavior was prone to errors due to enhanced biases toward one of the two perceptual outcomes[@Ashwood2021]. Despite the conceptual differences to our approach (discrete states in a HMM that correspond to switches between distinct decision-making strategies[@Ashwood2021] vs. gradual changes in mode that emerge from sequential Bayesian inference and ongoing fluctuations in the impact of external relative to internal information), it is tempting to speculate that engaged/disengaged states and between-mode fluctuations might tap into the same underlying phenomenon. 
 
-## Fluctuations in mode as a driver of 1/f dynamics in perception
-
-In light of the above, our results support the idea that, instead of unspecific effects of arousal, attention, training or metacognitive response strategies, perceptual choices are shaped by dynamic processes that occur at the level of sensory analysis[@Cicchini2017; @Braun2018; @Cicchini2021]: (i), the integration of incoming signals over time and, (ii), ongoing fluctuations in the impact of external versus internal sources of decision-related information. It is particularly interesting that these two model components reproduce the established 1/f characteristic[@Montroll1982; @Bak1987] of fluctuating performance in perception (see Figure 2-4D and previous work[@Gilden1995a; @Gilden1995; @Gilden2001]), since this feature has been attributed to both a memory process[@Gilden2001] (corresponding to model component (i): internal predictions that are dynamically updated in response to new inputs) and wave-like variations in perceptual resources[@Gilden1995] (corresponding to model component (ii): ongoing fluctuations in the impact of internal and external information).
-
-1/f noise is an ubiquitous attribute of dynamic complex systems that integrate sequences of contingent sub-processes[@Montroll1982] and exhibit self-organized criticality[@Bak1987]. As most real-world processes are *critical*, i.e. not completely uniform (or subcritical) nor completely random (or supercritical)[@Bak1987; @Bak1996], the brain may have evolved to operate at a critical point as well[@Chialvo2010]: Subcritical brains would be impervious to new inputs, whereas supercritical brains would be driven by noise. The 1/f observed in this study thus provides an intriguing connection between the notion that the brain's self-organized criticality is crucial for balancing network stability with information transmission[@Chialvo2010] and the adaptive functions of between-mode fluctuations[@Honey2017], which we propose to support the build-up of robust internal predictions despite an ongoing stream of noisy sensory inputs.
-
 ## Dopamine-dependent changes in E-I-balance as a neural mechanism of between-mode fluctuations 
 
-The link to self-organized criticality suggests that balanced cortical excitation and inhibition[@Deneve2016] (E-I), which may enable efficient coding[@Deneve2016] by maintaining neural networks in critical states[@Beggs2003], could provide a potential neural mechanism of between-mode fluctuations. Previous work has proposed that the balance between glutamatergic excitation and GABA-ergic inhibition is regulated by activity-dependent feedback through NMDA receptors[@Wang1999]. Such NMDA-mediated feedback has been related to the integration of external inputs over time[@Deneve2016] (model component (i), Figure 1E), thereby generating serial dependencies in decision-making[@Wang2001; @Wang2013; @Bliss2017; @Stein2020]. Intriguingly, slow neuromodulation by dopamine enhances NMDA-dependent signaling[@Durstewitz2000; @Wang2001; @Seamans2001] and fluctuates at infra-slow frequencies[@Kobayashi2017; @Chew2019] that match the temporal dynamics of between-mode fluctuations observed in humans (Figure 2) and mice (Figure 4). Ongoing fluctuations in the impact of external versus internal information (model component (ii)) may thus by caused by phasic changes in E-I-balance that are induced by dopaminergic neuromodulation.
+The link to self-organized criticality suggests that balanced cortical excitation and inhibition[@Deneve2016] (E-I), which may enable efficient coding[@Deneve2016] by maintaining neural networks in critical states[@Beggs2003], could provide a potential neural mechanism of between-mode fluctuations. Previous work has proposed that the balance between glutamatergic excitation and GABA-ergic inhibition is regulated by activity-dependent feedback through NMDA receptors[@Wang1999]. Such NMDA-mediated feedback has been related to the integration of external inputs over time[@Deneve2016] (model component (i), Figure 1E), thereby generating serial dependencies in decision-making[@Wang2001; @Wang2013; @Bliss2017; @Stein2020]. Intriguingly, slow neuromodulation by dopamine enhances NMDA-dependent signaling[@Durstewitz2000; @Wang2001; @Seamans2001] and fluctuates at slow frequencies[@Kobayashi2017; @Chew2019] that match the temporal dynamics of between-mode fluctuations observed in humans (Figure 2) and mice (Figure 4). Ongoing fluctuations in the impact of external versus internal information (model component (ii)) may thus by caused by phasic changes in E-I-balance that are induced by dopaminergic neuromodulation.
 
 ## Limitations and open questions
 
@@ -4387,7 +4503,7 @@ Parameters of the psychometric error function were fitted using the R-package *o
 
 **Model definition**: Our modeling analysis is an extension of a model proposed by Glaze et al.[@Glaze2015], who defined a normative account of evidence accumulation for decision-making. In this model, trial-wise choices are explained by applying Bayes theorem to infer moment-by-moment changes in the state of environment from trial-wise noisy observations across trials.
 
-Following Glaze et al.[@Glaze2015], we applied Bayes rule to compute the posterior evidence for the two alternative choices (i.e., the log posterior ratio $L$) from the sensory evidence available at time-point $t$ (i.e., the log likelihood ratio $LLR$) with the prior probability $\psi$:
+Following Glaze et al.[@Glaze2015], we applied Bayes rule to compute the posterior evidence for the two alternative choices (i.e., the log posterior ratio $L$) from the sensory evidence available at time-point $t$ (i.e., the log likelihood ratio $LLR$) with the prior probability $\psi$, **weighted by the respective precision terms $\omega_{LLR}$ and $\omega_{\psi}$**:
 
 \begin{equation}
 L_t = LLR_t * \omega_{LLR} + \psi_t(L_{t-1}, H) * \omega_{\psi}
@@ -4906,7 +5022,7 @@ B. Relative to randomly permuted data, we found highly significant autocorrelati
 
 C. Here, we depict the number of consecutive trials at which autocorrelation coefficients exceeded the respective autocorrelation of randomly permuted data within individual participants. For stimulus-congruence (upper panel), the lag of positive autocorrelation amounted to `r mean(ID_Summary_acf$lag_significant_Stimulus, na.rm = TRUE)` ± `r sd(ID_Summary_acf$lag_significant_Stimulus, na.rm = TRUE)/nrow(ID_Summary_acf)` on average, showing a peak at trial t+1 after the index trial. For history-congruence (lower panel), the lag of positive autocorrelation amounted to `r mean(ID_Summary_acf$lag_significant_History, na.rm = TRUE)` ± `r sd(ID_Summary_acf$lag_significant_History, na.rm = TRUE)/nrow(ID_Summary_acf)` on average, peaking at trial t+2 after the index trial.
 
-D. The smoothed probabilities of stimulus- and history-congruence (sliding windows of ±`r sliding_window/2` trials) fluctuated as *1/f noise*, i.e., at power densities that were inversely proportional to the frequency. 
+D. The smoothed probabilities of stimulus- and history-congruence (sliding windows of ±`r sliding_window/2` trials) fluctuated as **a scale-invariant process with a 1/f power law**, i.e., at power densities that were inversely proportional to the frequency. 
 
 E. The distribution of phase shift between fluctuations in stimulus- and history-congruence peaked at half a cycle ($\pi$ denoted by dotted line). 
 
@@ -5256,7 +5372,7 @@ B. Relative to randomly permuted data, we found highly significant autocorrelati
 
 C. For stimulus-congruence (upper panel), the lag of positive autocorrelation was longer in comparison to humans (`r mean(ID_M_Summary_acf$lag_significant_Stimulus, na.rm = TRUE)` ± `r sd(ID_M_Summary_acf$lag_significant_Stimulus, na.rm = TRUE)/nrow(ID_M_Summary_acf)` on average). For history-congruence (lower panel), the lag of positive autocorrelation was slightly shorter relative to humans (`r mean(ID_M_Summary_acf$lag_significant_History, na.rm = TRUE)` ± `r sd(ID_M_Summary_acf$lag_significant_History, na.rm = TRUE)/nrow(ID_M_Summary_acf)` on average, peaking at trial t+2 after the index trial).
 
-D. In mice, the dynamic probabilities of stimulus- and history-congruence (sliding windows of ±`r sliding_window/2` trials) fluctuated as *1/f noise*.
+D. In mice, the dynamic probabilities of stimulus- and history-congruence (sliding windows of ±`r sliding_window/2` trials) fluctuated as **a scale-invariant process with a 1/f power law**.
 
 E. The distribution of phase shift between fluctuations in stimulus- and history-congruence peaked at half a cycle ($\pi$ denoted by dotted line). 
 
@@ -5622,7 +5738,7 @@ B. At the simulated group level, we found significant autocorrelations in both s
 
 C. On the level of individual simulated participants, autocorrelation coefficients exceeded the autocorrelation coefficients of randomly permuted data within a lag of `r mean(ID_Sim_Summary_acf$lag_significant_Stimulus, na.rm = TRUE)` ± `r sd(ID_Sim_Summary_acf$lag_significant_Stimulus, na.rm = TRUE)/nrow(ID_Sim_Summary_acf)` trials for stimulus-congruence and `r mean(ID_Sim_Summary_acf$lag_significant_History, na.rm = TRUE)` ± `r sd(ID_Sim_Summary_acf$lag_significant_History, na.rm = TRUE)/nrow(ID_Sim_Summary_acf)` trials for history-congruence.
 
-D. The smoothed probabilities of stimulus- and history-congruence (sliding windows of ±`r sliding_window/2` trials) fluctuated as *1/f noise*, i.e., at power densities that were inversely proportional to the frequency (power ~ 1/$f^\beta$; stimulus-congruence: $\beta$ = $`r Sim_STAT.lmer_power_freq_Stimulus$coefficients[2,1]`$ ± $`r Sim_STAT.lmer_power_freq_Stimulus$coefficients[2,2]`$, T($`r Sim_STAT.lmer_power_freq_Stimulus$coefficients[2,3]`$) = $`r Sim_STAT.lmer_power_freq_Stimulus$coefficients[2,4]`$, p = $`r Sim_STAT.lmer_power_freq_Stimulus$coefficients[2,5]`$; 
+D. The smoothed probabilities of stimulus- and history-congruence (sliding windows of ±`r sliding_window/2` trials) fluctuated as **a scale-invariant process with a 1/f power law**, i.e., at power densities that were inversely proportional to the frequency (power ~ 1/$f^\beta$; stimulus-congruence: $\beta$ = $`r Sim_STAT.lmer_power_freq_Stimulus$coefficients[2,1]`$ ± $`r Sim_STAT.lmer_power_freq_Stimulus$coefficients[2,2]`$, T($`r Sim_STAT.lmer_power_freq_Stimulus$coefficients[2,3]`$) = $`r Sim_STAT.lmer_power_freq_Stimulus$coefficients[2,4]`$, p = $`r Sim_STAT.lmer_power_freq_Stimulus$coefficients[2,5]`$; 
 history-congruence: $\beta$ = $`r Sim_STAT.lmer_power_freq_History$coefficients[2,1]`$ ± $`r Sim_STAT.lmer_power_freq_History$coefficients[2,2]`$, T($`r Sim_STAT.lmer_power_freq_History$coefficients[2,3]`$) = $`r Sim_STAT.lmer_power_freq_History$coefficients[2,4]`$, p = $`r Sim_STAT.lmer_power_freq_History$coefficients[2,5]`$).
 
 E. The distribution of phase shift between fluctuations in simulated stimulus- and history-congruence peaked at half a cycle ($\pi$ denoted by dotted line). The dynamic probabilities of simulated stimulus- and history-congruence were therefore were strongly anti-correlated ($\beta$ = $`r Sim_STAT.slider_History_vs_Accuracy$coefficients[2,1]`$ ± $`r Sim_STAT.slider_History_vs_Accuracy$coefficients[2,2]`$, T($`r Sim_STAT.slider_History_vs_Accuracy$coefficients[2,3]`$) = $`r Sim_STAT.slider_History_vs_Accuracy$coefficients[2,4]`$, p = $`r Sim_STAT.slider_History_vs_Accuracy$coefficients[2,5]`$).
@@ -7649,7 +7765,7 @@ B. In the no-accumulation model, we found no significant autocorrelation of hist
 C. In the no-accumulation model, the number of consecutive trials at which true autocorrelation coefficients exceeded the autocorrelation coefficients for randomly permuted data increased with respect to stimulus-congruence (`r mean(Control_ID_Sim_Summary_acf[Control_ID_Sim_Summary_acf$type == type_list[4],]$lag_significant_Stimulus, na.rm = TRUE)` ± `r sd(Control_ID_Sim_Summary_acf[Control_ID_Sim_Summary_acf$type == type_list[4],]$lag_significant_Stimulus, na.rm = TRUE)/nrow(Control_ID_Sim_Summary_acf[Control_ID_Sim_Summary_acf$type == type_list[4],])` trials; T(`r Control_Sim_STAT.exc_autocorrelationt_Stimulus_glaze_osc_no_H$parameter`) = `r Control_Sim_STAT.exc_autocorrelationt_Stimulus_glaze_osc_no_H$statistic`, p = $`r Control_Sim_STAT.exc_autocorrelationt_Stimulus_glaze_osc_no_H$p.value`$) 
 and decreased with respect to history-congruence (`r mean(Control_ID_Sim_Summary_acf[Control_ID_Sim_Summary_acf$type == type_list[4],]$lag_significant_History, na.rm = TRUE)` ± `r sd(Control_ID_Sim_Summary_acf[Control_ID_Sim_Summary_acf$type == type_list[4],]$lag_significant_History, na.rm = TRUE)/nrow(Control_ID_Sim_Summary_acf[Control_ID_Sim_Summary_acf$type == type_list[4],])` trials; T(`r Control_Sim_STAT.exc_autocorrelationt_History_glaze_osc_no_H$parameter`) = `r Control_Sim_STAT.exc_autocorrelationt_History_glaze_osc_no_H$statistic`, p = $`r Control_Sim_STAT.exc_autocorrelationt_History_glaze_osc_no_H$p.value`$) relative to the full model.
 
-D. In the no-accumulation model, the smoothed probabilities of stimulus- and history-congruence (sliding windows of ±`r sliding_window/2` trials) fluctuated as *1/f noise*, i.e., at power densities that were inversely proportional to the frequency (power ~ 1/$f^\beta$; stimulus-congruence: $\beta$ = $`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_osc_no_H$coefficients[2,1]`$ ± $`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_osc_no_H$coefficients[2,2]`$, T($`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_osc_no_H$coefficients[2,3]`$) = $`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_osc_no_H$coefficients[2,4]`$, p = $`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_osc_no_H$coefficients[2,5]`$; 
+D. In the no-accumulation model, the smoothed probabilities of stimulus- and history-congruence (sliding windows of ±`r sliding_window/2` trials) fluctuated as **a scale-invariant process with a 1/f power law**, i.e., at power densities that were inversely proportional to the frequency (power ~ 1/$f^\beta$; stimulus-congruence: $\beta$ = $`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_osc_no_H$coefficients[2,1]`$ ± $`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_osc_no_H$coefficients[2,2]`$, T($`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_osc_no_H$coefficients[2,3]`$) = $`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_osc_no_H$coefficients[2,4]`$, p = $`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_osc_no_H$coefficients[2,5]`$; 
 history-congruence: $\beta$ = $`r Control_Sim_STAT.lmer_power_freq_History_glaze_osc_no_H$coefficients[2,1]`$ ± $`r Control_Sim_STAT.lmer_power_freq_History_glaze_osc_no_H$coefficients[2,2]`$, T($`r Control_Sim_STAT.lmer_power_freq_History_glaze_osc_no_H$coefficients[2,3]`$) = $`r Control_Sim_STAT.lmer_power_freq_History_glaze_osc_no_H$coefficients[2,4]`$, p = $`r Control_Sim_STAT.lmer_power_freq_History_glaze_osc_no_H$coefficients[2,5]`$).
 
 E. In the no-accumulation model, the distribution of phase shift between fluctuations in simulated stimulus- and history-congruence peaked at half a cycle ($\pi$ denoted by dotted line). In contrast to the full model, the dynamic probabilities of simulated stimulus- and history-congruence were not significantly anti-correlated ($\beta$ = $`r Control_Sim_STAT.slider_History_vs_Accuracy_glaze_osc_no_H$coefficients[2,1]`$ ± $`r Control_Sim_STAT.slider_History_vs_Accuracy_glaze_osc_no_H$coefficients[2,2]`$, T($`r Control_Sim_STAT.slider_History_vs_Accuracy_glaze_osc_no_H$coefficients[2,3]`$) = $`r Control_Sim_STAT.slider_History_vs_Accuracy_glaze_osc_no_H$coefficients[2,4]`$, p = $`r Control_Sim_STAT.slider_History_vs_Accuracy_glaze_osc_no_H$coefficients[2,5]`$).
@@ -7686,7 +7802,7 @@ B. In the no-oscillation model, we did not find significant autocorrelations for
 C. In the no-oscillation model, the number of consecutive trials at which true autocorrelation coefficients exceeded the autocorrelation coefficients for randomly permuted data decreased with respect to both stimulus-congruence (`r mean(Control_ID_Sim_Summary_acf[Control_ID_Sim_Summary_acf$type == type_list[1],]$lag_significant_Stimulus, na.rm = TRUE)` ± `r sd(Control_ID_Sim_Summary_acf[Control_ID_Sim_Summary_acf$type == type_list[1],]$lag_significant_Stimulus, na.rm = TRUE)/nrow(Control_ID_Sim_Summary_acf[Control_ID_Sim_Summary_acf$type == type_list[1],])` trials; T(`r Control_Sim_STAT.exc_autocorrelationt_Stimulus_glaze_no_osc$parameter`) = `r Control_Sim_STAT.exc_autocorrelationt_Stimulus_glaze_no_osc$statistic`, p = $`r Control_Sim_STAT.exc_autocorrelationt_Stimulus_glaze_no_osc$p.value`$) 
 and history-congruence (`r mean(Control_ID_Sim_Summary_acf[Control_ID_Sim_Summary_acf$type == type_list[1],]$lag_significant_History, na.rm = TRUE)` ± `r sd(Control_ID_Sim_Summary_acf[Control_ID_Sim_Summary_acf$type == type_list[1],]$lag_significant_History, na.rm = TRUE)/nrow(Control_ID_Sim_Summary_acf[Control_ID_Sim_Summary_acf$type == type_list[1],])` trials; T(`r Control_Sim_STAT.exc_autocorrelationt_History_glaze_no_osc$parameter`) = `r Control_Sim_STAT.exc_autocorrelationt_History_glaze_no_osc$statistic`, p = $`r Control_Sim_STAT.exc_autocorrelationt_History_glaze_no_osc$p.value`$) relative to the full model.
 
-D. In the no-oscillation model, the smoothed probabilities of stimulus- and history-congruence (sliding windows of ±`r sliding_window/2` trials) fluctuated as *1/f noise*, i.e., at power densities that were inversely proportional to the frequency (power ~ 1/$f^\beta$; stimulus-congruence: $\beta$ = $`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_no_osc$coefficients[2,1]`$ ± $`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_no_osc$coefficients[2,2]`$, T($`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_no_osc$coefficients[2,3]`$) = $`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_no_osc$coefficients[2,4]`$, p = $`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_no_osc$coefficients[2,5]`$; 
+D. In the no-oscillation model, the smoothed probabilities of stimulus- and history-congruence (sliding windows of ±`r sliding_window/2` trials) fluctuated as **a scale-invariant process with a 1/f power law**, i.e., at power densities that were inversely proportional to the frequency (power ~ 1/$f^\beta$; stimulus-congruence: $\beta$ = $`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_no_osc$coefficients[2,1]`$ ± $`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_no_osc$coefficients[2,2]`$, T($`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_no_osc$coefficients[2,3]`$) = $`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_no_osc$coefficients[2,4]`$, p = $`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_no_osc$coefficients[2,5]`$; 
 history-congruence: $\beta$ = $`r Control_Sim_STAT.lmer_power_freq_History_glaze_no_osc$coefficients[2,1]`$ ± $`r Control_Sim_STAT.lmer_power_freq_History_glaze_no_osc$coefficients[2,2]`$, T($`r Control_Sim_STAT.lmer_power_freq_History_glaze_no_osc$coefficients[2,3]`$) = $`r Control_Sim_STAT.lmer_power_freq_History_glaze_no_osc$coefficients[2,4]`$, p = $`r Control_Sim_STAT.lmer_power_freq_History_glaze_no_osc$coefficients[2,5]`$).
 
 E. In the no-oscillation model, the distribution of phase shift between fluctuations in simulated stimulus- and history-congruence peaked at half a cycle ($\pi$ denoted by dotted line). In contrast to the full model, the dynamic probabilities of simulated stimulus- and history-congruence were positively correlated ($\beta$ = $`r Control_Sim_STAT.slider_History_vs_Accuracy_glaze_no_osc$coefficients[2,1]`$ ± $`r Control_Sim_STAT.slider_History_vs_Accuracy_glaze_no_osc$coefficients[2,2]`$, T($`r Control_Sim_STAT.slider_History_vs_Accuracy_glaze_no_osc$coefficients[2,3]`$) = $`r Control_Sim_STAT.slider_History_vs_Accuracy_glaze_no_osc$coefficients[2,4]`$, p = $`r Control_Sim_STAT.slider_History_vs_Accuracy_glaze_no_osc$coefficients[2,5]`$).
@@ -7723,7 +7839,7 @@ B. In the likelihood-oscillation-only model, we observed that the autocorrelatio
 C. In the likelihood-oscillation-only model, the number of consecutive trials at which true autocorrelation coefficients exceeded the autocorrelation coefficients for randomly permuted data did not differ with respect to stimulus-congruence (`r mean(Control_ID_Sim_Summary_acf[Control_ID_Sim_Summary_acf$type == type_list[3],]$lag_significant_Stimulus, na.rm = TRUE)` ± `r sd(Control_ID_Sim_Summary_acf[Control_ID_Sim_Summary_acf$type == type_list[3],]$lag_significant_Stimulus, na.rm = TRUE)/nrow(Control_ID_Sim_Summary_acf[Control_ID_Sim_Summary_acf$type == type_list[3],])` trials; T(`r Control_Sim_STAT.exc_autocorrelationt_Stimulus_glaze_only_l_osc$parameter`) = `r Control_Sim_STAT.exc_autocorrelationt_Stimulus_glaze_only_l_osc$statistic`, p = $`r Control_Sim_STAT.exc_autocorrelationt_Stimulus_glaze_only_l_osc$p.value`$), 
 but decreased with respect to history-congruence (`r mean(Control_ID_Sim_Summary_acf[Control_ID_Sim_Summary_acf$type == type_list[3],]$lag_significant_History, na.rm = TRUE)` ± `r sd(Control_ID_Sim_Summary_acf[Control_ID_Sim_Summary_acf$type == type_list[3],]$lag_significant_History, na.rm = TRUE)/nrow(Control_ID_Sim_Summary_acf[Control_ID_Sim_Summary_acf$type == type_list[3],])` trials; T(`r Control_Sim_STAT.exc_autocorrelationt_History_glaze_only_l_osc$parameter`) = `r Control_Sim_STAT.exc_autocorrelationt_History_glaze_only_l_osc$statistic`, p = $`r Control_Sim_STAT.exc_autocorrelationt_History_glaze_only_l_osc$p.value`$) relative to the full model.
 
-D. In the likelihood-oscillation-only model, the smoothed probabilities of stimulus- and history-congruence (sliding windows of ±`r sliding_window/2` trials) fluctuated as *1/f noise*, i.e., at power densities that were inversely proportional to the frequency (power ~ 1/$f^\beta$; stimulus-congruence: $\beta$ = $`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_only_l_osc$coefficients[2,1]`$ ± $`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_only_l_osc$coefficients[2,2]`$, T($`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_only_l_osc$coefficients[2,3]`$) = $`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_only_l_osc$coefficients[2,4]`$, p = $`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_only_l_osc$coefficients[2,5]`$; 
+D. In the likelihood-oscillation-only model, the smoothed probabilities of stimulus- and history-congruence (sliding windows of ±`r sliding_window/2` trials) fluctuated as **a scale-invariant process with a 1/f power law**, i.e., at power densities that were inversely proportional to the frequency (power ~ 1/$f^\beta$; stimulus-congruence: $\beta$ = $`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_only_l_osc$coefficients[2,1]`$ ± $`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_only_l_osc$coefficients[2,2]`$, T($`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_only_l_osc$coefficients[2,3]`$) = $`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_only_l_osc$coefficients[2,4]`$, p = $`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_only_l_osc$coefficients[2,5]`$; 
 history-congruence: $\beta$ = $`r Control_Sim_STAT.lmer_power_freq_History_glaze_only_l_osc$coefficients[2,1]`$ ± $`r Control_Sim_STAT.lmer_power_freq_History_glaze_only_l_osc$coefficients[2,2]`$, T($`r Control_Sim_STAT.lmer_power_freq_History_glaze_only_l_osc$coefficients[2,3]`$) = $`r Control_Sim_STAT.lmer_power_freq_History_glaze_only_l_osc$coefficients[2,4]`$, p = $`r Control_Sim_STAT.lmer_power_freq_History_glaze_only_l_osc$coefficients[2,5]`$).
 
 E. In the likelihood-oscillation-only model, the distribution of phase shift between fluctuations in simulated stimulus- and history-congruence peaked at half a cycle ($\pi$ denoted by dotted line). In contrast to the full model, the dynamic probabilities of simulated stimulus- and history-congruence were positively correlated ($\beta$ = $`r Control_Sim_STAT.slider_History_vs_Accuracy_glaze_only_l_osc$coefficients[2,1]`$ ± $`r Control_Sim_STAT.slider_History_vs_Accuracy_glaze_only_l_osc$coefficients[2,2]`$, T($`r Control_Sim_STAT.slider_History_vs_Accuracy_glaze_only_l_osc$coefficients[2,3]`$) = $`r Control_Sim_STAT.slider_History_vs_Accuracy_glaze_only_l_osc$coefficients[2,4]`$, p = $`r Control_Sim_STAT.slider_History_vs_Accuracy_glaze_only_l_osc$coefficients[2,5]`$).
@@ -7761,7 +7877,7 @@ B. In the prior-oscillation-only model, we did not observe any significant posit
 C. In the prior-oscillation-only model, the number of consecutive trials at which true autocorrelation coefficients exceeded the autocorrelation coefficients for randomly permuted data did was decreased with respect to stimulus-congruence relative to the full model (`r mean(Control_ID_Sim_Summary_acf[Control_ID_Sim_Summary_acf$type == type_list[2],]$lag_significant_Stimulus, na.rm = TRUE)` ± `r sd(Control_ID_Sim_Summary_acf[Control_ID_Sim_Summary_acf$type == type_list[2],]$lag_significant_Stimulus, na.rm = TRUE)/nrow(Control_ID_Sim_Summary_acf[Control_ID_Sim_Summary_acf$type == type_list[2],])` trials; T(`r Control_Sim_STAT.exc_autocorrelationt_Stimulus_glaze_only_p_osc$parameter`) = `r Control_Sim_STAT.exc_autocorrelationt_Stimulus_glaze_only_p_osc$statistic`, p = $`r Control_Sim_STAT.exc_autocorrelationt_Stimulus_glaze_only_p_osc$p.value`$), 
 but did not differ from the full model with respect to history-congruence (`r mean(Control_ID_Sim_Summary_acf[Control_ID_Sim_Summary_acf$type == type_list[2],]$lag_significant_History, na.rm = TRUE)` ± `r sd(Control_ID_Sim_Summary_acf[Control_ID_Sim_Summary_acf$type == type_list[2],]$lag_significant_History, na.rm = TRUE)/nrow(Control_ID_Sim_Summary_acf[Control_ID_Sim_Summary_acf$type == type_list[2],])` trials; T(`r Control_Sim_STAT.exc_autocorrelationt_History_glaze_only_p_osc$parameter`) = `r Control_Sim_STAT.exc_autocorrelationt_History_glaze_only_p_osc$statistic`, p = $`r Control_Sim_STAT.exc_autocorrelationt_History_glaze_only_p_osc$p.value`$).
 
-D. In the prior-oscillation-only model, the smoothed probabilities of stimulus- and history-congruence (sliding windows of ±`r sliding_window/2` trials) fluctuated as *1/f noise*, i.e., at power densities that were inversely proportional to the frequency (power ~ 1/$f^\beta$; stimulus-congruence: $\beta$ = $`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_only_p_osc$coefficients[2,1]`$ ± $`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_only_p_osc$coefficients[2,2]`$, T($`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_only_p_osc$coefficients[2,3]`$) = $`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_only_p_osc$coefficients[2,4]`$, p = $`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_only_p_osc$coefficients[2,5]`$; 
+D. In the prior-oscillation-only model, the smoothed probabilities of stimulus- and history-congruence (sliding windows of ±`r sliding_window/2` trials) fluctuated as **a scale-invariant process with a 1/f power law**, i.e., at power densities that were inversely proportional to the frequency (power ~ 1/$f^\beta$; stimulus-congruence: $\beta$ = $`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_only_p_osc$coefficients[2,1]`$ ± $`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_only_p_osc$coefficients[2,2]`$, T($`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_only_p_osc$coefficients[2,3]`$) = $`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_only_p_osc$coefficients[2,4]`$, p = $`r Control_Sim_STAT.lmer_power_freq_Stimulus_glaze_only_p_osc$coefficients[2,5]`$; 
 history-congruence: $\beta$ = $`r Control_Sim_STAT.lmer_power_freq_History_glaze_only_p_osc$coefficients[2,1]`$ ± $`r Control_Sim_STAT.lmer_power_freq_History_glaze_only_p_osc$coefficients[2,2]`$, T($`r Control_Sim_STAT.lmer_power_freq_History_glaze_only_p_osc$coefficients[2,3]`$) = $`r Control_Sim_STAT.lmer_power_freq_History_glaze_only_p_osc$coefficients[2,4]`$, p = $`r Control_Sim_STAT.lmer_power_freq_History_glaze_only_p_osc$coefficients[2,5]`$).
 
 E. In the prior-oscillation-only model, the distribution of phase shift between fluctuations in simulated stimulus- and history-congruence peaked at half a cycle ($\pi$ denoted by dotted line). Similar to the full model, the dynamic probabilities of simulated stimulus- and history-congruence were anti-correlated ($\beta$ = $`r Control_Sim_STAT.slider_History_vs_Accuracy_glaze_only_p_osc$coefficients[2,1]`$ ± $`r Control_Sim_STAT.slider_History_vs_Accuracy_glaze_only_p_osc$coefficients[2,2]`$, T($`r Control_Sim_STAT.slider_History_vs_Accuracy_glaze_only_p_osc$coefficients[2,3]`$) = $`r Control_Sim_STAT.slider_History_vs_Accuracy_glaze_only_p_osc$coefficients[2,4]`$, p = $`r Control_Sim_STAT.slider_History_vs_Accuracy_glaze_only_p_osc$coefficients[2,5]`$).
@@ -7818,7 +7934,9 @@ We would like to thank Prof. Friston for the very insightful and helpful comment
 
 **If, empirically, the fluctuations in sensitivity are scale-free with a 1/f power law, why did you elect to model fluctuations in precision as a periodic function with one unique timescale (i.e., f).?**
 
-The reason for choosing a unique timescale f was to enable our model to depict the the dominant timescale at which prior and likelihood precision are temporarily suspended, giving rise to what we believe constitutes between-mode fluctuations. Simulating from our model (Figure 6) replicates the 1/f feature of the empirical data. Please note that the individual trial is the smallest unit of *measurement* for these fluctuations, such that our analysis only deals with frequencies below 1 (1/$N_{trials}$).
+The reason for choosing a unique timescale f was to enable our model to depict the the dominant timescale at which prior and likelihood precision are temporarily suspended, giving rise to what we believe constitutes between-mode fluctuations. In line with the shape of the autocorrelation curves, the value for f lies at approximately 0.11 1/$N_{trials}$.   Simulating from our model (Figure 6) replicates the 1/f feature of the empirical data. Please note that the individual trial is the smallest unit of *measurement* for these fluctuations, such that our analysis only deals with frequencies below 1 (1/$N_{trials}$). We have added a paragraph on $f$ to the results section:
+
+- value of f, reason for only one variable
 
 ### Comment 2
 
@@ -7848,11 +7966,11 @@ We realize that, due to the potential non-linearity in their relation to arousal
 
 In light of the above, we have adapted the manuscrit in the following ways:
 
-- explanation of how fluctuations in prior and likelihood precision may impact RTs and confidence
+- explanation of how fluctuations in prior and likelihood precision may impact RTs and confidence: *TODO*
 
-- reference to the potential non-linearity
+- reference to the potential non-linearity: *TODO*
 
-- reference to future work that will use pupillometry, video tracking and neural signals to discern between-mode fluctuations from global and?or unspecific flucations in performance. 
+- reference to future work that will use pupillometry, video tracking and neural signals to discern between-mode fluctuations from global and?or unspecific flucations in performance: *TODO*
 
 ### Comment 4
 
@@ -7864,7 +7982,7 @@ However, we feel that outside of the predictive coding field, attention is not a
 
 We now provide a more nuanced interpretation of our findings of RTs and confidence in relation to attention, with a specific focus on predictive coding and precision:
 
-- attention and precision in PC
+- attention and precision in PC: *TODO*
 
 ### Comment 5 
 
@@ -7906,7 +8024,8 @@ H'_t = H'_{t-1} + \beta_H *\omega_{LLR} * \epsilon_H
 M'_t = M'_{t-1} + \beta_M *\omega_{LLR} * \epsilon_M
 \end{equation}  
 
-Allowing the learning rate itself to vary as a function of preceding experiences would add an additional level of complexity that we sought to omit in this analysis. However, we fully agree that choosing a Bayesian framework (e.g., a three-level HGF) would indeed be more consistent.
+Allowing the learning rate itself to vary as a function of preceding experiences would add an additional level of complexity that we sought to omit in this analysis. However, we fully agree that choosing a Bayesian framework (e.g., a three-level HGF) would indeed be
+more consistent.
 
 ### Comment 9
 
@@ -7920,54 +8039,129 @@ Allowing the learning rate itself to vary as a function of preceding experiences
 
 **Note, again, I am reading your omega_LLR and omega_ψ as precisions and that the periodic modulation is the hyperprior that you are characterizing—and have discovered.**
 
-### Comment 10
+We would like to thank Prof. Friston for these very helpful and precise suggestions. In the light of our response to Comments 1 - 9, we agree that a complete and extensive investigation of the relation between bimodal inference, learning about changes in the environment and the relation to metacognition may be beyond the scope of the current manuscript: Both Reviewer 1 and 3 (see below) have shared that the manuscript is too long and should be streamlined. Yet evaluating the full model space (e.g., comparing update rules for inferences about $H$ and $M$, testing for an influence of beliefs about $M$ on learning about $H$, validating oscillations in $\omega_{LLR}$ and $omega_{\psi}$ using pupillometry, motor behavior, LFPs etc.) would make the manuscript even longer. We are therefore happy to follow Prof. Fristons suggestions to omit section 5.8. We have changed the manuscript in the following ways:
 
-This begs the question as to whether you want to pursue the 1/f story. You refer to this as "noise". However, there is no noise in this setup. I think what you meant was that the fluctuations are scale free, because they evinced a power law. I am sure that there are scale free aspects of these kinds of hyperpriors; however, in the context of your paradigm I wonder whether you should just ignore the scale free aspect and focus on your estimated temporal scale implicit in f. This means you don't have to hand wave about self-organized criticality in the discussion and focus upon your hypothesis.
+- When introducing $\omega_{LLR}$ and $omega_{\psi}$, we identify these parameters as precision, referring to the Bayesian framework: *TODO*
 
-A final move—to make the paper more focused and digestible—would be to put a lot of your defensive analyses (e.g. about general arousal et cetera) in supplementary material. You have to be careful not to exhaust the reader by putting up a lot of auxiliary material before the important messages in your report.
+- When identifying fluctuations in mode, we introduce this as a hyperprior, again referring to the Bayesian framework: *TODO*
 
-Minor points
+- We have deleted the section 5.8 and added a summary of our modeling approach to the discussion, including the text recommended by of Prof. Friston: (...) *Yet relying too strongly on serial dependencies may come at a cost: When accumulating over time, internal predictions may eventually override external information, leading to circular and false inferences about the state of the environment. In this work, we used model simulations to show that, akin to the wake-sleep-algorithm in machine learning[@Bengio2015], bimodal inference may help to determine whether errors result from external input or from internally-stored predictions (Figure 7): During internal mode, sensory processing is more strongly constrained by predictive processes that auto-encode the agent's environment. Conversely, during external mode, the network is driven predominantly by sensory inputs[@Honey2017]. Between-mode fluctuations may thus generate an unambiguous error signal that aligns internal predictions with the current state of the environment in iterative test-update-cycles[@Bengio2015]. On a broader scale, between-mode fluctuations may thus regulate the balance between feedforward versus feedback contributions to perception and thereby play a adaptive role in metacognition and reality monitoring[@Dijkstra2021].*
 
-I cannot resist suggesting that you change your title to "Bimodal Inference in Mice and Men"
+*From the perspective of the Bayesian brain hypothesis, we hypothesized that observers have certain hyperpriors that are apt for accommodating fluctuations in the predictability of their environment, i.e., people believe that their world is inherently volatile. To be Bayes optimal, it is therefore necessary to periodically re-evaluate posterior beliefs about the parameters that define an internal generative model of the external sensory environment. One way to do this is to periodically suspend the precision of prior beliefs and increase the precision afforded to sensory evidence that updates Bayesian beliefs about model parameters.*
+*The empirical evidence above suggests that the timescale of this periodic scheduling of evidence accumulation is scale invariant. This means there exists a timescale of periodic fluctuations in precision over every window or length of perceptual decision-making. Our bimodal inference approach models perceptual decisions under a generative model (based upon a hazard function to model serial dependencies between subsequent trials) with periodic fluctuations in the precision of sensory evidence relative to prior beliefs at a particular timescale. This ad-hoc-modification allowed us to quantify the dominant timescale of periodic fluctuations at approximately 0.11 1/$N_{trials}$ in humans and mice that is appropriate for these kinds of paradigms.*
 
-Please replace "infra-slow fluctuations" with "slow fluctuations". Infra-slow has some colloquial meaning in fMRI studies but not in any scale free context.
+TODO: Model comparison
 
-Please replace "simulated data" with "simulations" in the abstract. Finally, please replace "robust learning and metacognition in volatile environments" with "enable optimal inference and learning in volatile environments."
+### Comment 11
 
-Line 50, please replace "about the degree of noise inherent in encoding of sensory information" with "the precision of sensory information relative to prior (Bayesian) beliefs."
+**This begs the question as to whether you want to pursue the 1/f story. You refer to this as "noise". However, there is no noise in this setup. I think what you meant was that the fluctuations are scale free, because they evinced a power law. I am sure that there are scale free aspects of these kinds of hyperpriors; however, in the context of your paradigm I wonder whether you should just ignore the scale free aspect and focus on your estimated temporal scale implicit in f. This means you don't have to hand wave about self-organized criticality in the discussion and focus upon your hypothesis.**
 
-Line 125: please replace "a source of error" with "a source of bias"
+With respect to the result section, we would suggest reporting the 1/f/fluctuations and stating - as outlined above - that our model captures the dominant time-scale via the variable $f$, while reproducing the 1/f feature (for frequencies < 1/$N_{trials}$). We agree with the reviewer that the discussion of self-organized criticality is far from the data. We have omitted this section from the discussion.
 
-Line 141: please replace "one 1/f noise" with a scale invariant process with a 1/f power law" (here and throughout) this is not "noise" it is a particular kind of fluctuation.
+To Do: Discuss the value of f and report the result. 
 
-Line 178, when you say that the fluctuations may arise due to "changes in level of tonic arousal or on-task attention", I think you need to qualify this. In predictive processing, on-task attention is exactly the modulation of sensory precision, relative to prior precision that you are characterising here. Tonic arousal may be another thing may or may not confound your current results.
+### Comment 12
 
-When introducing Equation 2, please make it clear that the omega terms stand in for the precisions afforded to the likelihood (omega_LLR) and prior (omega_ψ) that constitute the log posterior. You can then motivate Equation 6 and 7 as implementing the hyperprior in which the sensory and prior precisions fluctuate at a particular time scale.
+**A final move—to make the paper more focused and digestible—would be to put a lot of your defensive analyses (e.g. about general arousal et cetera) in supplementary material. You have to be careful not to exhaust the reader by putting up a lot of auxiliary material before the important messages in your report.**
 
-You can also point out that the implicit anti-phase fluctuations are mandated by Bayes optimal formulations in which it is only the relative values of the prior and sensory precision that matter. Bayesian filters these precisions constitute the Kalman gain. You can find a derivation of why this in treatments of the hierarchical Gaussian filter is by Mathys et al.
+**Minor points**
 
-In your first model simulations, I would make it clear in the main text which parameters you are optimizing's; namely (H, alpha, a_likelihood, a_prior f). Perhaps a little table with a brief description of the meaning of these hyper parameters would be useful?
+### Comment 13
 
-Please remove Section 5.8. If you do not, you need to explain why — on line 586 - setting a = 0 is appropriate when a = 0, the log posterior in Equation 2 is zero because the precisions (omegas) are zero (by Equations 6 and 7).
+**I cannot resist suggesting that you change your title to "Bimodal Inference in Mice and Men"**
 
-I hope that these suggestions help, should any revision be required.
+We thank you for this suggestion and have changed the title accordingly. 
+
+### Comment 14
+
+**Please replace "infra-slow fluctuations" with "slow fluctuations". slow has some colloquial meaning in fMRI studies but not in any scale free context.**
+
+Done.
+
+### Comment 15
+
+**Please replace "simulated data" with "simulations" in the abstract. Finally, please replace "robust learning and metacognition in volatile environments" with "enable optimal inference and learning in volatile environments."**
+
+Done. Since we have followed the Reviewer suggestion to delete section 5.8, we have rephrased the last paragraph of the abstract into "We propose that between-mode fluctuations may benefit perception by generating unambiguous error signals that enable optimal inference and learning in volatile environments".
+
+### Comment 16
+
+**Line 50, please replace "about the degree of noise inherent in encoding of sensory information" with "the precision of sensory information relative to prior (Bayesian) beliefs."**
+
+Done. 
+
+### Comment 17
+
+**Line 125: please replace "a source of error" with "a source of bias"**
+
+Done.
+
+### Comment 18
+
+**Line 141: please replace "one 1/f noise" with a scale invariant process with a 1/f power law" (here and throughout) this is not "noise" it is a particular kind of fluctuation.**
+
+Done.
+
+### Comment 19
+
+**Line 178, when you say that the fluctuations may arise due to "changes in level of tonic arousal or on-task attention", I think you need to qualify this. In predictive processing, on-task attention is exactly the modulation of sensory precision, relative to prior precision that you are characterising here. Tonic arousal may be another thing may or may not confound your current results.**
+
+TODO: work out the differences between on-task attention and the hyperprior. 
+
+### Comment 20
+
+**When introducing Equation 2, please make it clear that the omega terms stand in for the precisions afforded to the likelihood (omega_LLR) and prior (omega_ψ) that constitute the log posterior.**
+
+We have modified the introduction of equation 2 as follows: Following Bayes' theorem, we reasoned that binary perceptual decisions depend on the posterior log ratio $L$ of the two alternative states of the environment that participants learn about via noisy sensory information[@Glaze2015]. We computed the posterior by combining the sensory evidence available at time-point $t$ (i.e., the log likelihood ratio $LLR$) with the prior probability $\psi$**, weighted by the respective precision terms $\omega_{LLR}$ and $\omega_{\psi}$**:
+
+\begin{equation}
+L_t = LLR_t * \omega_{LLR} + \psi_t(L_{t-1}, H) * \omega_{\psi}
+\end{equation}
+
+**You can then motivate Equation 6 and 7 as implementing the hyperprior in which the sensory and prior precisions fluctuate at a particular time scale**.
+
+We would like to thank the reviewer for this suggestion, which we have added to the introduction of equations (6) and (7): To allow for *bimodal inference*, i..e, alternating periods of internally- and externally-biased modes of perceptual processing that occur irrespective of the sequence of preceding experiences, we assumed that the relative influences of likelihood and prior show coherent anti-phase fluctuations governed by $\omega_{LLR}$ and $\omega_{\psi}$ that are determined by amplitude $a$, frequency $f$ and phase $p$. **This implements a hyperprior in which the sensory and prior precisions fluctuate at a particular time scale**:
+
+\begin{equation}
+\omega_{LLR} = a_{LLR} * sin(f * t + p) + 1
+\end{equation}
+
+\begin{equation}
+\omega_{\psi} = a_{\psi} * sin(f * t + p + \pi) + 1
+\end{equation}
+
+### Comment 21
+
+**You can also point out that the implicit anti-phase fluctuations are mandated by Bayes optimal formulations in which it is only the relative values of the prior and sensory precision that matter. Bayesian filters these precisions constitute the Kalman gain. You can find a derivation of why this in treatments of the hierarchical Gaussian filter is by Mathys et al.**
+
+TODO: in the discussion?
+
+### Comment 22
+
+**In your first model simulations, I would make it clear in the main text which parameters you are optimizing's; namely (H, alpha, a_likelihood, a_prior f). Perhaps a little table with a brief description of the meaning of these hyper parameters would be useful?**
+
+TODO
+
+### Comment 23
+
+**Please remove Section 5.8. If you do not, you need to explain why — on line 586 - setting a = 0 is appropriate when a = 0, the log posterior in Equation 2 is zero because the precisions (omegas) are zero (by Equations 6 and 7).**
+
+We have removed the section 5.8. When setting the amplitude parameters to zero, $\omega_{LLR}$ and $\omega_{\psi}$ are constant at 1, creating a unimodal control model.  
 
 
+## Reviewer 2
+
+**The authors elucidate whether periodicities in the sensitivity to external information represent an epiphenomenon of limited processing capacity or, alternatively, result from a structured and adaptive mechanism of perceptual inference. Analyzing large datasets of perceptual decision-making in humans and mice, they investigated whether the accuracy of visual perception is constant over time or whether it fluctuates. The authors found significant autocorrelations on the group level and on the level of individual participants, indicating that a stimulus-congruent response in a given trial increased the probability of stimulus-congruent responses in the future. Furthermore, the authors addressed whether observers cycle through periods of enhanced and reduced sensitivity to external information or whether observers rely on internal information in certain phases. This was quantified by whether a response at a given trial was correlated with responses in previous trials. The authors used computational modeling to infer the origin of the different modes (internal vs. external).**
+
+**Evaluation**
+
+**This is a very interesting and well-written manuscript, dealing with an important question. The findings are novel and provide an innovative account of interpreting visual perception. I am not an expert in modeling, so I will restrict my comments to the theoretical framework and the experimental approach. I have a few minor questions that I would like the authors to answer or clarify.**
+
+**Minor questions**
+
+**1. History congruent perception was defined on the basis of response repetitions. Are we really sure that responses are repeated due to some variant of a perceptual decision process (internal or external) or may arise on the motor-level - independent of a perceptual source? For instance, a response primed by residual activation in the motor system may represent a local effect independent from a general response bias.**
 
 
-
-Reviewer #2: Bimodal inference in humans and mice
-
-Veith Weilnhammer, Heiner Stuke, Kai Standvoss, Philipp Sterzer
-
-The authors elucidate whether periodicities in the sensitivity to external information represent an epiphenomenon of limited processing capacity or, alternatively, result from a structured and adaptive mechanism of perceptual inference. Analyzing large datasets of perceptual decision-making in humans and mice, they investigated whether the accuracy of visual perception is constant over time or whether it fluctuates. The authors found significant autocorrelations on the group level and on the level of individual participants, indicating that a stimulus-congruent response in a given trial increased the probability of stimulus-congruent responses in the future. Furthermore, the authors addressed whether observers cycle through periods of enhanced and reduced sensitivity to external information or whether observers rely on internal information in certain phases. This was quantified by whether a response at a given trial was correlated with responses in previous trials. The
-authors used computational modeling to infer the origin of the different modes (internal vs. external).
-
-Evaluation
-This is a very interesting and well-written manuscript, dealing with an important question. The findings are novel and provide an innovative account of interpreting visual perception. I am not an expert in modeling, so I will restrict my comments to the theoretical framework and the experimental approach. I have a few minor questions that I would like the authors to answer or clarify.
-
-Minor questions
-1. History congruent perception was defined on the basis of response repetitions. Are we really sure that responses are repeated due to some variant of a perceptual decision process (internal or external) or may arise on the motor-level - independent of a perceptual source? For instance, a response primed by residual activation in the motor system may represent a local effect independent from a general response bias.
 2. If indeed, a response repetition is initiated by whatever reasons (non-perceptual), wouldn't this imply that the repeated response is per se more related to previous than to current visual information and would hence signal a reduced sensitivity to current external information? The authors are discussing the option of stereotypically repeated responses in the context of alertness. However, a tendency to repeat responses may arise due to other reasons. For instance, may the motor priming effects mentioned possibly explain faster RTs along with a stronger bias when in internal-mode.
 
 
@@ -7984,8 +8178,7 @@ Major comments:
 
 2) The key premise that when participants do not rely on the external stimulus they rely more on the previous trial needs to be more clearly (and statistically) contrasted against a null hypothesis. For instance, an null hypothesis could be that when participants place a lower weight on the stimulus they simply choose randomly. It is important to specify a null hypothesis such that the key premise does not appear self-evident or circular.
 
-3) From a mechanistic (sequential sampling) perspective, several previous papers have examined whether choice history biases influence the starting point or the drift rate of the evidence accumulation process. Under the former formulation, reliance on the evidence vs. reliance on the previous choice will be naturally anti-correlated (the less weight you place on the evidence the more impactful the choice history will be, assuming that the last choice is represented as a starting point bias). This seems to be mapping onto the computational model the authors describe, in which there is a weight on the prior, a weight on the likelihood and the assumption that these weights fluctuate in anti-phase. It is not obvious that this anti-phase relationship needs to be imposed ad-hoc. Or whether it would emerge naturally (using a mechanistic or Bayesian framework). More generally, the authors assert that without an external mechanism prior biases would be impossible to overcome, and
-this would misfit the data. However, it would be important to a) actually show that the results cannot be explained by a single mechanism in which the anti-phase relationship is emergent rather than ad-hoc, b) relate the current framework with previous mechanistic considerations of serial choice biases.
+3) From a mechanistic (sequential sampling) perspective, several previous papers have examined whether choice history biases influence the starting point or the drift rate of the evidence accumulation process. Under the former formulation, reliance on the evidence vs. reliance on the previous choice will be naturally anti-correlated (the less weight you place on the evidence the more impactful the choice history will be, assuming that the last choice is represented as a starting point bias). This seems to be mapping onto the computational model the authors describe, in which there is a weight on the prior, a weight on the likelihood and the assumption that these weights fluctuate in anti-phase. It is not obvious that this anti-phase relationship needs to be imposed ad-hoc. Or whether it would emerge naturally (using a mechanistic or Bayesian framework). More generally, the authors assert that without an external mechanism prior biases would be impossible to overcome, and this would misfit the data. However, it would be important to a) actually show that the results cannot be explained by a single mechanism in which the anti-phase relationship is emergent rather than ad-hoc, b) relate the current framework with previous mechanistic considerations of serial choice biases.
 
 4) The authors need to unpack their definition of history biases since in previous work biases due to the response or the identity of the stimulus at the previous trial are treated differently. Here, the authors focus on response biases but it is not clear whether they could examine also stimulus-driven history biases (in paradigms where stimulus-response is remapped on each trial).
 

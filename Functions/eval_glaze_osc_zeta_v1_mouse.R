@@ -1,12 +1,12 @@
-fit_glaze_osc_zeta_v1_mouse <- function(par, Input_Data) {   
+eval_glaze_osc_zeta_v1_mouse <- function(par, Input_Data, param) {   
   
-  H = par[1]
-  prec = par[2]
-  amp = par[3]
-  amp_LLR = par[4]
-  frequency = par[5]
-  phase = par[6]
-  zeta = par[7]
+  H = param[1]
+  prec = param[2]
+  amp = param[3]
+  amp_LLR = param[4]
+  frequency = param[5]
+  phase = par
+  zeta = param[7]
   
   # Fit <- data.frame(
   #   env = Input_Data$Stimulus - min(Input_Data$Stimulus),

@@ -1,12 +1,11 @@
-fit_glaze_osc_zeta_v1_mouse <- function(par, Input_Data) {   
+eval_glaze_osc_zeta_v1_Prior_amp_mouse <- function(par, Input_Data, param) {   
   
-  H = par[1]
-  prec = par[2]
-  amp = par[3]
-  amp_LLR = par[4]
-  frequency = par[5]
-  phase = par[6]
-  zeta = par[7]
+  H = param[1]
+  prec = param[2]
+  amp = param[3]
+  frequency = param[4]
+  phase = par
+  zeta = param[6]
   
   # Fit <- data.frame(
   #   env = Input_Data$Stimulus - min(Input_Data$Stimulus),
@@ -17,13 +16,12 @@ fit_glaze_osc_zeta_v1_mouse <- function(par, Input_Data) {
     env = Input_Data$Stimulus,
     response = Input_Data$Response
   )
-  
   Fit$u = sigmoid((prec)*Fit$env)
   Fit$LLR = log(Fit$u/(1-Fit$u))
   
   Fit$oscillation_ei = (amp*(sin(frequency*(c(1:nrow(Fit))-1) + phase))) + 1
-  Fit$oscillation_ei_LLR = (amp_LLR*(sin(frequency*(c(1:nrow(Fit))-1) + phase + pi))) + 1
-  
+  #Fit$oscillation_ei_LLR = (amp_LLR*(sin(frequency*(c(1:nrow(Fit))-1) + phase + pi))) + 1
+   
   n = nrow(Fit)
   for (k in c(1:n)){
     
@@ -35,7 +33,7 @@ fit_glaze_osc_zeta_v1_mouse <- function(par, Input_Data) {
       Fit$muhat[k] = (Fit$mu[k-1] + log( ((1-H)/H) + exp(-Fit$mu[k-1])) - log( ((1-H)/H) + exp(Fit$mu[k-1])))*Fit$oscillation_ei[k]
     }
     
-    Fit$mu[k] = Fit$muhat[k] + Fit$LLR[k]*Fit$oscillation_ei_LLR[k]
+    Fit$mu[k] = Fit$muhat[k] + Fit$LLR[k]#*Fit$oscillation_ei_LLR[k]
     # Fit$mu[k] = Fit$muhat[k] + Fit$LLR[k]/Fit$oscillation_ei[k]
     Fit$da[k] = Fit$mu[k] - Fit$muhat[k]
     #Fit$y_prob[k] = exp(Fit$mu[k])/(1 +  exp(Fit$mu[k]))
@@ -58,6 +56,6 @@ fit_glaze_osc_zeta_v1_mouse <- function(par, Input_Data) {
   #sum_Error = (-sum(accuracy_term[is.finite(accuracy_term)]))/length(accuracy_term[is.finite(accuracy_term)])
   sum_Error = -sum(accuracy_term[is.finite(accuracy_term)])
   
-  #print(sum_Error)
+  # print(sum_Error)
   return(sum_Error)
 }
