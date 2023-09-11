@@ -44,14 +44,14 @@ options(scipen = -1, digits = 2)
 ##
 ## ROOT
 ##
-root = "/home/veithweilnhammer/Desktop/Modes Data/"
+#root = "/home/veithweilnhammer/Desktop/Modes Data/"
 #root = "E:/Modes Data/"
-#root = "/media/veithweilnhammer/My Passport/Modes Data/"
+root = "C:/Users/Veith Weilnhammer/Downloads/"
 
 ##
 ## Load/save fully preprocessed data
 ##
-load_summary_data = TRUE
+load_summary_data = FALSE
 save_summary_data = FALSE
 
 ##
@@ -65,7 +65,7 @@ sliding_window = 10
 
 additional_autocorrelations = FALSE
 
-load_data = FALSE
+load_data = TRUE
 
 compute_logreg = FALSE
 compute_Tw_LogReg = FALSE
@@ -88,7 +88,7 @@ compute_slider_mouse_data = FALSE
 filter_mouse_data = FALSE
 compute_pretraining_data_mouse = FALSE
 
-load_mouse_data = FALSE
+load_mouse_data = TRUE
 apply_mouse_exclusion_criteria = FALSE
 
 compute_mouse_group_acf = FALSE
@@ -104,7 +104,7 @@ extract_mouse_additional_Slider_Data = FALSE
 ## Optimization
 ##
 run_optim_human = FALSE
-run_optim_mouse = FALSE
+run_optim_mouse = TRUE
 
 ## generate output from fitted data
 generate_output_human = FALSE
@@ -117,8 +117,9 @@ run_mouse_logreg_mu_minus_1 = FALSE
 ## Simulation
 ##
 
-# visualize bias
+# visualize bias 
 run_visualize_bias_sim = FALSE
+run_visualize_alt_sim = FALSE
 
 # Adaptive simulation
 run_adaptive_simulation = FALSE
@@ -872,13 +873,19 @@ full_logit_Sum <-
     glmer(Response ~ Stimulus + Response_minus_1 + (1|study_id/subject_id),
         data = PwData[PwData$Response >= 0 & PwData$Response <= 1,],
         family = binomial)
+reduced_logit_Sum <-
+    glmer(Response ~ Stimulus + (1|study_id/subject_id),
+        data = PwData[PwData$Response >= 0 & PwData$Response <= 1,],
+        family = binomial)
 } else {
   full_logit_Sum <- readRDS(file = "./Results/full_logit_Sum.rds")
+  reduced_logit_Sum <- readRDS(file = "./Results/reduced_logit_Sum.rds")
 }
 STAT.full_logit_Sum <- summary(full_logit_Sum) 
-  
+STAT.reduced_logit_Sum <- summary(reduced_logit_Sum)  
   if (save_summary_data) {
     save(STAT.full_logit_Sum, 
+         STAT.reduced_logit_Sum,
          STAT.LogReg, 
          Study_LogAggr,
          LogAggr,
@@ -1257,6 +1264,72 @@ STAT.Variance_History_vs_Preferred <- summary(Variance_History_vs_Preferred)
 }
 ```
 
+
+```{r mouse_bias_slider, cache = TRUE}
+
+if (!load_summary_data) {
+  
+  if (extract_mouse_additional_Slider_Data == TRUE) {
+    source("./Functions/f_compute_slider.R", local = knitr::knit_global())
+    M_Slider_Data = MwData[, c(1,2, 4, 6, 37, 38)]
+    
+    M_Slider_Data$Preferred = NA
+    M_Slider_Data$Preferred_slider = NA
+    for (subj_idx in unique(M_Slider_Data$subject_id)) {
+      print(subj_idx)
+      responses = M_Slider_Data[M_Slider_Data$subject_id == subj_idx, ]$Response
+      
+      outcomes = unique(responses)
+      
+      n = rep(NA, length(outcomes))
+      for (outcome_idx in c(1,length(outcomes))) {
+        n[outcome_idx] = sum(responses == outcomes[outcome_idx])
+      }
+      
+      M_Slider_Data[M_Slider_Data$subject_id == subj_idx, ]$Preferred = rep(0, length(responses))
+      M_Slider_Data[M_Slider_Data$subject_id == subj_idx, ]$Preferred[responses == outcomes[which(n == max(n))]] = 1
+      M_Slider_Data[M_Slider_Data$subject_id == subj_idx, ]$Preferred_slider = f_compute_slider(M_Slider_Data[M_Slider_Data$subject_id == subj_idx, ]$Preferred, sliding_window)
+    }
+  } else {M_Slider_Data <- read.csv(paste(root, "M_Slider_Data.csv", sep = ""))}
+  
+  M_slider_History_Preferred_vs_Accuracy <- lmer(Accuracy_slider ~ History_slider + Preferred_slider + (1|subject_id/session_id), data = M_Slider_Data)
+  M_STAT.slider_History_Preferred_vs_Accuracy <- summary(M_slider_History_Preferred_vs_Accuracy)
+  
+  M_slider_Preferred_vs_Accuracy <- lmer(Accuracy_slider ~ Preferred_slider + (1|subject_id/session_id), data = M_Slider_Data)
+  M_STAT.slider_Preferred_vs_Accuracy <- summary(M_slider_Preferred_vs_Accuracy)
+  
+  M_slider_History_vs_Preferred <- lmer(History_slider ~ Preferred_slider + (1|subject_id/session_id), data = M_Slider_Data)
+  M_STAT.slider_History_vs_Preferred <- summary(M_slider_History_vs_Preferred)
+  
+  M_Global_History_Preferred_vs_Bias <- lm(Accuracy ~ History + Bias, data = M_Behav)
+  M_STAT.Global_History_Preferred_vs_Bias <- summary(M_Global_History_Preferred_vs_Bias)
+  
+  M_Variance_History_General <- 
+    ddply(
+      M_Slider_Data, 
+      .(subject_id, session_id),
+      summarise,
+      var_History = sd(History_slider, na.rm = TRUE) - sd(Preferred_slider, na.rm = TRUE)
+    )
+  
+  M_Variance_History_vs_Preferred <- lmer(var_History ~ 1 + (1|session_id), data = M_Variance_History_General)
+  M_STAT.Variance_History_vs_Preferred <- summary(M_Variance_History_vs_Preferred)
+  
+  if (save_summary_data) {
+    save(M_STAT.slider_History_Preferred_vs_Accuracy,
+         M_STAT.slider_Preferred_vs_Accuracy,
+         M_STAT.slider_History_vs_Preferred,
+         M_STAT.Global_History_Preferred_vs_Bias,
+         M_Variance_History_General,
+         M_STAT.Variance_History_vs_Preferred,
+         file = "./Summary_Data/mouse_bias_slider.Rdata")
+  }
+  
+} else {
+  load("./Summary_Data/mouse_bias_slider.Rdata")
+}
+```
+
 The above sections provide correlative evidence that recurring intervals of stronger perceptual history temporally reduce the participants' sensitivity to external information. Importantly, the history-dependent biases that characterize internal mode processing must be differentiated from general response biases. In binary perceptual decision-making, general response biases are defined by a propensity to choose one of the two outcomes more often than the alternative. Indeed, in the experiments considered here, participants selected the more frequent of the two possible outcomes in `r mean(Behav$Bias, na.rm = TRUE)`% ± `r sd(Behav$Bias, na.rm = TRUE)/sqrt(length(Behav$Bias))`% of trials. 
 
 Two caveats have to be considered to make sure that the effect of history-congruence is distinct from the effect of general response biases. First, history-congruent states become more likely for larger response biases that cause a increasing imbalance in the likelihood of the two outcomes ($\beta$ = $`r STAT.slider_History_vs_Preferred$coefficients[2,1]`$ ± $`r STAT.slider_History_vs_Preferred$coefficients[2,2]`$, T($`r STAT.slider_History_vs_Preferred$coefficients[2,3]`$) = $`r STAT.slider_History_vs_Preferred$coefficients[2,4]`$, p = $`r STAT.slider_History_vs_Preferred$coefficients[2,5]`$). One may thus ask whether the autocorrelation of history-congruence could be entirely driven by general response biases. Yet the above analyses account for general response biases by computing group-level autocorrelations (see Figure 2C) relative to randomly permuted data (i.e., by subtracting the autocorrelation of randomly permuted data from the raw autocorrelation curve). This precludes that general response biases contribute to the observed autocorrelation of history-congruence (see Supplemental Figure S5 for a visualization of the correction procedure for simulated data with general response biases ranging from 60 to 90%). 
@@ -1264,7 +1337,7 @@ Two caveats have to be considered to make sure that the effect of history-congru
 Second, it may be argued that fluctuations in perceptual performance may be solely driven by ongoing changes in the strength of general response biases.
 To assess the links between dynamic fluctuations in stimulus-congruence on the one hand and history-congruence as well as general response bias on the other hand, we computed all variables as dynamic probabilities in sliding windows of ± 5 trials (see Figure 1C). Linear mixed effects modeling indicated that fluctuations in history-congruent biases were larger in amplitude than the corresponding fluctuations in general response biases ($\beta_0$ = $`r STAT.Variance_History_vs_Preferred$coefficients[1,1]`$ ± $`r STAT.Variance_History_vs_Preferred$coefficients[1,2]`$, T($`r STAT.Variance_History_vs_Preferred$coefficients[1,3]`$) = $`r STAT.Variance_History_vs_Preferred$coefficients[1,4]`$, p = $`r STAT.Variance_History_vs_Preferred$coefficients[1,5]`$). 
 Crucially, ongoing fluctuations in history-congruence had a significant effect on stimulus-congruence ($\beta_1$ = $`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[2,1]`$ ± $`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[2,2]`$, T($`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[2,3]`$) = $`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[2,4]`$, p = $`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[2,5]`$) 
-beyond the effect of ongoing changes in general response biases ($\beta_2$ = $`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,1]`$ ± $`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,2]`$, T($`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,3]`$) = $`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,4]`$, p = $`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,5]`$). In sum, the above control analyses confirm that the observed influence of preceding choices on perceptual decision-making cannot not be reduced to general response biases.
+beyond the effect of ongoing changes in general response biases ($\beta_2$ = $`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,1]`$ ± $`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,2]`$, T($`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,3]`$) = $`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,4]`$, p = $`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,5]`$). In sum, the above control analyses confirm that the observed influence of preceding choices on perceptual decision-making cannot be reduced to general response biases.
 
 ## Internal mode is characterized by lower thresholds as well as by history-dependent changes in biases and lapses
 
@@ -1878,34 +1951,49 @@ M_STAT.diff_History_Accuracy = t.test(M_Behav_diff[M_Behav_diff$Accuracy == 0,]$
 ```{r compute_mouse_logreg, cache = TRUE}
 
 if (!load_summary_data) {
-  
-##
-## Logistic regression
-##
-if (compute_mouse_logreg) {
-source("./Functions/f_compute_mouse_logreg.R", local = knitr::knit_global())
-M_LogAggr <- f_compute_mouse_logreg(MwData)
-} else {
-  
+  ##
+  ## Logistic regression
+  ##
+  if (compute_mouse_logreg) {
+    source("./Functions/f_compute_mouse_logreg.R",
+           local = knitr::knit_global())
+    M_LogAggr <- f_compute_mouse_logreg(MwData)
+  } else {
     M_LogAggr <- read.csv("./Results/M_LogAggr_new_preproc.csv")
-}
-
-M_LogAggr$diff_AIC = (M_LogAggr$full_AIC - M_LogAggr$reduced_AIC)
-
-M_STAT.LogReg = t.test(M_LogAggr$diff_AIC)
-
-if (compute_mouse_logreg) {
-M_full_logit_Sum <-
-    glmer(Response ~ Stimulus + Response_minus_1 + (1|subject_id),
-        data = MwData[MwData$Response >= 0 & MwData$Response <= 1,],
-        family = binomial)
-} else {
-   M_full_logit_Sum <- readRDS(file = "./Results/M_full_logit_Sum_new_preproc.rds")
-}
-M_STAT.full_logit_Sum <- summary(M_full_logit_Sum) 
+  }
+  
+  M_LogAggr$diff_AIC = (M_LogAggr$full_AIC - M_LogAggr$reduced_AIC)
+  
+  M_STAT.LogReg = t.test(M_LogAggr$diff_AIC)
+  
+  if (compute_mouse_logreg) {
+    M_full_logit_Sum <-
+      glmer(
+        Response ~ Stimulus + Response_minus_1 + (1 | subject_id),
+        data = MwData[MwData$Response >= 0 & MwData$Response <= 1, ],
+        family = binomial
+      )
+    
+     M_reduced_logit_Sum <-
+      glmer(
+        Response ~ Stimulus + (1 | subject_id),
+        data = MwData[MwData$Response >= 0 & MwData$Response <= 1, ],
+        family = binomial
+      )
+  } else {
+    M_full_logit_Sum <-
+      readRDS(file = "./Results/M_full_logit_Sum_new_preproc.rds")
+    M_reduced_logit_Sum <-
+      readRDS(file = "./Results/M_reduced_logit_Sum_new_preproc.rds")
+  }
+  M_STAT.full_logit_Sum <- summary(M_full_logit_Sum)
+  M_STAT.reduced_logit_Sum <- summary(M_reduced_logit_Sum)
   
   if (save_summary_data) {
-    save(M_LogAggr,M_STAT.LogReg, M_STAT.full_logit_Sum,
+    save(M_LogAggr, 
+         M_STAT.LogReg, 
+         M_STAT.full_logit_Sum,
+         M_STAT.reduced_logit_Sum,
          file = "./Summary_Data/LogReg_mice.Rdata")
   }
   
@@ -2447,68 +2535,6 @@ Crucially, the frequency of history-congruent perceptual choices also increased 
 
 As in humans, longer within-session task exposure was associated with an increase in history-congruence ($\beta$ = $`r M_STAT.training_History$coefficients[2,1]`$ ± $`r M_STAT.training_History$coefficients[2,2]`$, z = $`r M_STAT.training_History$coefficients[2,3]`$, p = $`r M_STAT.training_History$coefficients[2,4]`$) and a decrease in TDs ($\beta$ = $`r M_STAT.training_RT$coefficients[2,1]`$ ± $`r M_STAT.training_RT$coefficients[2,2]`$, T($`r M_STAT.training_RT$coefficients[2,3]`$) = $`r M_STAT.training_RT$coefficients[2,4]`$, p = $`r M_STAT.training_RT$coefficients[2,5]`$). In sum, these findings strongly argue against the proposition that mice show biases toward perceptual history due to an unspecific response strategy.
 
-
-```{r mouse_bias_slider, cache = TRUE}
-
-if (!load_summary_data) {
-  
-  if (extract_mouse_additional_Slider_Data == TRUE) {
-  source("./Functions/f_compute_slider.R", local = knitr::knit_global())
-M_Slider_Data = MwData[, c(1,2, 4, 6, 37, 38)]
-
-M_Slider_Data$Preferred = NA
-M_Slider_Data$Preferred_slider = NA
-for (subj_idx in unique(M_Slider_Data$subject_id)) {
-print(subj_idx)
-responses = M_Slider_Data[M_Slider_Data$subject_id == subj_idx, ]$Response
-
-outcomes = unique(responses)
-
-n = rep(NA, length(outcomes))
-for (outcome_idx in c(1,length(outcomes))) {
-n[outcome_idx] = sum(responses == outcomes[outcome_idx])
-}
-
-M_Slider_Data[M_Slider_Data$subject_id == subj_idx, ]$Preferred = rep(0, length(responses))
-M_Slider_Data[M_Slider_Data$subject_id == subj_idx, ]$Preferred[responses == outcomes[which(n == max(n))]] = 1
-M_Slider_Data[M_Slider_Data$subject_id == subj_idx, ]$Preferred_slider = f_compute_slider(M_Slider_Data[M_Slider_Data$subject_id == subj_idx, ]$Preferred, sliding_window)
-}
-} else {M_Slider_Data <- read.csv(paste(root, "M_Slider_Data.csv", sep = ""))}
-
-M_slider_History_Preferred_vs_Accuracy <- lmer(Accuracy_slider ~ History_slider + Preferred_slider + (1|subject_id/session_id), data = M_Slider_Data)
-M_STAT.slider_History_Preferred_vs_Accuracy <- summary(M_slider_History_Preferred_vs_Accuracy)
-
-M_slider_History_vs_Preferred <- lmer(History_slider ~ Preferred_slider + (1|subject_id/session_id), data = M_Slider_Data)
-M_STAT.slider_History_vs_Preferred <- summary(M_slider_History_vs_Preferred)
-
-M_Global_History_Preferred_vs_Bias <- lm(Accuracy ~ History + Bias, data = M_Behav)
-M_STAT.Global_History_Preferred_vs_Bias <- summary(M_Global_History_Preferred_vs_Bias)
-
-    M_Variance_History_General <- 
-    ddply(
-    M_Slider_Data, 
-    .(subject_id, session_id),
-    summarise,
-    var_History = sd(History_slider, na.rm = TRUE) - sd(Preferred_slider, na.rm = TRUE)
-  )
-
-M_Variance_History_vs_Preferred <- lmer(var_History ~ 1 + (1|session_id), data = M_Variance_History_General)
-M_STAT.Variance_History_vs_Preferred <- summary(M_Variance_History_vs_Preferred)
-  
-  if (save_summary_data) {
-    save(M_STAT.slider_History_Preferred_vs_Accuracy,
-         M_STAT.slider_History_vs_Preferred,
-         M_STAT.Global_History_Preferred_vs_Bias,
-         M_Variance_History_General,
-         M_STAT.Variance_History_vs_Preferred,
-         file = "./Summary_Data/mouse_bias_slider.Rdata")
-  }
-  
-} else {
-  load("./Summary_Data/mouse_bias_slider.Rdata")
-}
-```
-
 As in humans, fluctuations in the strength of history-congruent biases were, (i), larger in amplitude than the corresponding fluctuations in general response biases ($\beta_0$ = $`r M_STAT.Variance_History_vs_Preferred$coefficients[1,1]`$ ± $`r M_STAT.Variance_History_vs_Preferred$coefficients[1,2]`$, T($`r M_STAT.Variance_History_vs_Preferred$coefficients[1,3]`$) = $`r M_STAT.Variance_History_vs_Preferred$coefficients[1,4]`$, p = $`r M_STAT.Variance_History_vs_Preferred$coefficients[1,5]`$)
 and, (ii), had a significant effect on stimulus-congruence ($\beta_1$ = $`r M_STAT.slider_History_Preferred_vs_Accuracy$coefficients[2,1]`$ ± $`r M_STAT.slider_History_Preferred_vs_Accuracy$coefficients[2,2]`$, T($`r M_STAT.slider_History_Preferred_vs_Accuracy$coefficients[2,3]`$) = $`r M_STAT.slider_History_Preferred_vs_Accuracy$coefficients[2,4]`$, p = $`r M_STAT.slider_History_Preferred_vs_Accuracy$coefficients[2,5]`$) 
 beyond the effect of ongoing changes in general response biases ($\beta_2$ = $`r M_STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,1]`$ ± $`r M_STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,2]`$, T($`r M_STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,3]`$) = $`r M_STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,4]`$, p = $`r M_STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,5]`$). 
@@ -2866,7 +2892,7 @@ lower lapses $\gamma$ for $y_{t-1} = 0$: T(`r M_STAT.PM_diff_lapse_0_lower$param
 In mice, thresholds $t$ amounted to `r mean(P_M_Behav$full_b_threshold, na.rm = TRUE)` ± `r sd(P_M_Behav$full_b_threshold, na.rm = TRUE)/sqrt(length(P_M_Behav$full_b_threshold))` (see Figure 5A and E) and were higher in internal mode (`r mean(P_M_Behav$internal_b_threshold, na.rm = TRUE)` ± `r sd(P_M_Behav$internal_b_threshold, na.rm = TRUE)/sqrt(length(P_M_Behav$internal_b_threshold))`) as compared to external mode (`r mean(P_M_Behav$external_b_threshold, na.rm = TRUE)` ± `r sd(P_M_Behav$external_b_threshold, na.rm = TRUE)/sqrt(length(P_M_Behav$external_b_threshold))`; $\beta_0$ = $`r M_STAT.PM_diff_threshold$coefficients[1,1]`$ ± $`r M_STAT.PM_diff_threshold$coefficients[1,2]`$, T = $`r M_STAT.PM_diff_threshold$coefficients[1,3]`$, p = $`r M_STAT.PM_diff_threshold$coefficients[1,4]`$; controlling for differences in biases and lapses).
 Thresholds $t$ were not modulated by perceptual history (T(`r M_STAT.PM_diff_threshold_0_1$parameter`) = `r M_STAT.PM_diff_threshold_0_1$statistic`, p = $`r M_STAT.PM_diff_threshold_0_1$p.value`$).
 
-In sum, the above analyses of the psychometric function in mice corroborated our findings in humans. Higher thresholds indicated a reduced sensitivity to external information during internal mode. Additionally, internally-biased processing was characterized history-dependent modulation of biases and lapses. 
+In sum, the above analyses of the psychometric function in mice corroborated our findings in humans. Higher thresholds indicated a reduced sensitivity to external information during internal mode. Additionally, internally-biased processing was characterized by a history-dependent modulation of biases and lapses. 
 
 ## Fluctuations in mode result from coordinated changes in the impact of external and internal information on perception
 
@@ -2928,12 +2954,12 @@ if (!load_summary_data) {
   
   type_list = c(
               #"export_data",
-             "fit_glaze_osc_zeta_v1_no_integration",
-              "fit_glaze_osc_zeta_v1_no_amp",
-              "fit_glaze_osc_zeta_v1_LLR_amp",
-              "fit_glaze_osc_zeta_v1_Prior_amp",
-              "fit_glaze_osc_zeta_v1_one_amp",
-              "fit_glaze_osc_zeta_v1"#, 
+              #"fit_glaze_osc_zeta_v1_no_integration",
+              "fit_glaze_osc_zeta_v4_LLR_amp",
+              "fit_glaze_osc_zeta_v4_Prior_amp",
+              "fit_glaze_osc_zeta_v4_one_amp",
+              "fit_glaze_osc_zeta_v4",
+              "fit_glaze_osc_zeta_v4_no_amp"
               ) 
 
 if (run_optim_human) {
@@ -3483,7 +3509,7 @@ M_Summary_Compare_Optim<-
     M_Lbits,
     .(model),
     summarise,
-    mean_Lbits = mean(exclude_3SD(M_Lbits), na.rm = TRUE),
+    mean_Lbits = mean(M_Lbits, na.rm = TRUE),
     error_Lbits = sd(M_Lbits, na.rm = TRUE) / sqrt(length(M_Lbits)))
 
 M_Optim <- M_Optim[M_Optim$subject_id %in% M_Behav$subject_id,]
@@ -3644,15 +3670,15 @@ if (!load_summary_data) {
 if (run_simulation) {
   
 type_list = c(
-              "fit_glaze_osc_zeta_v1"
+              "fit_glaze_osc_zeta_v4"
               ) 
-source("./Functions/simulation_glaze_osc_human_zeta_v1.R", local = knitr::knit_global())
-source("./Functions/simulation_glaze_osc_human_zeta_v1_one_amp.R", local = knitr::knit_global())
+source("./Functions/simulation_glaze_osc_human_zeta_v4.R", local = knitr::knit_global())
+#source("./Functions/simulation_glaze_osc_human_zeta_v1_one_amp.R", local = knitr::knit_global())
 
 Sim <- data.frame()
 for (type_idx in c(1:length(type_list))){
   
-reproduce_Optim  <- read.csv(paste("./Results/", type_list[type_idx], ".csv", sep = ""))
+reproduce_Optim  <- read.csv(paste("./Results/", type_list[type_idx], "_mouse.csv", sep = ""))
 n_participants =  nrow(reproduce_Optim)
 n = runif(n_participants, 1000, 2000)
 
@@ -3664,10 +3690,10 @@ for (subj_idx in c(1:n_participants)){
   
   random_steps = rnorm(n = n[subj_idx], mean = 0, sd = 0)
   
-  if (type_list[type_idx] == "fit_glaze_osc_zeta_v1") {
+  if (type_list[type_idx] == "fit_glaze_osc_zeta_v4") {
 
   Sim_add <-
-  simulation_glaze_osc_human_zeta_v1(
+  simulation_glaze_osc_human_zeta_v4(
   outcomes,
   n[subj_idx],
   reproduce_Optim$p1[subj_idx],
@@ -3997,7 +4023,7 @@ Sim_STAT.Confidence_vs_mode <- summary(Sim_Confidence_vs_mode)
 ```
 
 ```{r evaluate_mouse, cache = TRUE}
-
+library(svMisc)
 type_list = c(
   "fit_glaze_osc_zeta_v1_mouse",
   "fit_glaze_osc_zeta_v1_one_amp_mouse",
@@ -4025,22 +4051,42 @@ source("./Functions/eval_glaze_osc_zeta_v1_LLR_amp_mouse.R",
 source("./Functions/eval_glaze_osc_zeta_v1_Prior_amp_mouse.R",
        local = knitr::knit_global())
 
-for (type_idx in c(1:length(type_list))) {
-  load_M_Optim <-
-    read.csv(paste("./Results/", type_list[type_idx], ".csv", sep = ""))
-  
-  Optim_eval = data.frame()
-  for (id in unique(MwData$subject_id)) {
-    for (session_id in unique(MwData[MwData$subject_id == id, ]$session_id)) {
-      Input_Data = MwData[MwData$subject_id == id &
-                            MwData$session_id == session_id, c("Stimulus", "Response", "Difficulty")]
-      
-      Input_Data$Stimulus <-
-        (Input_Data$Stimulus * 2 - 1) * Input_Data$Difficulty
-      Input_Data$Stimulus[Input_Data$Difficulty == 0] = 0
-      Input_Data = Input_Data[!is.na(Input_Data$Stimulus) &
-                                !is.na(Input_Data$Response), ]
-      
+source("./Functions/fit_glaze_osc_zeta_v1_mouse.R",
+       local = knitr::knit_global())
+source("./Functions/fit_glaze_osc_zeta_v1_one_amp_mouse.R",
+       local = knitr::knit_global())
+source("./Functions/fit_glaze_osc_zeta_v1_LLR_amp_mouse.R",
+       local = knitr::knit_global())
+source("./Functions/fit_glaze_osc_zeta_v1_Prior_amp_mouse.R",
+       local = knitr::knit_global())
+source("./Functions/fit_glaze_osc_zeta_v1_no_amp_mouse.R",
+       local = knitr::knit_global())
+source(
+  "./Functions/fit_glaze_osc_zeta_v1_no_integration_mouse.R",
+  local = knitr::knit_global()
+)
+
+Optim_eval = data.frame()
+
+
+
+for (id in unique(MwData$subject_id)) {
+  print(paste("mouse:", id, sep = " "))
+  for (session_id in unique(MwData[MwData$subject_id == id, ]$session_id)) {
+    print(paste("session:", session_id, sep = " "))
+    Input_Data = MwData[MwData$subject_id == id &
+                          MwData$session_id == session_id, c("Stimulus", "Response", "Difficulty")]
+    
+    Input_Data$Stimulus <-
+      (Input_Data$Stimulus * 2 - 1) * Input_Data$Difficulty
+    Input_Data$Stimulus[Input_Data$Difficulty == 0] = 0
+    Input_Data = Input_Data[!is.na(Input_Data$Stimulus) &
+                              !is.na(Input_Data$Response), ]
+    
+    for (type_idx in c(1:length(type_list))) {
+      load_M_Optim <-
+        read.csv(paste("./Results/", type_list[type_idx], ".csv", sep = ""))
+      print(type_list[type_idx])
       
       if (type_list[type_idx] == "fit_glaze_osc_zeta_v1_mouse") {
         param = as.numeric(load_M_Optim[load_M_Optim$subject_id == id &
@@ -4071,7 +4117,7 @@ for (type_idx in c(1:length(type_list))) {
       for (trial_idx in seq(
         from = 1,
         to = nrow(Input_Data) - 2 * sliding_window + 1,
-        by = 1
+        by = sliding_window
       )) {
         train =  Input_Data[seq(from = trial_idx,
                                 to = trial_idx + sliding_window - 1,
@@ -4087,7 +4133,6 @@ for (type_idx in c(1:length(type_list))) {
             type_list[type_idx] == "fit_glaze_osc_zeta_v1_one_amp_mouse" |
             type_list[type_idx] == "fit_glaze_osc_zeta_v1_LLR_amp_mouse" |
             type_list[type_idx] == "fit_glaze_osc_zeta_v1_Prior_amp_mouse") {
-          
           train_O =  optimx(
             par,
             match.fun(eval_list[type_idx]),
@@ -4100,8 +4145,7 @@ for (type_idx in c(1:length(type_list))) {
           log_evidence = c(log_evidence,
                            -match.fun(eval_list[type_idx])(train_O$p1, test, param))
         } else {
-          log_evidence = c(log_evidence,
-                           -match.fun(type_list[type_idx])(param, test))
+          log_evidence = c(log_evidence, -match.fun(type_list[type_idx])(param, test))
         }
       }
       
@@ -4113,7 +4157,7 @@ for (type_idx in c(1:length(type_list))) {
         type = type_list[type_idx]
       )
       Optim_eval = rbind(Optim_eval, add_Optim_eval)
-      print(Optim_eval)
+      #print(Optim_eval)
     }
   }
 }
@@ -4368,7 +4412,7 @@ This work investigates the behavioral and computational characteristics of ongoi
 
 A growing body of literature has highlighted that perception is modulated by preceding choices[@fischer_serial_2014; @Liberman2014; @Abrahamyan2016; @Cicchini2014; @Cicchini2017; @Fritsche2020; @Urai2017; @Urai2019; @Hsu2020; @Braun2018]. Our work provides converging cross-species evidence supporting the notion that such serial dependencies are a pervasive and general phenomenon of perceptual decision-making (Figures 2 and 4, Supplemental Figures 1 and 3). While introducing errors in randomized psychophysical designs[@Kiyonaga2017; @Urai2017; @Braun2018; @Abrahamyan2016; @Bergen2019] (Figures 2 and 4A), we found that perceptual history facilitates post-perceptual processes such as speed of response[@Cicchini2018] (Figure 2G) and subjective confidence in humans (Figure 2I). 
 
-At the level of individual traits, increased biases toward preceding choices were associated with reduced sensitivity to external information (Supplemental Figure 1C-D) and lower metacognitive efficiency. When investigating how serial dependencies evolve over time, we observed dynamic changes in strength of perceptual history (Figures 2 and 4B) that created wavering biases toward internally- and externally-biased modes of sensory processing. Between-mode fluctuations may thus provide a new explanation for ongoing changes in perceptual performance[@Verplanck1952; @Atkinson1963; @Dehaene1993; @Gilden1995; @Gilden1995a; @Monto2008]. 
+At the level of individual traits, increased biases toward preceding choices were associated with reduced sensitivity to external information (Supplemental Figure 1C-D) and lower metacognitive efficiency. When investigating how serial dependencies evolve over time, we observed dynamic changes in the strength of perceptual history (Figures 2 and 4B) that created wavering biases toward internally- and externally-biased modes of sensory processing. Between-mode fluctuations may thus provide a new explanation for ongoing changes in perceptual performance[@Verplanck1952; @Atkinson1963; @Dehaene1993; @Gilden1995; @Gilden1995a; @Monto2008]. 
 
 In computational terms, serial dependencies may leverage the temporal autocorrelation of natural environments[@St.John-Saaltink2016; @Bergen2019] to increase the efficiency of decision-making[@Burr2014; @Kiyonaga2017]. Such temporal smoothing[@St.John-Saaltink2016] of sensory inputs may be achieved by updating dynamic predictions about the world based on the sequence of noisy perceptual experiences[@fischer_serial_2014; @Bergen2019], using algorithms such as Kalman filtering[@Burr2014], Hierarchical Gaussian filtering[@Mathys2014a] or sequential Bayes[@Cicchini2014; @Glaze2015; @Cicchini2018]. At the level of neural mechanisms, the integration of internal with external information may be realized by combining feedback from higher levels in the cortical hierarchy with incoming sensory signals that are fed forward from lower levels[@Sterzer2018]. 
 
@@ -8052,6 +8096,20 @@ We would like to thank Prof. Friston for these very helpful and precise suggesti
 
 TODO: Model comparison
 
+```{r model_comp, cache = TRUE}
+Model_comp = read.csv("./Results/interim_eval.csv")
+
+head(Model_comp)
+Sum_Model_comp <-  ddply(
+Model_comp,
+.(type),
+summarise,
+mean = mean(LL, na.rm = TRUE),
+error = sd(LL, na.rm = TRUE) / sqrt(length(LL))
+)
+Sum_Model_comp
+```
+
 ### Comment 11
 
 **This begs the question as to whether you want to pursue the 1/f story. You refer to this as "noise". However, there is no noise in this setup. I think what you meant was that the fluctuations are scale free, because they evinced a power law. I am sure that there are scale free aspects of these kinds of hyperpriors; however, in the context of your paradigm I wonder whether you should just ignore the scale free aspect and focus on your estimated temporal scale implicit in f. This means you don't have to hand wave about self-organized criticality in the discussion and focus upon your hypothesis.**
@@ -8159,43 +8217,298 @@ We have removed the section 5.8. When setting the amplitude parameters to zero, 
 
 **Minor questions**
 
-**1. History congruent perception was defined on the basis of response repetitions. Are we really sure that responses are repeated due to some variant of a perceptual decision process (internal or external) or may arise on the motor-level - independent of a perceptual source? For instance, a response primed by residual activation in the motor system may represent a local effect independent from a general response bias.**
+### Comment 1
+**History congruent perception was defined on the basis of response repetitions. Are we really sure that responses are repeated due to some variant of a perceptual decision process (internal or external) or may arise on the motor-level - independent of a perceptual source? For instance, a response primed by residual activation in the motor system may represent a local effect independent from a general response bias.**
+
+- Discussion
+
+### Comment 2
+**If indeed, a response repetition is initiated by whatever reasons (non-perceptual), wouldn't this imply that the repeated response is per se more related to previous than to current visual information and would hence signal a reduced sensitivity to current external information? The authors are discussing the option of stereotypically repeated responses in the context of alertness. However, a tendency to repeat responses may arise due to other reasons. For instance, may the motor priming effects mentioned possibly explain faster RTs along with a stronger bias when in internal-mode.**
+
+- Discussion
+
+## Reviewer 3 
+
+**In this paper the authors propose that during perceptual decisions, humans and mice exhibit regular oscillatory fluctuations  between an "external"  (that places more weight on the perceptual evidence) and an "internal" (that places more weight on historical experiences) mode. In particular, the authors propose a computational scheme in which the influences of history and current stimulus on choice oscillate in anti phase, effectively implementing "bimodal inference". The computational advantages of these scheme as well as its relation to the underlying neurophysiology are discussed.**
+
+**Overall, the authors make a very interesting proposal about what drives slow fluctuations in perceptual performance during randomised two-alternative choice tasks. This proposal relates changes in accuracy with changes in serial choice biases, which is a timely and synthesising contribution. Furthermore, this proposal is backed by analyses over several human datasets  and a large dataset in mice.** 
+
+**Despite its strong empirical contribution, the paper seems limited by the fact that alternative computational hypotheses are not adequately considered (or at least considered in a systematic way). At the same time, and although the paper is well written, some parts are overly technical.**
+
+**Major comments:**
+
+### Comment 1
+
+**The authors collapse across various datasets in which different tasks were employed. However, some details on the nature of these different tasks and a discussion on the rationale of collapsing behavioural metrics across them is missing. The authors mention that all tasks involved binary perceptual decisions. In some parts of the manuscript the term "false alarms" is mentioned, indicating a detection protocol. Other terms in the methods section (e.g., "set size") might need further clarification. Importantly, it is not clear how reaction times were calculated in the various tasks and whether some experiments involved free response paradigms while others interrogation/ cued paradigms (in which case RTs can be defined as the latency between the response cue and the response).**
+
+- go through all the papers that we investigated in the confidence database and check for these points (what paradigm etc.): type of 2AFC task, response mapping, response time, feedback.
+
+### Comment 2
+
+**The key premise that when participants do not rely on the external stimulus they rely more on the previous trial needs to be more clearly (and statistically) contrasted against a null hypothesis. For instance, an null hypothesis could be that when participants place a lower weight on the stimulus they simply choose randomly. It is important to specify a null hypothesis such that the key premise does not appear self-evident or circular.**
+
+```{r null_hypotheses, cache = TRUE, warning = FALSE}
+##
+## humans
+##
+
+### dynamic probabilities:
+#STAT.slider_History_Preferred_vs_Accuracy$coefficients
 
 
-2. If indeed, a response repetition is initiated by whatever reasons (non-perceptual), wouldn't this imply that the repeated response is per se more related to previous than to current visual information and would hence signal a reduced sensitivity to current external information? The authors are discussing the option of stereotypically repeated responses in the context of alertness. However, a tendency to repeat responses may arise due to other reasons. For instance, may the motor priming effects mentioned possibly explain faster RTs along with a stronger bias when in internal-mode.
+#t.test((abs(STAT.slider_Preferred_vs_Accuracy$residuals)) - abs(STAT.slider_History_Preferred_vs_Accuracy$residuals)) ## replace with Accuracy ~ 
+
+delta_AIC_correlation_humans = compute_AIC(
+  LL = STAT.slider_History_Preferred_vs_Accuracy$logLik[1],
+  K =  2,
+  n = length(STAT.slider_History_Preferred_vs_Accuracy$residuals),
+  correction = 0
+) - compute_AIC(
+  LL = STAT.slider_Preferred_vs_Accuracy$logLik[1],
+  K =  1,
+  n = length(STAT.slider_History_vs_Preferred$residuals),
+  correction = 0
+) 
+
+### log reg
+#STAT.full_logit_Sum$coefficients
+
+#t.test(abs(STAT.reduced_logit_Sum$residuals) - abs(STAT.full_logit_Sum$residuals))
+
+delta_AIC_log_reg_humans = compute_AIC(
+  LL = STAT.full_logit_Sum$logLik[1],
+  K =  3,
+  n = length(STAT.full_logit_Sum$residuals),
+  correction = 0
+) - compute_AIC(
+  LL = STAT.reduced_logit_Sum$logLik[1],
+  K =  2,
+  n = length(STAT.full_logit_Sum$residuals),
+  correction = 0
+)
+
+##
+## mice
+##
+
+### slider
+### dynamic probabilities:
+M_STAT.slider_History_Preferred_vs_Accuracy$coefficients
+
+## !! replace with Accuracy ~ Preferred model
+t.test((abs(M_STAT.slider_History_vs_Preferred$residuals)) - abs(M_STAT.slider_Preferred_vs_Accuracy$residuals)) ## replace with Accuracy ~ 
+
+compute_AIC(
+  LL = M_STAT.slider_History_Preferred_vs_Accuracy$logLik[1],
+  K =  2,
+  n = length(STAT.slider_History_Preferred_vs_Accuracy$residuals),
+  correction = 0
+) - compute_AIC(
+  LL = STAT.slider_History_vs_Accuracy$logLik[1],
+  K =  1,
+  n = length(STAT.slider_History_vs_Accuracy$residuals),
+  correction = 0
+) 
 
 
+### log reg
+# M_STAT.full_logit_Sum$coefficients
 
-Reviewer #3: In this paper the authors propose that during perceptual decisions, humans and mice exhibit regular oscillatory fluctuations  between an "external"  (that places more weight on the perceptual evidence) and an "internal" (that places more weight on historical experiences) mode. In particular, the authors propose a computational scheme in which the influences of history and current stimulus on choice oscillate in anti phase, effectively implementing "bimodal inference". The computational advantages of these scheme as well as its relation to the underlying neurophysiology are discussed.
+# t.test(abs(M_STAT.reduced_logit_Sum$residuals) - abs(M_STAT.full_logit_Sum$residuals))
 
-Overall, the authors make a very interesting proposal about what drives slow fluctuations in perceptual performance during randomised two-alternative choice tasks. This proposal relates changes in accuracy with changes in serial choice biases, which is a timely and synthesising contribution. Furthermore, this proposal is backed by analyses over several human datasets  and a large dataset in mice. 
+delta_AIC_log_reg_mice = compute_AIC(
+  LL = M_STAT.full_logit_Sum$logLik[1],
+  K =  3,
+  n = length(STAT.full_logit_Sum$residuals),
+  correction = 0
+) - compute_AIC(
+  LL = M_STAT.reduced_logit_Sum$logLik[1],
+  K =  2,
+  n = length(STAT.full_logit_Sum$residuals),
+  correction = 0
+)
+```
 
-Despite its strong empirical contribution, the paper seems limited by the fact that alternative computational hypotheses are not adequately considered (or at least considered in a systematic way). At the same time, and although the paper is well written, some parts are overly technical.
+We would like to thank the reviewer for highlighting this important point. Following this suggestion, we have tested our main hypothesis ($H1$: periods of reduced stimulus-congruence are periods of enhanced reliance on history-congruence) against the following null hypotheses:
 
-Major comments:
+- $H0_1$: Periods of reduced stimulus-congruence are periods of enhanced random choices
+- $H0_2$: Periods of reduced stimulus-congruence are periods of enhanced general bias
 
-1) The authors collapse across various datasets in which different tasks were employed. However, some details on the nature of these different tasks and a discussion on the rationale of collapsing behavioural metrics across them is missing. The authors mention that all tasks involved binary perceptual decisions. In some parts of the manuscript the term "false alarms" is mentioned, indicating a detection protocol. Other terms in the methods section (e.g., "set size") might need further clarification. Importantly, it is not clear how reaction times were calculated in the various tasks and whether some experiments involved free response paradigms while others interrogation/ cued paradigms (in which case RTs can be defined as the latency between the response cue and the response).
+We have three sets of statistical analyses to test H1 against $H0_{1/2}$:
 
-2) The key premise that when participants do not rely on the external stimulus they rely more on the previous trial needs to be more clearly (and statistically) contrasted against a null hypothesis. For instance, an null hypothesis could be that when participants place a lower weight on the stimulus they simply choose randomly. It is important to specify a null hypothesis such that the key premise does not appear self-evident or circular.
+- First, we used logistic regression to predict individual choices. Under H1, one would expect a significant effect of perceptual history in a logistic regression model that predicts individual choices from the external stimulus, perceptual history and general response bias. At the model level, one would expect higher AIC in a model without perceptual history as a predictor of individual choices, indicating that perceptual history influences choices beyond noise ($H0_1$) and general response bias ($H0_2$). Both would not be the case under $H0_{1/2}$. In both humans and mice, we found a significant effect of perceptual history on choices while controlling for bias. When eliminating perceptual history as a predictor of individual choices, we found higher AIC (providing model-level evidence against $H0_1$ and $H0_2$). We complemented this analysis by computing AIC in individual observers (Supplemental Figure S4), and again found lower higher AIC in models from which perceptual history was eliminated. We have addes these analyses to the main manuscript. 
 
-3) From a mechanistic (sequential sampling) perspective, several previous papers have examined whether choice history biases influence the starting point or the drift rate of the evidence accumulation process. Under the former formulation, reliance on the evidence vs. reliance on the previous choice will be naturally anti-correlated (the less weight you place on the evidence the more impactful the choice history will be, assuming that the last choice is represented as a starting point bias). This seems to be mapping onto the computational model the authors describe, in which there is a weight on the prior, a weight on the likelihood and the assumption that these weights fluctuate in anti-phase. It is not obvious that this anti-phase relationship needs to be imposed ad-hoc. Or whether it would emerge naturally (using a mechanistic or Bayesian framework). More generally, the authors assert that without an external mechanism prior biases would be impossible to overcome, and this would misfit the data. However, it would be important to a) actually show that the results cannot be explained by a single mechanism in which the anti-phase relationship is emergent rather than ad-hoc, b) relate the current framework with previous mechanistic considerations of serial choice biases.
+**Humans:**
 
-4) The authors need to unpack their definition of history biases since in previous work biases due to the response or the identity of the stimulus at the previous trial are treated differently. Here, the authors focus on response biases but it is not clear whether they could examine also stimulus-driven history biases (in paradigms where stimulus-response is remapped on each trial).
+- **The hypothesis that ongoing changes in the sensitivity to external information are driven by internal predictions induced via perceptual history needs to be contrasted against two alternative hypotheses: When making errors, observers may exhibit stronger general biases toward one of the two potential outcomes or simply choose randomly. Logistic regression confirmed that perceptual history made a significant contribution to perception ($\beta$ = $`r STAT.full_logit_Sum$coefficients[3,1]`$ ± $`r STAT.full_logit_Sum$coefficients[3,2]`$, z = $`r STAT.full_logit_Sum$coefficients[3,3]`$, p = $`r STAT.full_logit_Sum$coefficients[3,4]`$) over and above the ongoing stream of external sensory information ($\beta$ = $`r STAT.full_logit_Sum$coefficients[2,1]`$ ± $`r STAT.full_logit_Sum$coefficients[2,2]`$, z = $`r STAT.full_logit_Sum$coefficients[2,3]`$, p = $`r STAT.full_logit_Sum$coefficients[2,4]`$) and general response biases toward ($\beta$ = $`r STAT.full_logit_Sum$coefficients[1,1]`$ ± $`r STAT.full_logit_Sum$coefficients[1,2]`$, z = $`r STAT.full_logit_Sum$coefficients[1,3]`$, p = $`r STAT.full_logit_Sum$coefficients[1,4]`$). When eliminating perceptual history as a predictor of individual choices, AIC increased by $\delta_{AIC}$ = `r -delta_AIC_log_reg_humans`, providing additional model-level evidence against both choice randomness and general response bias as the sole modulators of perceptual performance (see Supplemental Figure S4A-B for parameter- and model-level inference at the level of individual observers).**
 
-5) Previous work, which the authors acknowledges in their Discussion (6.5), distinguishes repetitive history biases from alternating biases. For instance, in Braun, Urai & Donner (2018, JoN) participants are split into repetitive or alternating. Shouldn't the authors define the history bias in a similar fashion? The authors point out that attracting and repelling biases operate simultaneously across different timescales. However, this is not warranted given Braun et. al and other similar papers. It is not clear how this more nuanced definition of history bias would alter the conclusions.
+**Mice:**
 
-6) The arousal hypothesis seems to be ruled out too easily, merely in the presence of a non-monotonic "state" vs. RT pattern. Arousal can have an inverted U-shaped effect on behavioural performance and recent paper has demonstrated a non-monotonic effect of tonic arousal (baseline pupil) on RTs and accuracy (https://www.biorxiv.org/content/10.1101/2023.07.28.550956.abstract). More generally, the RT and confidence analyses need to be complemented, perhaps by computational modelling using sequential sampling models, as these behavioural metrics have multiple mechanistic mappings (e.g., a fast RT might correspond to high SNR or an impulsive decisions driven by a starting point bias).
+- **In line with humans, mice were biased toward perceptual history in `r mean(M_Behav$History, na.rm = TRUE)`% ± `r sd(M_Behav$History, na.rm = TRUE)/sqrt(length(M_Behav$History))`% of trials (T(`r M_STAT.Global_History_Accuracy$parameter`) = `r M_STAT.Global_History_Accuracy$statistic`, p = $`r M_STAT.Global_History_Accuracy$p.value`$; Figure 4A and Supplemental Figure S1D). Perceptual history effects remained significant ($\beta$ = $`r M_STAT.full_logit_Sum$coefficients[3,1]`$ ± $`r M_STAT.full_logit_Sum$coefficients[3,2]`$, z = $`r M_STAT.full_logit_Sum$coefficients[3,3]`$, p = $`r M_STAT.full_logit_Sum$coefficients[3,4]`$) when controlling for external sensory information ($\beta$ = $`r M_STAT.full_logit_Sum$coefficients[2,1]`$ ± $`r M_STAT.full_logit_Sum$coefficients[2,2]`$, z = $`r M_STAT.full_logit_Sum$coefficients[2,3]`$, p = $`r M_STAT.full_logit_Sum$coefficients[2,4]`$) and general response biases toward one of the two potential outcomes ($\beta$ = $`r M_STAT.full_logit_Sum$coefficients[1,1]`$ ± $`r M_STAT.full_logit_Sum$coefficients[1,2]`$, z = $`r M_STAT.full_logit_Sum$coefficients[1,3]`$, p = $`r M_STAT.full_logit_Sum$coefficients[1,4]`$). When eliminating perceptual history as a predictor of individual choices, AIC increased by  $\delta_{AIC}$ = `r -delta_AIC_log_reg_mice`, arguing against the notion that choice randomness and general response bias are the only determinants of perceptual performance (see Supplemental Figure S4C-D for parameter- and model-level inference within individual mice).**
 
-7) In several analysis the authors present an effect and then show that this effecs persists when key variables/ design aspects are also taken into account (see an example at around line 70). It makes more sense to present only one single analysis in which these key variables are controlled for. Results cannot be interpreted if they are spurious factors driving them so it is not clear why some of the results are presented in two versions ("uncontrolled" and "controlled" analyses).
+- Second, We analyzed dynamic changes in history- and stimulus-congruence (i.e., smoothed probabilities for stimulus-congruence, history-congruence and general response bias in sliding 10 trial time-windows). Under H1, one would expect a significant negative correlation between the dynamic probability of stimulus- and history-congruence. At the model level, one would expect higher AIC in a model without history-congruence as a predictor of stimulus-congruence, indicating that changes in the probability of history-congruence influence stimulus-congruence beyond noise ($H0_1$) and general response bias ($H0_2$). Both would not be the case under $H0_{1/2}$. In both humans and mice, we found a significant negative correlation between history-congruence and stimulus-congruence while controlling for general response bias. When eliminating the dynamic probability of history-congruence as a predictor of stimulus-congruence, we found higher AIC (providing model-level evidence against $H0_1$ and $H0_2$). The section 5.4 or our original manuscript (*Fluctuations between internal and external mode modulate perceptual performance beyond the effect of general response biases*) complements these control analyses and has been moved to the supplement to stream-line the manuscript (following the Comment X.X by Reviewer 1 and Comment X.X by Reviewer 3). We have modified the main manuscript in the following way:
 
-8) The central empirical finding is potentially important but is currently shadowed by more speculative sections/ discussions. For instance, the section on the adaptive merits of the computational model is relatively weaker compared to the empirical results. In particular, the model is simulated without feedback (whereas most experiments employ trial by trial feedback) and does not outperform the baseline model in accuracy but in other secondary metrics.
+**Humans:**
 
-Minor comments:
+- **Finally, we ensured that fluctuations in stimulus- and history-congruence are linked to each other, while controlling for fluctuations in the strength of general response biases. When perceptual choices were less biased toward external information, participants relied more strongly on internal information acquired from perceptual history (and vice versa, $\beta$ = $`r STAT.slider_History_vs_Accuracy$coefficients[2,1]`$ ± $`r STAT.slider_History_vs_Accuracy$coefficients[2,2]`$, T($`r STAT.slider_History_vs_Accuracy$coefficients[2,3]`$) = $`r STAT.slider_History_vs_Accuracy$coefficients[2,4]`$, p = $`r STAT.slider_History_vs_Accuracy$coefficients[2,5]`$). Eliminating the dynamic fluctuations in history-congruence as a predictor of fluctuations in stimulus-congruence yielded an increase in AIC by \delta_{AIC} + `r delta_AIC_correlation_humans`. This provided model-level evidence against the null hypotheses that fluctuations in stimulus-congruence are driven exclusively by choice randomness or general response bias (see Supplemental Section X.X for an in-depth assessment of general response bias).** 
 
--- The amount of statistical analysis and results is often overwhelming. The authors could streamline the presentation better such that the main result is brought to the foreground. Currently the manuscript resembles a technical report.
+**Mice:**
 
--- Some typos or omissions may alter the meaning in various places. Indicatively, in lines 273, 439, 649.
+- **As in humans, fluctuations in the strength of history-congruent biases had a significant effect on stimulus-congruence ($\beta_1$ = $`r M_STAT.slider_History_Preferred_vs_Accuracy$coefficients[2,1]`$ ± $`r M_STAT.slider_History_Preferred_vs_Accuracy$coefficients[2,2]`$, T($`r M_STAT.slider_History_Preferred_vs_Accuracy$coefficients[2,3]`$) = $`r M_STAT.slider_History_Preferred_vs_Accuracy$coefficients[2,4]`$, p = $`r M_STAT.slider_History_Preferred_vs_Accuracy$coefficients[2,5]`$) beyond the effect of ongoing changes in general response biases ($\beta_2$ = $`r M_STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,1]`$ ± $`r M_STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,2]`$, T($`r M_STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,3]`$) = $`r M_STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,4]`$, p = $`r M_STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,5]`$). Eliminating the dynamic fluctuations in history-congruence as a predictor of fluctuations in stimulus-congruence resulted in an increase in AIC by \delta_{AIC} + `r delta_AIC_correlation_mice`. This confirmed that, in both humans and mice, perceptual performance is modulated by systematic fluctuations between externally- and internally-oriented modes of sensory processing that exist beyond choice randomness and general response bias.**
 
+- Third, we analyzed full amd history-conditioned psychometric curves in external and internal mode as well as across modes. Under H1, one would expect (i) a history-dependent increase in biases and lapses (effects of perceptual history), and (ii), a history-independent increase in threshold (reduced sensitivity to external information). Conversely, if what we identified as internal mode processing were in fact driven by random choices ($H0_1$), one would expect (i), a history-independent increase in lapse (choice randomness), (ii), no change in bias (no effect of perceptual history), and (iii), reduced thresholds (reduced sensitivity to external information. In both humans and mice, we observed the pattern predicted by H1. In response to the comments by Reviewer 1 and 3, we have significantly streamlined the manuscript and moved our assessment of psychometric functions to the supplement. We now provide a summary of our results in the main manuscript to make our reasoning with respect to $H0_1$ and $H1$ more explicit:
+
+**Humans:**
+
+**To rule out the possibility that the reduced sensitivity to external information that we identified as internal mode processing is in fact driven by enhanced choice randomness as opposed to perceptual history, we estimated full and history-dependent psychometric curves for internal, external, and across modes (Supplemental Section X.X and Supplemental Figure SX). If internal mode processing reflects an enhanced impact of perceptual history, one would expect a history-dependent increase in biases and lapses as well as a history-independent increase in threshold. Conversely, if internal mode processing were driven by random choices, one would expect a history-independent increase in biases and threshold, and no change in bias. In line with our hypothesis, we found that internal mode processing was associated with a history-dependent increase in bias and lapse as well as a history-independent increase in threshold. This suggests that internal mode processing is indeed driven by an enhanced impact of perceptual history.**   
+
+**Mice:**
+
+**When fitting full and history-conditioned psychometric curves to the data from the IBL database, we observed that internal mode processing was associated with a history-dependent increase in bias and lapse as well as a history-independent increase in threshold (Supplmental Section X.X and Supplemental Figure SX). This provided further evidence for the hypothesis that internal mode processing is driven by an enhanced impact of perceptual history, as opposed to increased choice randomness.**   
+
+### Comment 3
+
+**From a mechanistic (sequential sampling) perspective, several previous papers have examined whether choice history biases influence the starting point or the drift rate of the evidence accumulation process. Under the former formulation, reliance on the evidence vs. reliance on the previous choice will be naturally anti-correlated (the less weight you place on the evidence the more impactful the choice history will be, assuming that the last choice is represented as a starting point bias). This seems to be mapping onto the computational model the authors describe, in which there is a weight on the prior, a weight on the likelihood and the assumption that these weights fluctuate in anti-phase. It is not obvious that this anti-phase relationship needs to be imposed ad-hoc. Or whether it would emerge naturally (using a mechanistic or Bayesian framework). More generally, the authors assert that without an external mechanism prior biases would be impossible to overcome, and this would misfit the data. However, it would be important to a) actually show that the results cannot be explained by a single mechanism in which the anti-phase relationship is emergent rather than ad-hoc, b) relate the current framework with previous mechanistic considerations of serial choice biases.**
+
+- is running: model simulations, likelihood of the models
+
+### Comment 4
+
+**The authors need to unpack their definition of history biases since in previous work biases due to the response or the identity of the stimulus at the previous trial are treated differently. Here, the authors focus on response biases but it is not clear whether they could examine also stimulus-driven history biases (in paradigms where stimulus-response is remapped on each trial).**
+
+We defined the history-biases by comparing the *response about the perceived* stimulus category (A vs. B) at the current and at the preceding trial. An alternative would be to define history biases by comparing the *presented* stimulus category. Such an alternative approach may  be considered expecially for paradigms where observers receive feedback about whether a choice was correct, because this would let them infer the presented stimulus-category.
+
+### Comment 5
+
+**Previous work, which the authors acknowledges in their Discussion (6.5), distinguishes repetitive history biases from alternating biases. For instance, in Braun, Urai & Donner (2018, JoN) participants are split into repetitive or alternating. Shouldn't the authors define the history bias in a similar fashion? The authors point out that attracting and repelling biases operate simultaneously across different timescales. However, this is not warranted given Braun et. al and other similar papers. It is not clear how this more nuanced definition of history bias would alter the conclusions.**
+
+We would like to thank the reviewer for raising this point. Our empirical results show that, on average, history biases tend to be repetitive (Figure 2A, Figure 4A, and the biases in the psychometric functions in the Supplemental Figure SX and SX). However, this does not rule out the possibility that there are periods of alternating biases. In fact, our central finding of autocorrelation in history-congruence does not distinguish between alternating and repetitive history biases. In the plot below, we show autocorrelation curves for fluctuations history-congruence for symmetric pairs of alternating (hazard = 0.8) and repetitive (hazard = 0.2) biases. Both were simulated for 10 blocks of a random duration between 15 and 30 trials, interleaved with 10 blocks with no history biases (hazard = 0.5). This simulation illustrates that the autocorrelation of alternating and repeating biases is identical for symmetric pairs of hazard rates. The autocorrelation of history-congruence and the associated internal mode processing is therefore not tied to repeating biases, but accommodates alternating biases as well (which seem to be, on average and in our data, less frequent). We therefore did not separate alternating from repeating biases in our analysis of mode. 
+
+We apologize for not having recognized this aspect in the previous version of the discussion.  We have rewritten the paragraph on alternating and repeating biases, referring to the plot below, which we have added to the Supplemental Materials. 
+
+**While our results suggests an effect of attraction which is, on average, stronger , symmetric pairs of attraction and repulsion (e.g., fluctuations in history-congruence between 50% and 20% or 50% and 80%, respectively) lead to overlapping autocorrelation curves for history-congruence (see Supplemental Figure SX). Our analysis of between-mode fluctuations is therefore not tied exclusively to attractive biases, but accommodates repulsive biases as well, such that both may lead to internally-biased processing and reduced sensitivity to external sensory information. To elucidate how attraction and repulsion both fluctuate in their impact on perceptual decision-making will be an important task for future research, since this would help to understand whether attractive and repulsive biases are linked in terms of their computational function and neural implementation[@Fritsche2020].**
+
+**Supplemental Figure SX**
+```{r Supplemental_Figure_SX, cache = TRUE}
+##
+## Visualize alternating and repetitive biases 
+##
+if (run_visualize_alt_sim){
+source("./Functions/visualize_rep_alt_sim_correction.R",
+local = knitr::knit_global())
+
+blocks = rep(c(0.9, 0.5), 10)
+n_participants = 1000
+
+Rep_Sim = data.frame()
+for (subj_idx in c(1:n_participants)) {
+n_trials_per_block = round(runif(length(blocks), min = 15, max = 30))
+add_Rep_Sim <- visualize_rep_alt_sim_correction(blocks, n_trials_per_block)
+add_Rep_Sim$subj_idx = subj_idx
+
+Rep_Sim = rbind(Rep_Sim, add_Rep_Sim)
+}
+Rep_Sim$corrected <- Rep_Sim$acf - Rep_Sim$random
+Rep_Sim$type = "Attraction"
+
+
+blocks = rep(c(0.1, 0.5), 10)
+n_participants = 1000
+Alt_Sim = data.frame()
+for (subj_idx in c(1:n_participants)) {
+n_trials_per_block = round(runif(length(blocks), min = 15, max = 30))
+add_Alt_Sim <- visualize_rep_alt_sim_correction(blocks, n_trials_per_block)
+add_Alt_Sim$subj_idx = subj_idx
+
+Alt_Sim = rbind(Alt_Sim, add_Alt_Sim)
+}
+Alt_Sim$corrected <- Alt_Sim$acf - Alt_Sim$random
+Alt_Sim$type = "Repulsion"
+
+Rep_Alt_Sim = rbind(Rep_Sim, Alt_Sim)
+
+
+Sum_Rep_Alt_Sim <-  ddply(
+Rep_Alt_Sim,
+.(trial, type),
+summarise,
+mean = mean(corrected, na.rm = TRUE),
+error = sd(corrected, na.rm = TRUE) / sqrt(length(corrected))
+)
+
+Sum_Rep_Alt_Sim <- Sum_Rep_Alt_Sim[Sum_Rep_Alt_Sim$trial != 1,]
+Sum_Rep_Alt_Sim$trial = Sum_Rep_Alt_Sim$trial-1
+} else {Sum_Bias_Sim <- read.csv("./Results/Sum_Rep_Alt_Sim.csv")}
+
+p_Sum_Rep_Alt_Sim <- ggplot() +
+geom_errorbar(
+data = Sum_Rep_Alt_Sim,
+aes(
+x = trial,
+ymin = mean - error,
+ymax = mean + error,
+color = type
+),
+width = 0.5,
+alpha = 0.5,
+size = 0.5,
+) +
+geom_line(
+data = Sum_Rep_Alt_Sim,
+aes(x = trial,
+y = mean,
+color = type),
+linetype = "dotted"
+) +
+geom_hline(
+yintercept = 0,
+linetype = "dashed",
+color = "black",
+size = 0.25
+) +
+theme_classic(base_size = 6) + labs(
+x = "Lag (Trials)",
+y =
+paste("Autocorrelation coefficient: History congruence"),
+subtitle = NULL
+) + xlim(0, 25.5) + scale_color_brewer(palette = "Set1", direction = -1) + theme(legend.position = c(0.5, 0.9), legend.box = "horizontal") +  scale_x_continuous(
+breaks = seq(1, 25, by = 4),
+labels = seq(1, 25, by = 4),
+limits = c(0, 25)
+) #+ ylim(-0.01, 0.035) 
+p_Sum_Rep_Alt_Sim
+```
+
+**Supplemental Figure SX. Autocorrelation of history-congruence of alternating and repeating biases.** Here, we simulate the autocorrelation of history-congruence in `r n_participants` synthetic participants. In the attraction regime (blue), history-congruence fluctuated between 50% and 80% (blue) in interleaved blocks (10 blocks per condition with a random duration between 15 and 30 trials). In the repulsion regime (red), history-congruence fluctuated between 50% and 20%. The resulting autocorrelation curves for history-congruence overlap, indicating that our analysis is able to accomodate both attractive and repulsive biases. 
+
+### Comment 6
+
+**The arousal hypothesis seems to be ruled out too easily, merely in the presence of a non-monotonic "state" vs. RT pattern. Arousal can have an inverted U-shaped effect on behavioural performance and recent paper has demonstrated a non-monotonic effect of tonic arousal (baseline pupil) on RTs and accuracy (https://www.biorxiv.org/content/10.1101/2023.07.28.550956.abstract). More generally, the RT and confidence analyses need to be complemented, perhaps by computational modelling using sequential sampling models, as these behavioural metrics have multiple mechanistic mappings (e.g., a fast RT might correspond to high SNR or an impulsive decisions driven by a starting point bias).**
+
+Do we really need to fit drift diffusion models to the whole dataset? This will take weeks, and I am not sure what we will learn. Maybe it could be sufficient to discuss this, and make a less bold claim about RTs and Confidence?
+
+### Comment 7
+
+**In several analysis the authors present an effect and then show that this effecs persists when key variables/ design aspects are also taken into account (see an example at around line 70). It makes more sense to present only one single analysis in which these key variables are controlled for. Results cannot be interpreted if they are spurious factors driving them so it is not clear why some of the results are presented in two versions ("uncontrolled" and "controlled" analyses).**
+
+We apologize for this. We have updated our manuscript accordingly and have omitted, wheneer possible, reports of uncontrolled analyses. 
+
+### Comment 8
+
+The central empirical finding is potentially important but is currently shadowed by more speculative sections/ discussions. For instance, the section on the adaptive merits of the computational model is relatively weaker compared to the empirical results. In particular, the model is simulated without feedback (whereas most experiments employ trial by trial feedback) and does not outperform the baseline model in accuracy but in other secondary metrics.
+
+**We aggree with the Reviewer (see also a similar suggestion by Reviewer 1 in Comment X.X.). We have removed the section 5.8 from our manuscript and will develop a model on the potential function of between-mode fluctuations in a separate publication. 
+
+**Minor comments:**
+
+### Comment 9
+**The amount of statistical analysis and results is often overwhelming. The authors could streamline the presentation better such that the main result is brought to the foreground. Currently the manuscript resembles a technical report.**
+
+We apologize to this. From the Results, we have moved a number of sections to the Supplemental Materials to stream-line the manuscript (i.e., our analysis of general response biases [section 5.4], the analysis of psychometric functions [section 5.5], and the respective paragraph on the IBL database). From the Discussion, we have removed the section on self-organized criticality (following the suggestion of Reviewer 1).
+
+### Comment 10
+**Some typos or omissions may alter the meaning in various places. Indicatively, in lines 273, 439, 649.**
+Thanks a lot, we have corrected these typos. 
 
 \newpage
 # References

@@ -16,6 +16,7 @@ simulation_glaze_osc_human_zeta_v4 <- function(outcomes, n, H, prec, amp, amp_LL
     #Sim$env[k] = runif(1, -0.3, + 0.3)
     #Sim$u[k] = 0.5 + (Sim$env[k] - 0.5)*(prec + random_steps[k])
     #Sim$u[k] = sigmoid(prec*Sim$env[k])
+    
     Sim$u[k] = 1/(1+exp(-prec*(Sim$env[k]-0.5)))
     
     Sim$LLR[k] = log(Sim$u[k]/(1-Sim$u[k]))

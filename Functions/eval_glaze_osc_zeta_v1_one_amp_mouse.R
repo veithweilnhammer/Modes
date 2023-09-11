@@ -1,4 +1,4 @@
-fit_glaze_osc_zeta_v1_one_amp_mouse <- function(par, Input_Data, param) {   
+eval_glaze_osc_zeta_v1_one_amp_mouse <- function(par, Input_Data, param) {   
   
   H = param[1]
   prec = param[2]
