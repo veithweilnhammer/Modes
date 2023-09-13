@@ -62,8 +62,8 @@ fit_glaze_osc_zeta_v1_no_integration <- function(par, Input_Data) {
   
   ## log loss/cross entropy
   accuracy_term = Fit$response*log(Fit$y_prob) + (1-Fit$response) * log(1-Fit$y_prob)
-  #sum_Error = (-sum(accuracy_term[is.finite(accuracy_term)]))/length(accuracy_term[is.finite(accuracy_term)])
-  sum_Error = -sum(accuracy_term[is.finite(accuracy_term)])
+  sum_Error = (-sum(accuracy_term[is.finite(accuracy_term)]))/length(accuracy_term[is.finite(accuracy_term)])
+  #sum_Error = -sum(accuracy_term[is.finite(accuracy_term)])
   
   # print(sum_Error)
   return(sum_Error)

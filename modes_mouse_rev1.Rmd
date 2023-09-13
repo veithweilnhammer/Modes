@@ -2952,14 +2952,21 @@ P(y_t = 1) = 1 - P(y_t = 0) = \frac{1}{1 + exp(-\zeta * L_t)}
 
 if (!load_summary_data) {
   
-  type_list = c(
-              #"export_data",
-              #"fit_glaze_osc_zeta_v1_no_integration",
-              "fit_glaze_osc_zeta_v4_LLR_amp",
-              "fit_glaze_osc_zeta_v4_Prior_amp",
-              "fit_glaze_osc_zeta_v4_one_amp",
-              "fit_glaze_osc_zeta_v4",
-              "fit_glaze_osc_zeta_v4_no_amp"
+  # type_list = c(
+  #             "fit_glaze_osc_zeta_v4_LLR_amp",
+  #             "fit_glaze_osc_zeta_v4_Prior_amp",
+  #             "fit_glaze_osc_zeta_v4_one_amp",
+  #             "fit_glaze_osc_zeta_v4",
+  #             "fit_glaze_osc_zeta_v4_no_amp",
+  #             "fit_glaze_osc_zeta_v4_no_integration"
+  #             ) 
+  
+    type_list = c(
+              "fit_glaze_osc_zeta_v1_LLR_amp",
+              "fit_glaze_osc_zeta_v1_Prior_amp",
+              "fit_glaze_osc_zeta_v1",
+              "fit_glaze_osc_zeta_v1_no_amp",
+              "fit_glaze_osc_zeta_v1_no_integration"
               ) 
 
 if (run_optim_human) {
@@ -2993,9 +3000,9 @@ if (run_optim_human) {
   
   if (type_list[type_idx] == "fit_glaze_osc_zeta_v1") {
   ## Starting parameters
-  par = c(0.01, 0.01, 1, 1,  1 / 20, runif (1, 0, 2 * pi - pi / 1000))
-  lower = c(0.01, 0.01, 0, 0, 1 / 40, 0)
-  upper = c(0.99, 20, 10, 10, 1 / 5, 2 * pi - pi / 1000)
+  par = c(0.01, 0.01, 1, 1,  1 / 20, runif (1, 0, 2 * pi - pi / 1000), 5)
+  lower = c(0.01, 0.01, 0, 0, 1 / 40, 0, 1)
+  upper = c(0.99, 20, 4, 4, 1 / 5, 2 * pi - pi / 1000, 10)
   
   add_O =  optimx(
   par,
@@ -3009,9 +3016,9 @@ if (run_optim_human) {
   
   if (type_list[type_idx] == "fit_glaze_osc_zeta_v1_one_amp") {
   ## Starting parameters
-  par = c(0.01, 0.01, 1,  1 / 20, runif (1, 0, 2 * pi - pi / 1000))
-  lower = c(0.01, 0.01, 0, 1 / 40, 0)
-  upper = c(0.99, 20, 10, 1 / 5, 2 * pi - pi / 1000)
+  par = c(0.01, 0.01, 1,  1 / 20, runif (1, 0, 2 * pi - pi / 1000), 5)
+  lower = c(0.01, 0.01, 0, 1 / 40, 0, 1)
+  upper = c(0.99, 20, 4, 1 / 5, 2 * pi - pi / 1000, 10)
   
   add_O =  optimx(
   par,
@@ -3025,9 +3032,9 @@ if (run_optim_human) {
   
   if (type_list[type_idx] == "fit_glaze_osc_zeta_v1_LLR_amp") {
   ## Starting parameters
-  par = c(0.01, 0.01, 1,  1 / 20, runif (1, 0, 2 * pi - pi / 1000))
-  lower = c(0.01, 0.01, 0, 1 / 40, 0)
-  upper = c(0.99, 20, 10, 1 / 5, 2 * pi - pi / 1000)
+  par = c(0.01, 0.01, 1,  1 / 20, runif (1, 0, 2 * pi - pi / 1000), 5)
+  lower = c(0.01, 0.01, 0, 1 / 40, 0, 1)
+  upper = c(0.99, 20, 4, 1 / 5, 2 * pi - pi / 1000, 10)
   
   add_O =  optimx(
   par,
@@ -3042,9 +3049,9 @@ if (run_optim_human) {
   if (type_list[type_idx] == "fit_glaze_osc_zeta_v1_Prior_amp") {
   
   ## Starting parameters
-  par = c(0.01, 0.01, 1,  1 / 20, runif (1, 0, 2 * pi - pi / 1000))
-  lower = c(0.01, 0.01, 0, 1 / 40, 0)
-  upper = c(0.99, 20, 10, 1 / 5, 2 * pi - pi / 1000)
+  par = c(0.01, 0.01, 1,  1 / 20, runif (1, 0, 2 * pi - pi / 1000), 5)
+  lower = c(0.01, 0.01, 0, 1 / 40, 0, 1)
+  upper = c(0.99, 20, 4, 1 / 5, 2 * pi - pi / 1000, 10)
   
   
   add_O =  optimx(
@@ -3059,9 +3066,9 @@ if (run_optim_human) {
   
   if (type_list[type_idx] == "fit_glaze_osc_zeta_v1_no_amp") {
   ## Starting parameters
-  par = c(0.01, 0.01)
-  lower = c(0.01, 0.01)
-  upper = c(0.99, 20)
+  par = c(0.01, 0.01, 5)
+  lower = c(0.01, 0.01, 1)
+  upper = c(0.99, 20, 10)
   
   add_O =  optimx(
   par,
@@ -3075,9 +3082,9 @@ if (run_optim_human) {
   
   if (type_list[type_idx] == "fit_glaze_osc_zeta_v1_no_integration") {
   ## Starting parameters
-  par = c(0.01)
-  lower = c(0.01)
-  upper = c(20)
+  par = c(0.01, 5)
+  lower = c(0.01, 1)
+  upper = c(20, 10)
   
   add_O =  optimx(
   par,
@@ -3124,10 +3131,11 @@ if (run_optim_human) {
 Compare_Optim <- data.frame()
 for (load_idx in c(1:length(type_list))){
 load_Optim <- read.csv(paste("./Results/", type_list[load_idx], ".csv", sep = ""))
-
 Compare_Optim = rbind(Compare_Optim, load_Optim[,c(1,seq(ncol(load_Optim)-13,ncol(load_Optim)))])
 }
-
+Compare_Optim = Compare_Optim[Compare_Optim$convcode == 0,]
+Compare_Optim$AIC = exclude_3SD(Compare_Optim$AIC)
+colMeans(Wide_Compare_Optim, na.rm = TRUE)
 Wide_Compare_Optim = reshape(Compare_Optim[,c("AIC", "type","subject_id")], idvar = "subject_id", timevar = "type", direction = "wide")
 Wide_Compare_Optim$min_AIC <- apply(Wide_Compare_Optim[,2:ncol(Wide_Compare_Optim)], 1, FUN = max, na.rm = TRUE)
 Wide_Compare_Optim[,2:(ncol(Wide_Compare_Optim)-1)] = Wide_Compare_Optim[,2:(ncol(Wide_Compare_Optim)-1)] - Wide_Compare_Optim$min_AIC
@@ -3278,7 +3286,7 @@ STAT.Optim_History_Confidence_minus_1 <- summary(Optim_History_Confidence_minus_
 
 if (!load_summary_data) {
   
-  type_list = c(#"export_data",
+  type_list = c(
               "fit_glaze_osc_zeta_v1_mouse", 
               "fit_glaze_osc_zeta_v1_one_amp_mouse",
               "fit_glaze_osc_zeta_v1_LLR_amp_mouse",
@@ -3330,7 +3338,7 @@ if (!load_summary_data) {
   ## Starting parameters
   par = c(0.01, 0.01, 1, 1,  1 / 20, runif (1, 0, 2 * pi - pi / 1000), 5)
   lower = c(0.01, 0.01, 0, 0, 1 / 40, 0, 1)
-  upper = c(0.99, 20, 10, 10, 1 / 5, 2 * pi - pi / 1000, 10)
+  upper = c(0.99, 20, 4, 4, 1 / 5, 2 * pi - pi / 1000, 10)
   
   add_O =  optimx(
   par,
@@ -3346,7 +3354,7 @@ if (!load_summary_data) {
   ## Starting parameters
   par = c(0.01, 0.01, 1,  1 / 20, runif (1, 0, 2 * pi - pi / 1000), 5)
   lower = c(0.01, 0.01, 0, 1 / 40, 0, 1)
-  upper = c(0.99, 20, 10, 1 / 5, 2 * pi - pi / 1000, 10)
+  upper = c(0.99, 20, 4, 1 / 5, 2 * pi - pi / 1000, 10)
   
   add_O =  optimx(
   par,
@@ -3362,7 +3370,7 @@ if (!load_summary_data) {
   ## Starting parameters
   par = c(0.01, 0.01, 1,  1 / 20, runif (1, 0, 2 * pi - pi / 1000), 5)
   lower = c(0.01, 0.01, 0, 1 / 40, 0, 1)
-  upper = c(0.99, 20, 10, 1 / 5, 2 * pi - pi / 1000, 10)
+  upper = c(0.99, 20, 4, 1 / 5, 2 * pi - pi / 1000, 10)
   
   add_O =  optimx(
   par,
@@ -3378,7 +3386,7 @@ if (!load_summary_data) {
   ## Starting parameters
   par = c(0.01, 0.01, 1,  1 / 20, runif (1, 0, 2 * pi - pi / 1000), 5)
   lower = c(0.01, 0.01, 0, 1 / 40, 0, 1)
-  upper = c(0.99, 20, 10, 1 / 5, 2 * pi - pi / 1000, 10)
+  upper = c(0.99, 20, 4, 1 / 5, 2 * pi - pi / 1000, 10)
   
   
   add_O =  optimx(
@@ -3477,7 +3485,8 @@ M_Compare_Optim_Sum <- ddply(
     M_Compare_Optim_Subj, 
     .(type),
     summarise,
-    AIC = mean(AIC,na.rm = TRUE),
+    mean_AIC = mean(AIC,na.rm = TRUE),
+    sd_AIC = sd(AIC, na.rm = TRUE)/sqrt(length(AIC)),
     Log = mean(Log, na.rm = TRUE)
     )
 
@@ -3677,8 +3686,8 @@ if (!load_summary_data) {
 if (run_simulation) {
   
 type_list = c(
-              #"fit_glaze_osc_zeta_v1",
-              "fit_glaze_osc_zeta_v1_LLR_amp"
+              "fit_glaze_osc_zeta_v1"
+              #"fit_glaze_osc_zeta_v1_LLR_amp"
               ) 
 source("./Functions/simulation_glaze_osc_human_zeta.R", local = knitr::knit_global())
 source("./Functions/simulation_glaze_osc_human_zeta_LLR_amp.R", local = knitr::knit_global())
@@ -3698,7 +3707,7 @@ for (subj_idx in c(1:n_participants)){
   
   random_steps = rnorm(n = n[subj_idx], mean = 0, sd = 0)
   
-  if (type_list[type_idx] == "fit_glaze_osc_zeta") {
+  if (type_list[type_idx] == "fit_glaze_osc_zeta_v1") {
 
   Sim_add <-
   simulation_glaze_osc_human_zeta(
@@ -3754,7 +3763,8 @@ for (subj_idx in c(1:n_participants)){
 }
 
 } else {
-  Sim <- read.csv(paste(root, "Sim_posterior_param_variable_n_human_zeta.csv", sep = ""))
+  #Sim <- read.csv(paste(root, "Sim_posterior_param_variable_n_human_zeta.csv", sep = ""))
+  Sim <- read.csv(paste(root, "Sim_LLR_tryout.csv", sep = ""))
   type_list = unique(Sim$type)
 }
 
@@ -3828,7 +3838,8 @@ source("./Functions/f_compute_power_spectra.R", local = knitr::knit_global())
 sliders = c("Accuracy_slider", "History_slider")  
 Sim_Power_Spectra <- f_compute_power_spectra(Sim, sliders)  
 } else {
-  Sim_Power_Spectra <- read.csv(paste(root, "Sim_power_spectra_smoothed_param_variable_n_human_zeta.csv", sep = ""))
+  #Sim_Power_Spectra <- read.csv(paste(root, "Sim_power_spectra_smoothed_param_variable_n_human_zeta.csv", sep = ""))
+  Sim_Power_Spectra <- read.csv(paste(root, "Power_Spectra_LLR.csv", sep = ""))
 }
 
 Sim_Power_Spectra$r_freq = round(Sim_Power_Spectra$freq, digits = 4)
@@ -7987,7 +7998,7 @@ We would like to thank Prof. Friston for the very insightful and helpful comment
 
 The reason for choosing a unique timescale f was to enable our model to depict the the dominant timescale at which prior and likelihood precision are shifted against each other, giving rise to what we believe constitutes between-mode fluctuations. In line with the shape of the autocorrelation curves, the value for $f$ lies at approximately 0.11 1/$N_{trials}$ in both humans and mice. Simulating from our model (Figure 6) replicates the 1/f feature of the empirical data. Please note that the individual trial is the smallest unit of *measurement* for these fluctuations, such that our analysis only deals with frequencies below 1 (1/$N_{trials}$). We now provide this information in the results section:
 
-- **To allow for *bimodal inference*, i..e, alternating periods of internally- and externally-biased modes of perceptual processing that occur irrespective of the sequence of preceding experiences, we assumed that the relative influences of likelihood and prior show coherent anti-phase fluctuations governed by $\omega_{LLR}$ that are determined by amplitude $a$, frequency $f$ and phase $p$. This implements a hyperprior in which the sensory and prior precisions are shifted against each other at a dominant timescale defined by $f$: (...) **
+- **To allow for *bimodal inference*, i..e, alternating periods of internally- and externally-biased modes of perceptual processing that occur irrespective of the sequence of preceding experiences, we assumed that the relative influence of likelihood and prior vary according to fluctuations governed by $\omega_{LLR}$, i.e., a sine function (defined by amplitude $a$, frequency $f$ and phase $p$) that determines the precision afforded to the likelihood[@Feldman2010]. This implements a hyperprior[@Friston2005] in which the likelihood and prior precisions are shifted against each other at a dominant timescale defined by $f$: (...)**
 
 - **(...) The parameter $f$ captured the dominant time scale at which likelihood and prior precision were shifted against each other and was estimated at 0.11 1/$N_{trials}$ in both humans and mice.**
 
@@ -8091,9 +8102,9 @@ Allowing the learning rate itself to vary as a function of preceding experiences
 
 **Note, again, I am reading your omega_LLR and omega_ψ as precisions and that the periodic modulation is the hyperprior that you are characterizing—and have discovered.**
 
-We would like to thank Prof. Friston for these very helpful and precise suggestions. We would like to address the above points in two steps. 
+We would like to thank Prof. Friston for these very helpful and precise suggestions. In brief, we now provide a quantitative assessment of model space based on AIC (i) and have folloed the suggestion of omitting section 5.8 (ii).
 
-First, in addition to the qualitative assessment of our models in the initial version of our manuscript, we have conducted a formal model comparison. Following the model comparisons in other sections of the manuscript, we based the model comparison on AIC values. We compared the following models against each other:
+(i) In addition to the qualitative assessment of our models in the initial version of our manuscript, we have conducted a formal model comparison. Following the model comparisons in other sections of the manuscript, we based the model comparison on AIC values. We compared the following models against each other:
 
 - Full model (model 1): influence of sensory information according to parameter $\alpha$ (likelihood); integration of evidence across trials according to free parameter $H$ (prior); anti-phase oscillations in between the precision of likelihood and prior according to $\omega_{LLR}$ and $omega_{\psi}$ according to parameters $a_{LLR}$ (amplitude likelihood fluctuation), $a_{\psi}$ (amplitude prior fluctuation), $f$ (frequency) and $p$ (phase). 
 - Likelihood fluctuation only (model 2): influence of sensory information according to parameter $\alpha$ (likelihood); integration of evidence across trials according to free parameter $H$ (prior); oscillations in the precision of likelihood according to $\omega_{LLR}$ with free parameters $a_{LLR}$ (amplitude likelihood fluctuation), $f$ (frequency) and $p$ (phase). 
@@ -8101,13 +8112,20 @@ First, in addition to the qualitative assessment of our models in the initial ve
 - Integration only (model 4): influence of sensory information according to parameter $\alpha$ (likelihood); integration of evidence across trials according to free parameter $H$ (prior); no oscillations. This model corresponds to the model proposed by Glaze et al.[@Glaze2015]. This model captures normative evidence accumulation in unpredictable environments using a Bayesian update scheme. Importantly, model 4 thus represents the null hypothesis that fluctuations in mode emerge from a normative Bayesian model without the ad-hoc addition of oscillations as in model 1-3.
 - No integration (model 5): influence of sensory information according to parameter $\alpha$ (likelihood); no integration of evidence across trials; no oscillation. This model captures flat priors. It represents the null hypothesis that observers do not use prior information derived from serial dependency. 
 
+```{r model_comp, cache = TRUE}
+Optim1  = read.csv("./Results/Optim_human_free_phase_zeta.csv")
+Optim2  = read.csv("./Results/fit_glaze_osc_zeta_v1.csv")
+hist(Optim1[Optim1$convcode == 0,]$p1)
+hist(Optim2[Optim2$convcode == 0,]$p1)
+```
+
 Based on AIC, we identified the likelihood fluctuation only model (model 2) as the best model in humans and mice. This makes sense, as it is more parsimonious then the full model, but still captures ongoing shifts in the relative precision between prior and likelihood (assuming a constant precision on the prior and periodic increases/decreases in the precision of the prior). Importantly, our model comparison indicated that normative model of evidence accumulation without the ad-hoc addition of oscillations (model 4) performs worse in explaing our data. As expected, our data were also less likely to be explained by model 5, since our conventional analyses clearly indicated an effect of perceptual history, which cannot be captured by the no integration model which has flat priors.  
 
 We have updated the description of our model in the Results and Methods section accordingly, deleting $\omega_{\psi}$: 
 
 *TODO*
 
-In the Results, we now summarize the model comparison and its rationale with a particular focus on the null models 4 and 5  (see also Comment X.X by Reviewer 3): 
+In the Results, we now summarize the model comparison and its rationale with a particular focus on the null models 4 and 5 (see also Comment X.X by Reviewer 3): 
 
 *TODO*
 
@@ -8115,9 +8133,9 @@ We have included a separate paragraph to the method section, summarizing the mod
 
 *TODO*
 
-Second, in the light of our response to Comments 1 - 9 above, we agree that a complete and extensive investigation of the relation between bimodal inference, learning about changes in the environment and the relation to metacognition may be beyond the scope of the current manuscript: Both Reviewer 1 and 3 (see below) have shared that the manuscript is too long and should be streamlined. Yet evaluating the full model space (e.g., comparing update rules for inferences about $H$ and $M$, testing for an influence of beliefs about $M$ on learning about $H$, validating oscillations in $\omega_{LLR}$ and $omega_{\psi}$ using pupillometry, motor behavior, LFPs etc.) would make the manuscript even longer. We are therefore happy to follow Prof. Fristons suggestions to omit section 5.8. We have changed the manuscript in the following ways:
+(ii) In the light of our response to Comments 1 - 9 above, we agree that a complete and extensive investigation of the relation between bimodal inference, learning about changes in the environment and the relation to metacognition may be beyond the scope of the current manuscript: Both Reviewer 1 and 3 (see below) have shared that the manuscript is too long and should be streamlined. Yet evaluating the full model space (e.g., comparing update rules for inferences about $H$ and $M$, testing for an influence of beliefs about $M$ on learning about $H$, validating oscillations in $\omega_{LLR}$ and $omega_{\psi}$ using pupillometry, motor behavior, LFPs etc.) would make the manuscript even longer. We are therefore happy to follow Prof. Fristons suggestions to omit section 5.8. We have changed the manuscript in the following ways:
 
-- When introducing $\omega_{LLR}$, we identify these parameters as precision, referring to the Bayesian framework: *TODO*
+- When introducing $\omega_{LLR}$, we identify it as the precision afforded to the likelihood, referring to the Bayesian framework, and refer to fluctuations in mode as a hyperprior: **To allow for *bimodal inference*, i..e, alternating periods of internally- and externally-biased modes of perceptual processing that occur irrespective of the sequence of preceding experiences, we assumed that the relative influence of likelihood and prior vary according to fluctuations governed by $\omega_{LLR}$, i.e., a sine function (defined by amplitude $a$, frequency $f$ and phase $p$) that determines the precision afforded to the likelihood[@Feldman2010]. This implements a hyperprior[@Friston2005] in which the likelihood and prior precisions are shifted against each other at a dominant timescale defined by $f$: (...)**
 
 - When identifying fluctuations in mode, we introduce this as a hyperprior, again referring to the Bayesian framework: *TODO*
 
@@ -8127,31 +8145,25 @@ Second, in the light of our response to Comments 1 - 9 above, we agree that a co
 
 *The empirical evidence above suggests that the timescale of this periodic scheduling of evidence accumulation is scale invariant. This means there exists a timescale of periodic fluctuations in precision over every window or length of perceptual decision-making. Our bimodal inference approach models perceptual decisions under a generative model (based upon a hazard function to model serial dependencies between subsequent trials) with periodic fluctuations in the precision of sensory evidence relative to prior beliefs at a particular timescale. Remarkably, a systematic model comparison based on AIC indicated that a model with fluctuating precisions has much greater evidence, relative to a model in the absence of fluctuating precisions. This ad-hoc-modification allowed us to quantify the dominant timescale of periodic fluctuations at approximately 0.11 1/$N_{trials}$ in humans and mice that is appropriate for these kinds of paradigms.*
 
-```{r model_comp, cache = TRUE}
-Model_comp = read.csv("./Results/interim_eval.csv")
-
-head(Model_comp)
-Sum_Model_comp <-  ddply(
-Model_comp,
-.(type),
-summarise,
-mean = mean(LL, na.rm = TRUE),
-error = sd(LL, na.rm = TRUE) / sqrt(length(LL))
-)
-Sum_Model_comp
-```
-
 ### Comment 11
 
 **This begs the question as to whether you want to pursue the 1/f story. You refer to this as "noise". However, there is no noise in this setup. I think what you meant was that the fluctuations are scale free, because they evinced a power law. I am sure that there are scale free aspects of these kinds of hyperpriors; however, in the context of your paradigm I wonder whether you should just ignore the scale free aspect and focus on your estimated temporal scale implicit in f. This means you don't have to hand wave about self-organized criticality in the discussion and focus upon your hypothesis.**
 
-With respect to the result section, we would suggest reporting the 1/f/fluctuations and stating - as outlined above - that our model captures the dominant time-scale via the variable $f$, while reproducing the 1/f feature (for frequencies < 1/$N_{trials}$). We agree with the reviewer that the discussion of self-organized criticality is far from the data. We have omitted this section from the discussion.
+We would like to thank the reviewer for this suggestion. We have agree that the discussion of self-organized criticality is far from the data. We have omitted this section from the discussion. With respect to $f$, we have adapted the manuscript to make clear that it captures the dominant timescale of fluctuations in mode:
 
-To Do: Discuss the value of f and report the result. 
+-  Results: **(...) This implements a hyperprior[@Friston2005] in which the likelihood and prior precisions are shifted against each other at a dominant timescale defined by $f$: (...)**
+
+-  Results: **(...) The parameter $f$ captured the dominant time scale at which likelihood and prior precision were shifted against each other and was estimated at 0.11 1/$N_{trials}$ in both humans and mice.**
+
+- Discussion: **Remarkably, a systematic model comparison based on AIC indicated that a model with fluctuating precisions has much greater evidence, relative to a model in the absence of fluctuating precisions. This ad-hoc-modification allowed us to quantify the dominant timescale of periodic fluctuations at approximately 0.11 1/$N_{trials}$ in humans and mice that is appropriate for these kinds of paradigms.**
 
 ### Comment 12
 
 **A final move—to make the paper more focused and digestible—would be to put a lot of your defensive analyses (e.g. about general arousal et cetera) in supplementary material. You have to be careful not to exhaust the reader by putting up a lot of auxiliary material before the important messages in your report.**
+
+We have followed this suggestion and move the following sections to the supplement:
+
+
 
 **Minor points**
 
