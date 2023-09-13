@@ -8034,17 +8034,17 @@ In the light of the above and Comment X.X by Reviewer, we have worked our discus
 
 - We have re-written our interpretation of the quadratic relationship of mode to RTs and Confidence, focusing on predictive coding models attention: **According to predictive processing, attention corresponds to the precision afforded to the probability distributions that underlie perceptual inference[@Feldman2010]. As outlined above, between-mode fluctuations can be understood as ongoing shifts in the precision afforded to likelihood (*external mode*) and prior (*internal mode*), respectively. When the precision afforded to prior or likelihood increases, posterior precision increases, which leads to faster RTs and higher confidence. When defined from the perspective of predictive processing as the precision afforded to likelihood and prior[@Feldman2010], fluctuations in attention may thus provide a plausible explanation for the quadratic relationship between mode and RTs and confidence (Figure 2H and J; Figure 4I, Figure 6I)**.
 
-- We have added a more general discussion of our findings in the light of fluctuations in task engagement: **Outside of the predictive processing field, attention may also be understood as engagement with the task, which may vary according to global variables such as arousal or fatigue. Importantly, our results speak against the proposition that intervals of internal mode processing reflect low task engagement: In addition to shorter RTs and elevated confidence, internal mode was not associated with a general increase in lapse (Supplemental Figures SX), arguing against the proposition that internal mode is associated with random or stereotypical responses that may relfect low task engagement. It is, however, important to note that arousal and attention are known to have non-linear effects on RTs and confidence. Future work should therefore more direct measures of attention and arousal (such as pupil size, motor behavior, or neural data) to better delineate fluctuations in these global variables from fluctuations in the mode of perceptual processing.** 
+- We have added a more general discussion of our findings in the light of fluctuations in task engagement: **Outside of the predictive processing field, attention is often equated as engagement with the task, which may vary according to global variables such as arousal or fatigue. Importantly, our results speak against the proposition that intervals of internal mode processing reflect low task engagement: In addition to shorter RTs and elevated confidence, internal mode was not associated with a general increase in lapse (Supplemental Figures SX), arguing against the proposition that internal mode is associated with random or stereotypical responses that may reflect low task engagement. It is, however, important to note that arousal and attention are known to have non-linear effects on RTs and confidence. Future work should therefore more direct measures of attention and arousal (such as pupil size, motor behavior, or neural data) to better delineate fluctuations in these global variables from fluctuations in the mode of perceptual processing.** 
 
 ### Comment 4
 
 **In the predictive processing literature, attention is thought to correspond to fluctuations in sensory and prior precision. Why did you then consider attention as some additional or unrelated confound?**
 
-We feel that this point is closely related to the comment above. We realize that, in the predictive coding field, attention is equated the precision of factors that contribute to the perceptual decision, such that an observer can attend strongly to sensory information (high likelihood precision) or to internal predictions derived from the sequence of preceding percepts (high prior precision). Therefore, when following the above predictive coding definition, fluctuations in attention can be equated with fluctuations in mode. 
+We feel that this point is closely related to the comment above. We realize that, in the predictive coding field, attention is equated with the precision of probability distributions that contribute to the perceptual decision, such that an observer can attend strongly to sensory information (high likelihood precision) or to internal predictions derived from the sequence of preceding percepts (high prior precision). Therefore, when following the above predictive coding definition, fluctuations in attention can be equated with fluctuations in mode. 
 
-However, we feel that outside of the predictive coding field, attention is not always conceived in that way, such that low attention may reflect low engagement with the task, relating to low likelihood and low prior precision. Is it against this notion that we have included the analysis of attention as a separate control analysis (with the caveats outlined in our response to the comment above). 
+However, we feel that outside of the predictive coding field, attention is not always conceived in that way, such that low attention is often considered as low engagement with the task, i.e., relating to low likelihood and low prior precision in the predictive coding sense. Is it against this notion that we have included the analysis of attention as a separate control analysis (with the caveats outlined in our response to the comment above). 
 
-We now provide a more nuanced interpretation of our findings of RTs and confidence in relation to attention, with a specific focus on predictive coding and precision:
+We now provide a more nuanced interpretation of our findings of RTs and confidence in relation to attention, with a specific focus on predictive coding and precision (same as above):
 
 - **According to predictive processing, attention corresponds to the precision afforded to the probability distributions that underlie perceptual inference[@Feldman2010]. As outlined above, between-mode fluctuations can be understood as ongoing shifts in the precision afforded to likelihood (*external mode*) and prior (*internal mode*), respectively. When the precision afforded to prior or likelihood increases, posterior precision increases, which leads to faster RTs and higher confidence. When defined from the perspective of predictive processing as the precision afforded to likelihood and prior[@Feldman2010], fluctuations in attention may thus provide a plausible explanation for the quadratic relationship between mode and RTs and confidence (Figure 2H and J; Figure 4I, Figure 6I)**.
 
@@ -8102,21 +8102,22 @@ Allowing the learning rate itself to vary as a function of preceding experiences
 
 **Note, again, I am reading your omega_LLR and omega_ψ as precisions and that the periodic modulation is the hyperprior that you are characterizing—and have discovered.**
 
-We would like to thank Prof. Friston for these very helpful and precise suggestions. In brief, we now provide a quantitative assessment of model space based on AIC (i) and have folloed the suggestion of omitting section 5.8 (ii).
+We would like to thank Prof. Friston for these very helpful and precise suggestions. In brief, we now provide a quantitative assessment of model space based on AIC (i) and have followed the suggestion of omitting section 5.8 (ii).
 
 (i) In addition to the qualitative assessment of our models in the initial version of our manuscript, we have conducted a formal model comparison. Following the model comparisons in other sections of the manuscript, we based the model comparison on AIC values. We compared the following models against each other:
 
-- Full model (model 1): influence of sensory information according to parameter $\alpha$ (likelihood); integration of evidence across trials according to free parameter $H$ (prior); anti-phase oscillations in between the precision of likelihood and prior according to $\omega_{LLR}$ and $omega_{\psi}$ according to parameters $a_{LLR}$ (amplitude likelihood fluctuation), $a_{\psi}$ (amplitude prior fluctuation), $f$ (frequency) and $p$ (phase). 
+- Full model (model 1): influence of sensory information according to parameter $\alpha$ (likelihood); integration of evidence across trials according to free parameter $H$ (prior); anti-phase oscillations in between the precision of likelihood and prior according to $\omega_{LLR}$ and $omega_{\psi}$ according to parameters $a_{LLR}$ (amplitude likelihood fluctuation), $a_{\psi}$ (amplitude prior fluctuation), $f$ (frequency) and $p$ (phase). This model is the most complex, as it allows prior and likelihood precision to fluctuate at different amplitudes. 
+
 - Likelihood fluctuation only (model 2): influence of sensory information according to parameter $\alpha$ (likelihood); integration of evidence across trials according to free parameter $H$ (prior); oscillations in the precision of likelihood according to $\omega_{LLR}$ with free parameters $a_{LLR}$ (amplitude likelihood fluctuation), $f$ (frequency) and $p$ (phase). 
-- Prior fluctuation only (model 3): influence of sensory information according to parameter $\alpha$ (likelihood); integration of evidence across trials according to free parameter $H$ (prior); oscillations in the precision of prior according to $\omega_{\psi}$ with free parameters $a_{\psi}$ (amplitude prior fluctuation), $f$ (frequency) and $p$ (phase). 
+
+- Prior fluctuation only (model 3): influence of sensory information according to parameter $\alpha$ (likelihood); integration of evidence across trials according to free parameter $H$ (prior); oscillations in the precision of prior according to $\omega_{\psi}$ with free parameters $a_{\psi}$ (amplitude prior fluctuation), $f$ (frequency) and $p$ (phase). Please note that all models 1-3 lead to shifts in the relative precision of likelihood and prior. 
+
 - Integration only (model 4): influence of sensory information according to parameter $\alpha$ (likelihood); integration of evidence across trials according to free parameter $H$ (prior); no oscillations. This model corresponds to the model proposed by Glaze et al.[@Glaze2015]. This model captures normative evidence accumulation in unpredictable environments using a Bayesian update scheme. Importantly, model 4 thus represents the null hypothesis that fluctuations in mode emerge from a normative Bayesian model without the ad-hoc addition of oscillations as in model 1-3.
+
 - No integration (model 5): influence of sensory information according to parameter $\alpha$ (likelihood); no integration of evidence across trials; no oscillation. This model captures flat priors. It represents the null hypothesis that observers do not use prior information derived from serial dependency. 
 
 ```{r model_comp, cache = TRUE}
-Optim1  = read.csv("./Results/Optim_human_free_phase_zeta.csv")
-Optim2  = read.csv("./Results/fit_glaze_osc_zeta_v1.csv")
-hist(Optim1[Optim1$convcode == 0,]$p1)
-hist(Optim2[Optim2$convcode == 0,]$p1)
+
 ```
 
 Based on AIC, we identified the likelihood fluctuation only model (model 2) as the best model in humans and mice. This makes sense, as it is more parsimonious then the full model, but still captures ongoing shifts in the relative precision between prior and likelihood (assuming a constant precision on the prior and periodic increases/decreases in the precision of the prior). Importantly, our model comparison indicated that normative model of evidence accumulation without the ad-hoc addition of oscillations (model 4) performs worse in explaing our data. As expected, our data were also less likely to be explained by model 5, since our conventional analyses clearly indicated an effect of perceptual history, which cannot be captured by the no integration model which has flat priors.  
@@ -8137,13 +8138,11 @@ We have included a separate paragraph to the method section, summarizing the mod
 
 - When introducing $\omega_{LLR}$, we identify it as the precision afforded to the likelihood, referring to the Bayesian framework, and refer to fluctuations in mode as a hyperprior: **To allow for *bimodal inference*, i..e, alternating periods of internally- and externally-biased modes of perceptual processing that occur irrespective of the sequence of preceding experiences, we assumed that the relative influence of likelihood and prior vary according to fluctuations governed by $\omega_{LLR}$, i.e., a sine function (defined by amplitude $a$, frequency $f$ and phase $p$) that determines the precision afforded to the likelihood[@Feldman2010]. This implements a hyperprior[@Friston2005] in which the likelihood and prior precisions are shifted against each other at a dominant timescale defined by $f$: (...)**
 
-- When identifying fluctuations in mode, we introduce this as a hyperprior, again referring to the Bayesian framework: *TODO*
-
 - We have deleted the section 5.8 and added a summary of our modeling approach to the discussion, closely following the text recommended by Prof. Friston: (...) *Yet relying too strongly on serial dependencies may come at a cost: When accumulating over time, internal predictions may eventually override external information, leading to circular and false inferences about the state of the environment. In this work, we used model simulations to show that, akin to the wake-sleep-algorithm in machine learning[@Bengio2015], bimodal inference may help to determine whether errors result from external input or from internally-stored predictions (Figure 7): During internal mode, sensory processing is more strongly constrained by predictive processes that auto-encode the agent's environment. Conversely, during external mode, the network is driven predominantly by sensory inputs[@Honey2017]. Between-mode fluctuations may thus generate an unambiguous error signal that aligns internal predictions with the current state of the environment in iterative test-update-cycles[@Bengio2015]. On a broader scale, between-mode fluctuations may thus regulate the balance between feedforward versus feedback contributions to perception and thereby play a adaptive role in metacognition and reality monitoring[@Dijkstra2021].*
 
 *From the perspective of the Bayesian brain hypothesis, we hypothesized that observers have certain hyperpriors that are apt for accommodating fluctuations in the predictability of their environment, i.e., people believe that their world is inherently volatile. To be Bayes optimal, it is therefore necessary to periodically re-evaluate posterior beliefs about the parameters that define an internal generative model of the external sensory environment. One way to do this is to periodically suspend the increase the precision afforded to sensory evidence relative to prior precisions in order to update Bayesian beliefs about model parameters.*
 
-*The empirical evidence above suggests that the timescale of this periodic scheduling of evidence accumulation is scale invariant. This means there exists a timescale of periodic fluctuations in precision over every window or length of perceptual decision-making. Our bimodal inference approach models perceptual decisions under a generative model (based upon a hazard function to model serial dependencies between subsequent trials) with periodic fluctuations in the precision of sensory evidence relative to prior beliefs at a particular timescale. Remarkably, a systematic model comparison based on AIC indicated that a model with fluctuating precisions has much greater evidence, relative to a model in the absence of fluctuating precisions. This ad-hoc-modification allowed us to quantify the dominant timescale of periodic fluctuations at approximately 0.11 1/$N_{trials}$ in humans and mice that is appropriate for these kinds of paradigms.*
+*The empirical evidence above suggests that the timescale of this periodic scheduling of evidence accumulation is scale invariant. This means there exists a timescale of periodic fluctuations in precision over every window or length of perceptual decision-making. Our bimodal inference approach models perceptual decisions under a generative model (based upon a hazard function to model serial dependencies between subsequent trials) with periodic fluctuations in the precision of sensory evidence relative to prior beliefs at a particular timescale. Remarkably, a systematic model comparison based on AIC indicated that a model with fluctuating precisions has much greater evidence, relative to a model in the absence of fluctuating precisions. The ad-hoc addition of oscillations to a normative Bayesian model of evidence accumulation[@Glaze2015] allowed us to quantify the dominant timescale of periodic fluctuations mode at approximately 0.11 1/$N_{trials}$ in humans and mice that is appropriate for these kinds of paradigms.*
 
 ### Comment 11
 
@@ -8155,15 +8154,21 @@ We would like to thank the reviewer for this suggestion. We have agree that the 
 
 -  Results: **(...) The parameter $f$ captured the dominant time scale at which likelihood and prior precision were shifted against each other and was estimated at 0.11 1/$N_{trials}$ in both humans and mice.**
 
-- Discussion: **Remarkably, a systematic model comparison based on AIC indicated that a model with fluctuating precisions has much greater evidence, relative to a model in the absence of fluctuating precisions. This ad-hoc-modification allowed us to quantify the dominant timescale of periodic fluctuations at approximately 0.11 1/$N_{trials}$ in humans and mice that is appropriate for these kinds of paradigms.**
+- Discussion: **Remarkably, a systematic model comparison based on AIC indicated that a model with fluctuating precisions has much greater evidence, relative to a model in the absence of fluctuating precisions. The ad-hoc addition of oscillations to a normative Bayesian model of evidence accumulation[@Glaze2015] allowed us to quantify the dominant timescale of periodic fluctuations mode at approximately 0.11 1/$N_{trials}$ in humans and mice that is appropriate for these kinds of paradigms.**
 
 ### Comment 12
 
 **A final move—to make the paper more focused and digestible—would be to put a lot of your defensive analyses (e.g. about general arousal et cetera) in supplementary material. You have to be careful not to exhaust the reader by putting up a lot of auxiliary material before the important messages in your report.**
 
-We have followed this suggestion and move the following sections to the supplement:
+We have followed this suggestion and move the following sections to the supplement (*To Do*):
 
+- We now present the relation of mode to RTs and confidence in the context of predictive processing accounts of attention (see points below). The additional defensive analysis from section 5.3 (Internal and external modes of processing facilitate response behavior and enhance confidence in human perceptual decision-making) have been moved to the supplement. 
 
+- We moved section 5.4 (Fluctuations between internal and external mode modulate perceptual performance beyond the effect of general response biases) to the supplement. 
+
+- We summarize the upshot of section 5.5 (Internal mode is characterized by lower thresholds as well as by history-dependent changes in biases and lapses), since it provides a test against the null hypothesis that what we identify as internal mode processing is indeed periods of random or impulsive choices: **Text**. The statistics on the psychmetric functions have been moved to the supplement. 
+
+- We moved the corresponding paragraphs from the section on mouse behavior into the supplement. 
 
 **Minor points**
 
@@ -8183,7 +8188,7 @@ Done.
 
 **Please replace "simulated data" with "simulations" in the abstract. Finally, please replace "robust learning and metacognition in volatile environments" with "enable optimal inference and learning in volatile environments."**
 
-Done. Since we have followed the Reviewer suggestion to delete section 5.8, we have rephrased the last paragraph of the abstract into "We propose that between-mode fluctuations may benefit perception by generating unambiguous error signals that enable optimal inference and learning in volatile environments".
+Done. Since we have followed the suggestion to delete section 5.8, we have rephrased the last paragraph of the abstract into "We propose that between-mode fluctuations may benefit perception by generating unambiguous error signals that enable optimal inference and learning in volatile environments".
 
 ### Comment 16
 
@@ -8207,7 +8212,12 @@ Done.
 
 **Line 178, when you say that the fluctuations may arise due to "changes in level of tonic arousal or on-task attention", I think you need to qualify this. In predictive processing, on-task attention is exactly the modulation of sensory precision, relative to prior precision that you are characterising here. Tonic arousal may be another thing may or may not confound your current results.**
 
-TODO: work out the differences between on-task attention and the hyperprior. 
+Thank you very much for pointing this out. We have adapted the manuscript to make the distinction between attention in the predictive processing sense and the broader issue of task engagement (reflecting fluctuations in arousal, fatigue etc.) clearer (see also comments above): 
+
+ **According to predictive processing, attention corresponds to the precision afforded to the probability distributions that underlie perceptual inference[@Feldman2010]. As outlined above, between-mode fluctuations can be understood as ongoing shifts in the precision afforded to likelihood (*external mode*) and prior (*internal mode*), respectively. When the precision afforded to prior or likelihood increases, posterior precision increases, which leads to faster RTs and higher confidence. When defined from the perspective of predictive processing as the precision afforded to likelihood and prior[@Feldman2010], fluctuations in attention may thus provide a plausible explanation for the quadratic relationship between mode and RTs and confidence (Figure 2H and J; Figure 4I, Figure 6I)**.
+
+**Outside of the predictive processing field, attention is often equated as engagement with the task, which may vary according to global variables such as arousal or fatigue. Importantly, our results speak against the proposition that intervals of internal mode processing reflect low task engagement: In addition to shorter RTs and elevated confidence, internal mode was not associated with a general increase in lapse (Supplemental Figures SX), arguing against the proposition that internal mode is associated with random or stereotypical responses that may reflect low task engagement. It is, however, important to note that arousal and attention are known to have non-linear effects on RTs and confidence. Future work should therefore more direct measures of attention and arousal (such as pupil size, motor behavior, or neural data) to better delineate fluctuations in these global variables from fluctuations in the mode of perceptual processing.** 
+
 
 ### Comment 20
 
@@ -8235,7 +8245,11 @@ We would like to thank the reviewer for this suggestion, which we have added to 
 
 **You can also point out that the implicit anti-phase fluctuations are mandated by Bayes optimal formulations in which it is only the relative values of the prior and sensory precision that matter. Bayesian filters these precisions constitute the Kalman gain. You can find a derivation of why this in treatments of the hierarchical Gaussian filter is by Mathys et al.**
 
-TODO: in the discussion?
+We would like to thank the reviewer for this suggestion. We added this to the discussion of our model in the discussion:
+
+- **Yet relying too strongly on serial dependencies may come at a cost: When accumulating over time, internal predictions may eventually override external information, leading to circular and false inferences about the state of the environment. In this work, we used model simulations to show that, akin to the wake-sleep-algorithm in machine learning[@Bengio2015], bimodal inference may help to determine whether errors result from external input or from internally-stored predictions (Figure 7): During internal mode, sensory processing is more strongly constrained by predictive processes that auto-encode the agent's environment. Conversely, during external mode, the network is driven predominantly by sensory inputs[@Honey2017]. Between-mode fluctuations may thus generate an unambiguous error signal that aligns internal predictions with the current state of the environment in iterative test-update-cycles[@Bengio2015]. On a broader scale, between-mode fluctuations may thus regulate the balance between feedforward versus feedback contributions to perception and thereby play a adaptive role in metacognition and reality monitoring[@Dijkstra2021].**
+
+(...)
 
 ### Comment 22
 
