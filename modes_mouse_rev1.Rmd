@@ -3123,7 +3123,7 @@ if (run_optim_human) {
   }
   
   write.csv(Optim,
-  paste("./Results/", type_list[type_idx], "_z_fixed_1.csv", sep = ""),
+  paste("./Results/", type_list[type_idx], ".csv", sep = ""),
   row.names = FALSE)
 } else {
  
@@ -3298,7 +3298,6 @@ if (!load_summary_data) {
 
   if (run_optim_mouse){
 
-  
   # available models
   source("./Functions/fit_glaze_osc_zeta_v1_mouse.R",
   local = knitr::knit_global())
@@ -3312,7 +3311,6 @@ if (!load_summary_data) {
   local = knitr::knit_global())
   source("./Functions/fit_glaze_osc_zeta_v1_no_integration_mouse.R",
   local = knitr::knit_global())
-
 
   type_idx = 6
   
@@ -4041,8 +4039,144 @@ Sim_STAT.Confidence_vs_mode <- summary(Sim_Confidence_vs_mode)
 }
 ```
 
+
+```{r evaluate_human, cache = TRUE}
+
+type_list = c(
+  "fit_glaze_osc_zeta_v1",
+  "fit_glaze_osc_zeta_v1_one_amp",
+  "fit_glaze_osc_zeta_v1_LLR_amp",
+  "fit_glaze_osc_zeta_v1_Prior_amp",
+  "fit_glaze_osc_zeta_v1_no_amp",
+  "fit_glaze_osc_zeta_v1_no_integration"
+  #"fit_glaze_osc_zeta_v1_random_walk_mouse"
+  )
+
+
+  # available models
+  source("./Functions/fit_glaze_osc_zeta_v1.R",
+  local = knitr::knit_global())
+  source("./Functions/fit_glaze_osc_zeta_v1_one_amp.R",
+  local = knitr::knit_global())
+  source("./Functions/fit_glaze_osc_zeta_v1_LLR_amp.R",
+  local = knitr::knit_global())
+  source("./Functions/fit_glaze_osc_zeta_v1_Prior_amp.R",
+  local = knitr::knit_global())
+  source("./Functions/fit_glaze_osc_zeta_v1_no_amp.R",
+  local = knitr::knit_global())
+  source("./Functions/fit_glaze_osc_zeta_v1_no_integration.R",
+  local = knitr::knit_global())
+
+
+block_size = 10
+Optim_eval = data.frame()
+for (id in unique(PwData$subject_id)) {
+  print(paste("human:", id, sep = " "))
+  
+    Input_Data = PwData[PwData$subject_id == id, c("Stimulus", "Response", "clear_RT", "clear_Confidence")]
+  
+  
+    Input_Data = Input_Data[!is.na(Input_Data$Stimulus) &
+                              !is.na(Input_Data$Response), ]
+    
+    if (nrow(Input_Data)  > block_size) {
+      for (trial_idx in seq(from = 1, to = nrow(Input_Data) - block_size  + 1, by = block_size)) {
+      #for (trial_idx  in c(1)) {
+        train =  Input_Data[seq(from = trial_idx,
+                                to = trial_idx + block_size  - 1,
+                                by = 1), ]
+        
+        for (type_idx in c(1:length(type_list))) {
+        #print(type_list[type_idx])
+          if (type_list[type_idx] == "fit_glaze_osc_zeta_v1") {
+            ## Starting parameters
+            par = c(0.01, 0.01, 1, 1,  1 / 20, runif (1, 0, 2 * pi - pi / 1000), 5)
+            lower = c(0.01, 0.01, 0, 0, 1 / 40, 0, 1)
+            upper = c(0.99, 20, 4, 4, 1 / 5, 2 * pi - pi / 1000, 10)
+          }
+          
+          if (type_list[type_idx] == "fit_glaze_osc_zeta_v1_one_amp") {
+            ## Starting parameters
+            par = c(0.01, 0.01, 1,  1 / 20, runif (1, 0, 2 * pi - pi / 1000), 5)
+            lower = c(0.01, 0.01, 0, 1 / 40, 0, 1)
+            upper = c(0.99, 20, 4, 1 / 5, 2 * pi - pi / 1000, 10)
+          }
+          
+          if (type_list[type_idx] == "fit_glaze_osc_zeta_v1_LLR_amp") {
+            ## Starting parameters
+            par = c(0.01, 0.01, 1,  1 / 20, runif (1, 0, 2 * pi - pi / 1000), 5)
+            lower = c(0.01, 0.01, 0, 1 / 40, 0, 1)
+            upper = c(0.99, 20, 4, 1 / 5, 2 * pi - pi / 1000, 10)
+          }
+          
+          if (type_list[type_idx] == "fit_glaze_osc_zeta_v1_Prior_amp") {
+            ## Starting parameters
+            par = c(0.01, 0.01, 1,  1 / 20, runif (1, 0, 2 * pi - pi / 1000), 5)
+            lower = c(0.01, 0.01, 0, 1 / 40, 0, 1)
+            upper = c(0.99, 20, 4, 1 / 5, 2 * pi - pi / 1000, 10)
+          }
+          
+          if (type_list[type_idx] == "fit_glaze_osc_zeta_v1_no_amp") {
+            ## Starting parameters
+            par = c(0.01, 0.01, 5)
+            lower = c(0.01, 0.01, 1)
+            upper = c(0.99, 20, 10)
+          }
+          
+          if (type_list[type_idx] == "fit_glaze_osc_zeta_v1_no_integration") {
+            ## Starting parameters
+            par = c(0.01, 5)
+            lower = c(0.01, 1)
+            upper = c(20, 10)
+          }
+        
+          suppressWarnings({
+            add_O =  optimx(
+              par,
+              match.fun(type_list[type_idx]),
+              Input_Data = train,
+              lower = lower,
+              upper = upper
+            )
+          })
+    
+          
+          
+          add_O$subject_id = id
+          add_O$block_id = trial_idx
+          add_O$trial_n = nrow(train)
+          add_O$free_param = length(par)
+          add_O$type = type_list[type_idx]
+          add_O$AIC = compute_AIC(
+            LL = -add_O$value,
+            K =  add_O$free_param,
+            n = add_O$trial_n,
+            correction = 0
+          )
+          add_O$cAIC = compute_AIC(
+            LL = -add_O$value,
+            K =  add_O$free_param,
+            n = add_O$trial_n,
+            correction = 1
+          )
+          
+          Optim_eval = rbind(Optim_eval, add_O[, c('subject_id', 'block_id','value', 'AIC', 'type', 'free_param', 'trial_n', 'convcode')])
+          #Optim_eval = rbind(Optim_eval, add_O)
+        }
+      
+    }
+    }
+    
+    write.csv(Optim_eval, "./Results/Optim_eval_human_interim.csv", row.names = FALSE)
+    Sum <-   ddply(Optim_eval,
+                   .(type),
+                   summarise,
+                   error = mean(value, na.rm = TRUE))
+    print(Sum)
+}
+```
+
 ```{r evaluate_mouse, cache = TRUE}
-library(svMisc)
 type_list = c(
   "fit_glaze_osc_zeta_v1_mouse",
   "fit_glaze_osc_zeta_v1_one_amp_mouse",
@@ -4050,25 +4184,9 @@ type_list = c(
   "fit_glaze_osc_zeta_v1_Prior_amp_mouse",
   "fit_glaze_osc_zeta_v1_no_amp_mouse",
   "fit_glaze_osc_zeta_v1_no_integration_mouse"
-)
+  #"fit_glaze_osc_zeta_v1_random_walk_mouse"
+  )
 
-eval_list = c(
-  "eval_glaze_osc_zeta_v1_mouse",
-  "eval_glaze_osc_zeta_v1_one_amp_mouse",
-  "eval_glaze_osc_zeta_v1_LLR_amp_mouse",
-  "eval_glaze_osc_zeta_v1_Prior_amp_mouse"
-)
-
-
-# available models
-source("./Functions/eval_glaze_osc_zeta_v1_mouse.R",
-       local = knitr::knit_global())
-source("./Functions/eval_glaze_osc_zeta_v1_one_amp_mouse.R",
-       local = knitr::knit_global())
-source("./Functions/eval_glaze_osc_zeta_v1_LLR_amp_mouse.R",
-       local = knitr::knit_global())
-source("./Functions/eval_glaze_osc_zeta_v1_Prior_amp_mouse.R",
-       local = knitr::knit_global())
 
 source("./Functions/fit_glaze_osc_zeta_v1_mouse.R",
        local = knitr::knit_global())
@@ -4080,15 +4198,16 @@ source("./Functions/fit_glaze_osc_zeta_v1_Prior_amp_mouse.R",
        local = knitr::knit_global())
 source("./Functions/fit_glaze_osc_zeta_v1_no_amp_mouse.R",
        local = knitr::knit_global())
-source(
-  "./Functions/fit_glaze_osc_zeta_v1_no_integration_mouse.R",
+source( "./Functions/fit_glaze_osc_zeta_v1_no_integration_mouse.R",
+  local = knitr::knit_global()
+)
+source("./Functions/fit_glaze_osc_zeta_v1_random_walk_mouse.R",
   local = knitr::knit_global()
 )
 
+
+block_size = 10
 Optim_eval = data.frame()
-
-
-
 for (id in unique(MwData$subject_id)) {
   print(paste("mouse:", id, sep = " "))
   for (session_id in unique(MwData[MwData$subject_id == id, ]$session_id)) {
@@ -4102,85 +4221,109 @@ for (id in unique(MwData$subject_id)) {
     Input_Data = Input_Data[!is.na(Input_Data$Stimulus) &
                               !is.na(Input_Data$Response), ]
     
-    for (type_idx in c(1:length(type_list))) {
-      load_M_Optim <-
-        read.csv(paste("./Results/", type_list[type_idx], ".csv", sep = ""))
-      print(type_list[type_idx])
-      
-      if (type_list[type_idx] == "fit_glaze_osc_zeta_v1_mouse") {
-        param = as.numeric(load_M_Optim[load_M_Optim$subject_id == id &
-                                          load_M_Optim$session_id == session_id, 1:7])
-        par = param[6]
-        lower = 0
-        upper = 2 * pi
-        
-      } else  if (type_list[type_idx] == "fit_glaze_osc_zeta_v1_one_amp_mouse" |
-                  type_list[type_idx] == "fit_glaze_osc_zeta_v1_LLR_amp_mouse" |
-                  type_list[type_idx] == "fit_glaze_osc_zeta_v1_Prior_amp_mouse") {
-        param = as.numeric(load_M_Optim[load_M_Optim$subject_id == id &
-                                          load_M_Optim$session_id == session_id, 1:6])
-        par = param[5]
-        lower = 0
-        upper = 2 * pi
-        
-      } else if (type_list[type_idx] == "fit_glaze_osc_zeta_v1_no_amp_mouse") {
-        param = as.numeric(load_M_Optim[load_M_Optim$subject_id == id &
-                                          load_M_Optim$session_id == session_id, 1:3])
-        
-      } else if (type_list[type_idx] == "fit_glaze_osc_zeta_v1_no_integration_mouse") {
-        param = as.numeric(load_M_Optim[load_M_Optim$subject_id == id &
-                                          load_M_Optim$session_id == session_id, 1:2])
-      }
-      
-      log_evidence = c()
-      for (trial_idx in seq(
-        from = 1,
-        to = nrow(Input_Data) - 2 * sliding_window + 1,
-        by = sliding_window
-      )) {
+    if (nrow(Input_Data)  > block_size) {
+      for (trial_idx in seq(from = 1, to = nrow(Input_Data) - block_size  + 1, by = block_size)) {
+      #for (trial_idx  in c(1)) {
         train =  Input_Data[seq(from = trial_idx,
-                                to = trial_idx + sliding_window - 1,
+                                to = trial_idx + block_size  - 1,
                                 by = 1), ]
         
-        test = Input_Data[seq(
-          from = trial_idx + sliding_window,
-          to = trial_idx + 2 * sliding_window - 1,
-          by = 1
-        ), ]
-        
-        if (type_list[type_idx] == "fit_glaze_osc_zeta_v1_mouse" |
-            type_list[type_idx] == "fit_glaze_osc_zeta_v1_one_amp_mouse" |
-            type_list[type_idx] == "fit_glaze_osc_zeta_v1_LLR_amp_mouse" |
-            type_list[type_idx] == "fit_glaze_osc_zeta_v1_Prior_amp_mouse") {
-          train_O =  optimx(
+        for (type_idx in c(1:length(type_list))) {
+
+          if (type_list[type_idx] == "fit_glaze_osc_zeta_v1_mouse") {
+            ## Starting parameters
+            par = c(0.01, 0.01, 1, 1,  1 / 20, runif (1, 0, 2 * pi - pi / 1000), 5)
+            lower = c(0.01, 0.01, 0, 0, 1 / 40, 0, 1)
+            upper = c(0.99, 20, 4, 4, 1 / 5, 2 * pi - pi / 1000, 10)
+          }
+          
+          if (type_list[type_idx] == "fit_glaze_osc_zeta_v1_one_amp_mouse") {
+            ## Starting parameters
+            par = c(0.01, 0.01, 1,  1 / 20, runif (1, 0, 2 * pi - pi / 1000), 5)
+            lower = c(0.01, 0.01, 0, 1 / 40, 0, 1)
+            upper = c(0.99, 20, 4, 1 / 5, 2 * pi - pi / 1000, 10)
+          }
+          
+          if (type_list[type_idx] == "fit_glaze_osc_zeta_v1_LLR_amp_mouse") {
+            ## Starting parameters
+            par = c(0.01, 0.01, 1,  1 / 20, runif (1, 0, 2 * pi - pi / 1000), 5)
+            lower = c(0.01, 0.01, 0, 1 / 40, 0, 1)
+            upper = c(0.99, 20, 4, 1 / 5, 2 * pi - pi / 1000, 10)
+          }
+          
+          if (type_list[type_idx] == "fit_glaze_osc_zeta_v1_Prior_amp_mouse") {
+            ## Starting parameters
+            par = c(0.01, 0.01, 1,  1 / 20, runif (1, 0, 2 * pi - pi / 1000), 5)
+            lower = c(0.01, 0.01, 0, 1 / 40, 0, 1)
+            upper = c(0.99, 20, 4, 1 / 5, 2 * pi - pi / 1000, 10)
+          }
+          
+          if (type_list[type_idx] == "fit_glaze_osc_zeta_v1_no_amp_mouse") {
+            ## Starting parameters
+            par = c(0.01, 0.01, 5)
+            lower = c(0.01, 0.01, 1)
+            upper = c(0.99, 20, 10)
+          }
+          
+          if (type_list[type_idx] == "fit_glaze_osc_zeta_v1_no_integration_mouse") {
+            ## Starting parameters
+            par = c(0.01, 5)
+            lower = c(0.01, 1)
+            upper = c(20, 10)
+          }
+          
+          if (type_list[type_idx] == "fit_glaze_osc_zeta_v1_random_walk_mouse") {
+            ## Starting parameters
+            par = c(0.01, 0.01, 3, 0.1, 5)
+            lower = c(0.01, 0.01,-5, 0.01, 1)
+            upper = c(0.99, 20,+5, 1, 10)
+          }
+          
+          add_O =  optimx(
             par,
-            match.fun(eval_list[type_idx]),
+            match.fun(type_list[type_idx]),
             Input_Data = train,
-            param = param,
             lower = lower,
             upper = upper
           )
           
-          log_evidence = c(log_evidence,
-                           -match.fun(eval_list[type_idx])(train_O$p1, test, param))
-        } else {
-          log_evidence = c(log_evidence, -match.fun(type_list[type_idx])(param, test))
+          
+          add_O$subject_id = id
+          add_O$session_id = session_id
+          add_O$block_id = trial_idx
+          add_O$trial_n = nrow(train)
+          add_O$free_param = length(par)
+          add_O$type = type_list[type_idx]
+          add_O$AIC = compute_AIC(
+            LL = -add_O$value,
+            K =  add_O$free_param,
+            n = add_O$trial_n,
+            correction = 0
+          )
+          add_O$cAIC = compute_AIC(
+            LL = -add_O$value,
+            K =  add_O$free_param,
+            n = add_O$trial_n,
+            correction = 1
+          )
+       Optim_eval = rbind(Optim_eval, add_O[, c('subject_id', 'session_id', 'block_id', 'value', 'type', 'free_param', 'trial_n', 'convcode')])   
         }
       }
-      
-      add_Optim_eval = data.frame(
-        subject_id = id,
-        session_id = session_id,
-        LL = mean(log_evidence, na.rm = TRUE),
-        N = nrow(Input_Data),
-        type = type_list[type_idx]
-      )
-      Optim_eval = rbind(Optim_eval, add_Optim_eval)
-      #print(Optim_eval)
     }
   }
+  
+          write.csv(Optim_eval,
+              "./Results/Optim_eval_mouse_interim.csv",
+              row.names = FALSE)
+          
+          # Sum <- ddply(Optim_eval,
+          #          .(type),
+          #          summarise,
+          #          error = mean(abs(value), na.rm = TRUE))
+          # print(Sum)
 }
 ```
+
 Simulations from the bimodal inference model (based on the posterior model parameters obtained in humans; see Methods for details) closely matched the empirical results outlined above: Simulated perceptual decisions resulted from a competition of perceptual history with incoming sensory signals (Figure 6A). Stimulus- and history-congruence were significantly auto-correlated (Figure 6B-C), fluctuating in anti-phase as a scale-invariant process with a 1/f power law (Figure 6D-F). Simulated posterior certainty[@Kepecs2008; @Urai2017; @Braun2018] (i.e., the absolute of the posterior log ratio $|L_t|$) showed a quadratic relationship to the mode of sensory processing (Figure 6H), mirroring the relation of RTs and confidence reports to external and internal biases in perception (Figure 2G-H and Figure 4G-H). Crucially, the overlap between empirical and simulated data broke down when we removed the anti-phase oscillations ($\omega_{LLR}$ and/or $\omega_{\psi}$) or the accumulation of evidence over time (i.e., setting $H$ to 0.5) from the bimodal inference model (see Supplemental Figure S7-10).
 
 <!-- These qualitative results were confirmed by a formal comparison in which we tested the explanatory power of the bimodal inference model against the reduced versions of itself. We conducted group-level random-effects Bayesian model selection using Variational Bayesian Analysis (VBA[@Stephan2009]), which indicated that the bimodal inference model achieved the highest log model evidence, yielding an exceedance probability of 100% in humans and mice (see Supplemental Figure SX2C for a visualization of the log model evidence in bits per trial across models).  -->
@@ -7980,7 +8123,7 @@ kable_styling(font_size = 7, latex_options = c("repeat_header"))
 
 **I think that both issues could be resolved by shortening the paper and removing (or, at least, greatly simplifying) the final simulation studies of metacognition. I try to unpack this suggestion in the following.**
 
-We would like to thank Prof. Friston for the very insightful and helpful comments on our manuscript. We fully agree that our ideas about the computational function of between-mode fluctuations and the associated simulation may be presented in a more accessible form in a standalone paper. As we outline below in more detail, we have followed the suggestion of streamlining our findings and rewrote the paper to reduce it's length by shortening the sections on computational modeling. 
+We would like to thank Prof. Friston for the very insightful and helpful comments on our manuscript. We fully agree that our ideas about the computational function of between-mode fluctuations and the associated simulations may be presented in a more accessible form in a standalone paper. As we outlined in more detail below, we have have streamlined our findings and rewrote the paper to reduce it's length by shortening the sections on computational modeling. We have also followed Prof. Friston's suggestion to interpret the effects of mode on RT and confidence in the context of predictive processing definitions of attention, namely the allocation of precision between prior and likelihood. 
 
 **Major points:**
 
@@ -7992,21 +8135,25 @@ We would like to thank Prof. Friston for the very insightful and helpful comment
 
 **As noted above, all of this is fascinating but there are too many moving parts that do not fit together comfortably. I will list a few examples:**
 
-### Comment 1
+### Comment 1: Done
 
 **If, empirically, the fluctuations in sensitivity are scale-free with a 1/f power law, why did you elect to model fluctuations in precision as a periodic function with one unique timescale (i.e., f).?**
 
-The reason for choosing a unique timescale f was to enable our model to depict the the dominant timescale at which prior and likelihood precision are shifted against each other, giving rise to what we believe constitutes between-mode fluctuations. In line with the shape of the autocorrelation curves, the value for $f$ lies at approximately 0.11 1/$N_{trials}$ in both humans and mice. Simulating from our model (Figure 6) replicates the 1/f feature of the empirical data. Please note that the individual trial is the smallest unit of *measurement* for these fluctuations, such that our analysis only deals with frequencies below 1 (1/$N_{trials}$). We now provide this information in the results section:
+The reason for choosing a unique timescale $f$ was to enable our model to depict the the dominant timescale at which prior and likelihood precision are shifted against each other, giving rise to what we believe constitutes between-mode fluctuations. We think that identifying this timescale is important for planning future experiments targeted at between-mode fluctuations and their manipulation by causal interventions (e.g., pharmacology or TMS). In line with the shape of the autocorrelation curves, the value for $f$ lies at approximately 0.11 1/$N_{trials}$ in both humans and mice. The value of $f$ approximately matches the transition probabilities between *engaged* and *diseganged* states in work assessing flucuations in perceptual decision-making using Hidden Markov models (stay probabilities ranged between 0.94 and 0.98, see Ashwood et al., Nature Neuroscience 2022). Simulating from our model (Figure 6) replicates the 1/f feature of the empirical data. Please note that the individual trial is the smallest unit of *measurement* for these fluctuations, such that our analysis is limited y definition to frequencies below 1 (1/$N_{trials}$). 
 
-- **To allow for *bimodal inference*, i..e, alternating periods of internally- and externally-biased modes of perceptual processing that occur irrespective of the sequence of preceding experiences, we assumed that the relative influence of likelihood and prior vary according to fluctuations governed by $\omega_{LLR}$, i.e., a sine function (defined by amplitude $a$, frequency $f$ and phase $p$) that determines the precision afforded to the likelihood[@Feldman2010]. This implements a hyperprior[@Friston2005] in which the likelihood and prior precisions are shifted against each other at a dominant timescale defined by $f$: (...)**
+We now provide a rationale for choosing one value for $f$ - identifying the dominant timescale for fluctuations in mode - in the results section:
 
-- **(...) The parameter $f$ captured the dominant time scale at which likelihood and prior precision were shifted against each other and was estimated at 0.11 1/$N_{trials}$ in both humans and mice.**
+- **To allow for *bimodal inference*, i..e, alternating periods of internally- and externally-biased modes of perceptual processing that occur irrespective of the sequence of preceding experiences, we assumed that likelihood and prior vary in their influence on the perceptual decision according to fluctuations governed by $\omega_{LLR}$ and $\omega_{\psi}$, i.e., two anti-phase sine functions (defined by amplitude $a$, frequency $f$ and phase $p$) that determine the precision afforded to the likelihood and prior[@Feldman2010]. The implicit anti-phase fluctuations are mandated by Bayes-optimal formulations in which inference depends only on the relative values of prior and likelihood precision (i.e., the Kalman gain[@Mathys2014]). As such, $\omega_{LLR}$ and $\omega_{\psi}$ implement a hyperprior[@Friston2005] in which the likelihood and prior precisions are shifted against each other at a dominant timescale defined by $f$: (...)**
 
-### Comment 2
+- **(...) The parameter $f$ captures the dominant time scale at which likelihood and prior precision were shifted against each other and was estimated at 0.11 1/$N_{trials}$ in both humans and mice.**
+
+- Table 2 (see response to Comment X.X by Reviewer 1) contains an additional definition for all model parameters, including $f$. 
+
+### Comment 2: Done
 
 **At present, the estimates of meta-cognition (M) play the role of accumulated estimates of (sensory or prior) precision. Why are these not used in your model of perceptual decisions in Equation 2.**
 
-We would like to thank Prof. Friston for this comment. In our model, the parameter $\alpha$ controls the encoding precision by governing the transformation from sensory stimuli to the log likelihood ratio (LLR) via the following equations, which is closer to zero for lower values of $\alpha$.  
+We would like to thank Prof. Friston for this comment. In our model, the parameter $\alpha$ controls the encoding precision by governing the transformation from sensory stimuli to the log likelihood ratio (LLR) via the following equations (the LLR ends up closer closer to zero when $\alpha$ is low):  
 
 \begin{equation}
 u_t = \frac{1}{1 + exp(-\alpha * s_t)}
@@ -8016,39 +8163,51 @@ u_t = \frac{1}{1 + exp(-\alpha * s_t)}
 LLR_t = log(\frac{u_t}{1-u_t})
 \end{equation}
 
-Our model simulations on the adaptive benefits of bimodal inference rest on the asumption that $\alpha$ may change unpredictably. The construct $M$ is a belief about $\alpha$ that may be useful for, e.g., communicating the precision of sensory encoding to other cognitive domains or agents. To our mind, $\alpha$ is a feature of low-level sensory encoding that cannot be modulated by top-down beliefs such as $M$. This is why we did not include $M$ in equation (2). 
+Our model simulations on the adaptive benefits of bimodal inference rest on the assumption that $\alpha$ may change unpredictably. The construct $M$ is a belief about $\alpha$ that may be useful for, e.g., communicating the precision of sensory encoding to other cognitive domains or agents. To our mind, $\alpha$ is a feature of low-level sensory encoding that cannot be modulated by top-down beliefs such as $M$. This is why we did not include $M$ in equation (2). 
 
-### Comment 3
+### Comment 3: Link to reviewer 3, add citation for non-linear arousal effects
 
 **Why do you assume that non-specific increases in attention and arousal will increase reaction times? If one has very precise prior beliefs (and is not attending to stimuli), would you not expect a decrease in reaction time?**
 
-Thanks a lot for pointing this out (see also the comment below and comment X.X.X by Reviewer 3). Both high prior and high likelihood precision lead to higher absolute values of the posterior log ratio (reflecting decision certainty), and thus faster response times (RTs). This is reflected empirically by RTs in humans (Figure 2) and to a lesser degree in mice (Figure 4): RTs tended to be shorter for stronger biases toward both external and internal mode. Our model, which incorporates (i), the accumulation of information across trials, and (ii), fluctuations in the likelihood precision relative to the prior precision, recapitulates this feature of the data, which is lost or greatly attenuated when eliminating process (i) and/or (ii) (see model comparison and simulations below). Our data thus confirm the hypothesis that both high prior and likelihood precision lead to faster RTs. 
+Thanks a lot for pointing this out (see also the comment below and comment X.X.X by Reviewer 3). Both high prior and high likelihood precision lead to higher absolute values of the posterior log ratio (reflecting certainty encoded by the decision variable), and thus faster response times (RTs). This is reflected empirically by RTs in humans (Figure 2) and to a lesser degree in mice (Figure 4): RTs tended to be shorter for stronger biases toward both external and internal mode. Our model, which incorporates (i), the accumulation of information across trials, and (ii), fluctuations in the likelihood precision relative to the prior precision, recapitulates this feature of the data, which is lost or greatly attenuated when eliminating process (i) and/or (ii) (see model comparison and simulations below). Our data thus confirm the hypothesis that both high prior and likelihood precision lead to faster RTs. 
 
-At the same time, we included the relation between mode and RTs and confidence as a defensive analysis. One might argue that fluctuations in perceptual performance are not influenced at all by periods of relative increases in prior precision (which decrease performance in fully randomized designs), but by periods where participants may not attend to the task at all, i.e., neither to sensory information nor to prior precision. We think that analysis of response times and confidence can give some insight into whether such alternative mechanisms may be at play, as we would assume longer response times and lower confidence if participants failed to attend to the task at all (e.g., due to low arousal).
+In the previous version of the manuscript, we had included the relation between mode and RTs and confidence primarily as a defensive analysis against the proposition that what we call between-mode fluctuations are not a perceptual phenomenon, but occur downstream of perception. One may imagine that fluctuations in perceptual performance are not influenced by periods of relative increases in prior precision (which decrease performance in fully randomized designs), but by periods when participants may not attend to the task at all, i.e., neither to sensory information nor to prior precision. We think that analysis of response times and confidence can give some insight into whether such alternative mechanisms may be at play, as we would assume longer response times and lower confidence if participants failed to attend to the task at all (e.g., due to low arousal).
 
-We realize that, due to the potential non-linearity in their relation to arousal (see also comment X.X.X by Reviewer 3), RTs and confidence cannot provide a definitive map of where fluctuations in mode are situated in relation to arousal/attention. This can potentially be provided by tracking of pupil size or response behavior or by neural data(e.g., noise correlations of fluctuations in LFP). These data are not available for the studies in the Confidence Database, but were recently published for the IBL database. While we believe that this is beyond the scope of this manuscript, we will assess the relation of pupil diameter, motor behavior (turning of the response wheel) and LFPs to between-mode fluctuations in a future publication.
+We realize that, due to the potential non-linearity in their relation to arousal (see also comment X.X.X by Reviewer 3), RTs and confidence cannot provide a definitive map of where fluctuations in mode are situated in relation to arousal. Such a delineation may potentially be provided by tracking of pupil size, response behavior or by neural data (e.g., noise correlations of fluctuations in LFP). These data are not available for the studies in the Confidence Database, but were recently published for the IBL database. While we believe that this is beyond the scope of this manuscript, we will assess the relation of pupil diameter, motor behavior (turning of the response wheel) and LFPs to between-mode fluctuations in a future publication using the IBL dataset.
 
-In the light of the above and Comment X.X by Reviewer, we have worked our discussion of attention throughout the manuscript. We now use the term "task engagement" instead of on-task attention to avoid confusion with the definition of attention in the predictive processing sense. The following changes have been made: 
+In the light of the considerations above and our response to comment X.X.X by Reviewer 3, we now refer to attention in the predictive processing sense. We now use the term "task engagement" instead of "on-task attention" to refer to situation in which participants may not attend to the task at all, e.g. due to low arousal or fatigue, and discuss these as alternative explanations for between-mode fluctuations. We have made three sets of changes to our manuscript: 
 
-- We present our results on the relation of mode to RT and Confidence in a more descriptive way, and do not use it as a strong defensive analysis against attention, arousal, fatigue or task engagement: *To Do*.
+- First, we present our results on the relation of mode to RT and Confidence in a more descriptive way, and do not use it as a strong defensive analysis against: **The above results point to the existence of systematic fluctuations in the *decision variable*[@Kepecs2008] that determines perceptual choices, leading to enhanced sensitivity to external stimulus information during external mode and increased biases toward preceding choices during internal mode. As such, fluctuations in mode should influence downstream aspects of behavior and cognition that operate on the perceptual decision variable[@Kepecs2008]. To test this hypothesis with respect to motor behavior and metacognition, we asked how between-mode fluctuations relate to response times (RTs) and confidence reports.**
 
-- We have re-written our interpretation of the quadratic relationship of mode to RTs and Confidence, focusing on predictive coding models attention: **According to predictive processing, attention corresponds to the precision afforded to the probability distributions that underlie perceptual inference[@Feldman2010]. As outlined above, between-mode fluctuations can be understood as ongoing shifts in the precision afforded to likelihood (*external mode*) and prior (*internal mode*), respectively. When the precision afforded to prior or likelihood increases, posterior precision increases, which leads to faster RTs and higher confidence. When defined from the perspective of predictive processing as the precision afforded to likelihood and prior[@Feldman2010], fluctuations in attention may thus provide a plausible explanation for the quadratic relationship between mode and RTs and confidence (Figure 2H and J; Figure 4I, Figure 6I)**.
+- **With respect to RTs, we observed faster responses for stimulus-congruent as opposed to stimulus-incongruent choices ($\beta$ = $`r STAT.lmer_RT_Accuracy_History$coefficients[2,1]`$ ± $`r STAT.lmer_RT_Accuracy_History$coefficients[2,2]`$, T($`r STAT.lmer_RT_Accuracy_History$coefficients[2,3]`$) = $`r STAT.lmer_RT_Accuracy_History$coefficients[2,4]`$, p = $`r STAT.lmer_RT_Accuracy_History$coefficients[2,5]`$; Figure 2G). Intriguingly, whilst controlling for the effect of stimulus-congruence, we found that history-congruent (as opposed to history-incongruent) choices were also characterized by faster responses ($\beta$ = $`r STAT.lmer_RT_Accuracy_History$coefficients[3,1]`$ ± $`r STAT.lmer_RT_Accuracy_History$coefficients[3,2]`$, T($`r STAT.lmer_RT_Accuracy_History$coefficients[3,3]`$) = $`r STAT.lmer_RT_Accuracy_History$coefficients[3,4]`$, p = $`r STAT.lmer_RT_Accuracy_History$coefficients[3,5]`$; Figure 2G).** 
 
-- We have added a more general discussion of our findings in the light of fluctuations in task engagement: **Outside of the predictive processing field, attention is often equated as engagement with the task, which may vary according to global variables such as arousal or fatigue. Importantly, our results speak against the proposition that intervals of internal mode processing reflect low task engagement: In addition to shorter RTs and elevated confidence, internal mode was not associated with a general increase in lapse (Supplemental Figures SX), arguing against the proposition that internal mode is associated with random or stereotypical responses that may reflect low task engagement. It is, however, important to note that arousal and attention are known to have non-linear effects on RTs and confidence. Future work should therefore more direct measures of attention and arousal (such as pupil size, motor behavior, or neural data) to better delineate fluctuations in these global variables from fluctuations in the mode of perceptual processing.** 
+- **When analyzing the speed of response against the mode of sensory processing (Figure 2H), we found that RTs were shorter during externally-oriented perception ($\beta_1$ = $`r STAT.RT_vs_mode$coefficients[2,1]`$ ± $`r STAT.RT_vs_mode$coefficients[2,2]`$, T($`r STAT.RT_vs_mode$coefficients[2,3]`$) = $`r STAT.RT_vs_mode$coefficients[2,4]`$, p = $`r STAT.RT_vs_mode$coefficients[2,5]`$). Crucially, as indicated by a quadratic relationship between the mode of sensory processing and RTs ($\beta_2$ = $`r STAT.RT_vs_mode$coefficients[3,1]`$ ± $`r STAT.RT_vs_mode$coefficients[3,2]`$, T($`r STAT.RT_vs_mode$coefficients[3,3]`$) = $`r STAT.RT_vs_mode$coefficients[3,4]`$, p = $`r STAT.RT_vs_mode$coefficients[3,5]`$), participants became faster at indicating their perceptual decision when biases toward both internal and external mode grew stronger.**
 
-### Comment 4
+- **In analogy to the speed of response, confidence was higher for stimulus-congruent as opposed to stimulus-incongruent choices ($\beta$ = $`r STAT.lmer_Confidence_Accuracy_History$coefficients[3,1]`$ ± $`r STAT.lmer_Confidence_Accuracy_History$coefficients[3,2]`$, T($`r STAT.lmer_Confidence_Accuracy_History$coefficients[3,3]`$) = $`r STAT.lmer_Confidence_Accuracy_History$coefficients[3,4]`$, p = $`r STAT.lmer_Confidence_Accuracy_History$coefficients[3,5]`$; Figure 2I). Yet whilst controlling for the effect of stimulus-congruence, we found that history-congruence also increased confidence ($\beta$ = $`r STAT.lmer_Confidence_Accuracy_History$coefficients[2,1]`$ ± $`r STAT.lmer_Confidence_Accuracy_History$coefficients[2,2]`$, T($`r STAT.lmer_Confidence_Accuracy_History$coefficients[2,3]`$) = $`r STAT.lmer_Confidence_Accuracy_History$coefficients[2,4]`$, p = $`r STAT.lmer_Confidence_Accuracy_History$coefficients[2,5]`$; Figure 2I).**
+
+- **When depicted against the mode of sensory processing (Figure 2J), subjective confidence was indeed enhanced when perception was more externally-oriented ($\beta_1$ = $`r STAT.Confidence_vs_mode$coefficients[2,1]`$ ± $`r STAT.Confidence_vs_mode$coefficients[2,2]`$, T($`r STAT.Confidence_vs_mode$coefficients[2,3]`$) = $`r STAT.Confidence_vs_mode$coefficients[2,4]`$, p = $`r STAT.Confidence_vs_mode$coefficients[2,5]`$). Importantly, however, participants were more confident in their perceptual decision for stronger biases toward both internal and external mode ($\beta_2$ = $`r STAT.Confidence_vs_mode$coefficients[3,1]`$ ± $`r STAT.Confidence_vs_mode$coefficients[3,2]`$, T($`r STAT.Confidence_vs_mode$coefficients[3,3]`$) = $`r STAT.Confidence_vs_mode$coefficients[3,4]`$, p = $`r STAT.Confidence_vs_mode$coefficients[3,5]`$). In analogy to RTs, subjective confidence thus showed a quadratic relationship to the mode of sensory processing (Figure 2J).**
+
+- **Consequently, our findings predict that human participants lack full metacognitive insight into how strongly external signals and internal predictions contribute to perceptual decision-making. Stronger biases toward perceptual history thus lead to two seemingly contradictory effects, more frequent errors (Supplemental Figure 1C) and increasing subjective confidence (Figure 2I-J). This observation generates an intriguing prediction regarding the association of between-mode fluctuations and perceptual metacognition: Metacognitive efficiency should be lower in individuals who spend more time in internal mode, since their confidence reports are less predictive of whether the corresponding perceptual decision is correct. We computed each participant's M-ratio[@Fleming2014] (meta-d'/d' = `r mean(Mode_Meta$meta_dprime_ratio, na.rm = TRUE)` ± `r sd(Mode_Meta$meta_dprime_ratio, na.rm = TRUE)/sqrt(length(Mode_Meta$meta_dprime_ratio))`) to probe this hypothesis independently of inter-individual differences in perceptual performance. Indeed, we found that biases toward internal information (i.e., as defined by the average probability of history-congruence) were stronger in participants with lower metacognitive efficiency ($\beta$ = $`r STAT.Meta_dprime_ratio_vs_internal$coefficients[2,1]`$ ± $`r STAT.Meta_dprime_ratio_vs_internal$coefficients[2,2]`$, T($`r STAT.Meta_dprime_ratio_vs_internal$coefficients[2,3]`$) = $`r STAT.Meta_dprime_ratio_vs_internal$coefficients[2,4]`$, p = $`r STAT.Meta_dprime_ratio_vs_internal$coefficients[2,5]`$).**
+
+- **In sum, the above results indicate that reporting behavior and metacognition do not map linearly onto the mode of sensory processing, suggesting that slow fluctuations in the respective impact of external and internal information are most likely to affect perception at an early level of sensory analysis[@St.John-Saaltink2016; @Cicchini2021]. Such low-level processing may thus integrate perceptual history with external inputs into a decision variable[@Kepecs2008] that influences not only perceptual choices, but also downstream functions such as speed of response and subjective confidence.** 
+
+- **In what follows, we probe alternative explanations for between-mode fluctuations, test for the existence of modes in mice, and propose a predictive processing model that explains fluctuations in mode ongoing shifts in the precision afforded to external sensory information relative to internal predictions driven by perceptual history.**
+
+- Second, we have re-written our discussion of the quadratic relationship of mode to RTs and Confidence, focusing on predictive coding models attention: **According to predictive processing, attention corresponds to the precision afforded to the probability distributions that underlie perceptual inference[@Feldman2010]. As outlined above, between-mode fluctuations can be understood as ongoing shifts in the precision afforded to likelihood (*external mode*) and prior (*internal mode*), respectively. When the precision afforded to prior or likelihood increases, posterior precision increases, which leads to faster RTs and higher confidence. When defined from the perspective of predictive processing as the precision afforded to likelihood and prior[@Feldman2010], fluctuations in attention may thus provide a plausible explanation for the quadratic relationship of mode to RTs and confidence (Figure 2H and J; Figure 4I, Figure 6I)**.
+
+- Third, we have added a more general discussion of our findings in the light of fluctuations in task engagement: **Outside of the predictive processing field, attention is often understood as engagement with the task, which may vary according to global variables such as arousal or fatigue. Importantly, our results speak against the proposition that intervals of internal mode processing reflect low task engagement: In addition to shorter RTs and elevated confidence, internal mode was not associated with a general increase in lapse (Supplemental Figures SX), arguing against the proposition that internal mode is associated with random or stereotypical responses that may reflect low task engagement. It is, however, important to note that arousal and attention are known to have non-linear effects on RTs and confidence. Future work should therefore more direct measures of attention and arousal (such as pupil size, motor behavior, or neural data) to better delineate fluctuations in these global variables from fluctuations in the mode of perceptual processing.** 
+
+### Comment 4: Done
 
 **In the predictive processing literature, attention is thought to correspond to fluctuations in sensory and prior precision. Why did you then consider attention as some additional or unrelated confound?**
 
-We feel that this point is closely related to the comment above. We realize that, in the predictive coding field, attention is equated with the precision of probability distributions that contribute to the perceptual decision, such that an observer can attend strongly to sensory information (high likelihood precision) or to internal predictions derived from the sequence of preceding percepts (high prior precision). Therefore, when following the above predictive coding definition, fluctuations in attention can be equated with fluctuations in mode. 
+This point is closely related to the comment above. We realize that, in the predictive coding field, attention is equated with the precision of probability distributions that contribute to the perceptual decision, such that an observer can attend strongly to sensory information (high likelihood precision) or to internal predictions derived from the sequence of preceding percepts (high prior precision). Therefore, when following the above predictive coding definition, fluctuations in attention can be equated with fluctuations in mode. 
 
 However, we feel that outside of the predictive coding field, attention is not always conceived in that way, such that low attention is often considered as low engagement with the task, i.e., relating to low likelihood and low prior precision in the predictive coding sense. Is it against this notion that we have included the analysis of attention as a separate control analysis (with the caveats outlined in our response to the comment above). 
 
-We now provide a more nuanced interpretation of our findings of RTs and confidence in relation to attention, with a specific focus on predictive coding and precision (same as above):
+We now provide a more nuanced interpretation of our findings of RTs and confidence in relation to attention, with a specific focus on predictive coding and precision. We hope that our responses to the comment above resolves the points raised in this comment. 
 
-- **According to predictive processing, attention corresponds to the precision afforded to the probability distributions that underlie perceptual inference[@Feldman2010]. As outlined above, between-mode fluctuations can be understood as ongoing shifts in the precision afforded to likelihood (*external mode*) and prior (*internal mode*), respectively. When the precision afforded to prior or likelihood increases, posterior precision increases, which leads to faster RTs and higher confidence. When defined from the perspective of predictive processing as the precision afforded to likelihood and prior[@Feldman2010], fluctuations in attention may thus provide a plausible explanation for the quadratic relationship between mode and RTs and confidence (Figure 2H and J; Figure 4I, Figure 6I)**.
-
-### Comment 5 
+### Comment 5: Done
 
 **What licences the assumption that "agents depend upon internal confidence signals" in the absence of feedback?** 
 
@@ -8058,27 +8217,27 @@ In the absence of feedback, observers can only rely on internal estimates of per
 \epsilon_M = (1-|y_t - P(y_t = 1)|) - M_t
 \end{equation} 
 
-### Comment 6
+### Comment 6: Done
 
 **And what licences the assumption that internal confidence feedback corresponds to "the absolute of the posterior log ratio" (did you mean the log of the posterior ratio)?**
 
 We mean the absolute of the log of the posterior ratio. Following first order models (see e.g., Fleming & Daw, Self-evaluation of decision-making: A general Bayesian framework for metacognitive computation, Psychol. Rev. 2017, https://doi.org/10.1037/rev0000045), the perceptual decision and the confidence report rely on the posterior. The distance of the log of the posterior ratio $L_t$ from zero becomes a measure of decision-certainty or confidence.
 
-### Comment 7
+### Comment 7: Done
 
 **I got a bit lost here when you say that "the precision of sensory coding M a function of u_t. This is largely because I couldn't find a definition of u_t.**
 
-We apologize for this lack of clarity. In the model simulations on the adaptive benefits of bimodal inference, we generated stimuli $s_t$ from a Bernoulli-distribution with p + q + 0.5. The value of $u_t$ was then defined via equation (22), following our modeling of the human data:
+We apologize for this lack of clarity. In the model simulations on the adaptive benefits of bimodal inference, we generated stimuli $s_t$ from a Bernoulli-distribution with p = q = 0.5. The value of $u_t$ was then defined via equation (22), following our modeling of the human data:
 
 \begin{equation}
 u_t = \frac{1}{1+exp(-\alpha*(s_t-0.5))}
 \end{equation}
 
-### Comment 8
+### Comment 8: Done
 
 **What licences an application of Rescorla-Wagner to learning the parameters (as in Equation 11) and, learning sensory precision as described by M_T (Equation 13). Are you moving from a Bayesian framework to a reinforcement learning framework?**
 
-We would like to thank the reviewer for pointing out this inconsistency. We chose the a Rescorla-Wagner learning rule for simplicity: In our model, the speed of learning about $H$ and $M$ varies according to the current mode of perceptual processing and a constant learning rate:  
+We would like to thank the reviewer for pointing out this inconsistency. We have chosen the Rescorla-Wagner learning rule for simplicity: In our model, the speed of learning about $H$ and $M$ varies according to the current mode of perceptual processing and a constant learning rate:  
 
 \begin{equation}
 H'_t = H'_{t-1} + \beta_H *\omega_{LLR} * \epsilon_H
@@ -8090,7 +8249,7 @@ M'_t = M'_{t-1} + \beta_M *\omega_{LLR} * \epsilon_M
 
 Allowing the learning rate itself to vary as a function of preceding experiences would add an additional level of complexity that we sought to omit in this analysis. However, we fully agree that choosing a Bayesian framework (e.g., a three-level HGF) would indeed be more consistent.
 
-### Comment 9
+### Comment 9: Model comparison
 
 **I am sure you have answers to these questions - but with each new question the reader is left more and more skeptical that there is a coherent story behind your analyses. It would have been more convincing had you just committed to a Bayesian filter and made your points using one update scheme, under ideal Bayesian observer assumptions.**
 
@@ -8104,29 +8263,43 @@ Allowing the learning rate itself to vary as a function of preceding experiences
 
 We would like to thank Prof. Friston for these very helpful and precise suggestions. In brief, we now provide a quantitative assessment of model space based on AIC (i) and have followed the suggestion of omitting section 5.8 (ii).
 
-(i) In addition to the qualitative assessment of our models in the initial version of our manuscript, we have conducted a formal model comparison. Following the model comparisons in other sections of the manuscript, we based the model comparison on AIC values. We compared the following models against each other:
+- (i) In addition to the qualitative assessment of our models in the initial version of our manuscript, we have conducted a formal model comparison. Following the model comparisons in other sections of the manuscript, we based the model comparison on AIC values. We compared the following models against each other:
 
-- Full model (model 1): influence of sensory information according to parameter $\alpha$ (likelihood); integration of evidence across trials according to free parameter $H$ (prior); anti-phase oscillations in between the precision of likelihood and prior according to $\omega_{LLR}$ and $omega_{\psi}$ according to parameters $a_{LLR}$ (amplitude likelihood fluctuation), $a_{\psi}$ (amplitude prior fluctuation), $f$ (frequency) and $p$ (phase). This model is the most complex, as it allows prior and likelihood precision to fluctuate at different amplitudes. 
+- The *full model* (model 1) incorporates the following factors: influence of sensory information according to parameter $\alpha$ (likelihood); integration of evidence across trials according to free parameter $H$ (prior); anti-phase oscillations in between the precision of likelihood and prior according to $\omega_{LLR}$ and $omega_{\psi}$ according to parameters $a_{LLR}$ (amplitude likelihood fluctuation), $a_{\psi}$ (amplitude prior fluctuation), $f$ (frequency) and $p$ (phase). This model is the most complex, as it allows prior and likelihood precision to fluctuate at different amplitudes. 
 
-- Likelihood fluctuation only (model 2): influence of sensory information according to parameter $\alpha$ (likelihood); integration of evidence across trials according to free parameter $H$ (prior); oscillations in the precision of likelihood according to $\omega_{LLR}$ with free parameters $a_{LLR}$ (amplitude likelihood fluctuation), $f$ (frequency) and $p$ (phase). 
+- The *likelihood fluctuation only model* (model 2) incorporates the following factors: influence of sensory information according to parameter $\alpha$ (likelihood); integration of evidence across trials according to free parameter $H$ (prior); oscillations in the precision of likelihood according to $\omega_{LLR}$ with free parameters $a_{LLR}$ (amplitude likelihood fluctuation), $f$ (frequency) and $p$ (phase). 
 
-- Prior fluctuation only (model 3): influence of sensory information according to parameter $\alpha$ (likelihood); integration of evidence across trials according to free parameter $H$ (prior); oscillations in the precision of prior according to $\omega_{\psi}$ with free parameters $a_{\psi}$ (amplitude prior fluctuation), $f$ (frequency) and $p$ (phase). Please note that all models 1-3 lead to shifts in the relative precision of likelihood and prior. 
+- The *prior fluctuation only model* (model 3) incorporates the following factors: influence of sensory information according to parameter $\alpha$ (likelihood); integration of evidence across trials according to free parameter $H$ (prior); oscillations in the precision of prior according to $\omega_{\psi}$ with free parameters $a_{\psi}$ (amplitude prior fluctuation), $f$ (frequency) and $p$ (phase). Please note that all models 1-3 lead to shifts in the relative precision of likelihood and prior. 
 
-- Integration only (model 4): influence of sensory information according to parameter $\alpha$ (likelihood); integration of evidence across trials according to free parameter $H$ (prior); no oscillations. This model corresponds to the model proposed by Glaze et al.[@Glaze2015]. This model captures normative evidence accumulation in unpredictable environments using a Bayesian update scheme. Importantly, model 4 thus represents the null hypothesis that fluctuations in mode emerge from a normative Bayesian model without the ad-hoc addition of oscillations as in model 1-3.
+- The *integration only model* (model 4) incorporates the following factors: influence of sensory information according to parameter $\alpha$ (likelihood); integration of evidence across trials according to free parameter $H$ (prior); no oscillations. This model corresponds to the model proposed by Glaze et al.[@Glaze2015]. This model captures normative evidence accumulation in unpredictable environments using a Bayesian update scheme. Importantly, model 4 thus represents the null hypothesis that fluctuations in mode emerge from a normative Bayesian model without the ad-hoc addition of oscillations as in model 1-3.
 
-- No integration (model 5): influence of sensory information according to parameter $\alpha$ (likelihood); no integration of evidence across trials; no oscillation. This model captures flat priors. It represents the null hypothesis that observers do not use prior information derived from serial dependency. 
+- The *no integration model* (model 5) incorporates the following factors: influence of sensory information according to parameter $\alpha$ (likelihood); no integration of evidence across trials; no oscillation. This model has no effective (flat) priors. It represents the null hypothesis that observers do not use prior information derived from serial dependency. 
 
 ```{r model_comp, cache = TRUE}
+Optim_eval = read.csv("./Results/Optim_eval_human_interim.csv")
+Optim_eval$species = "humans"
 
+Optim_eval_mice = read.csv("./Results/Optim_eval_mouse_interim.csv")
+Optim_eval_mice$species = "mice"
+
+Optim_eval = rbind(Optim_eval, Optim_eval_mice)
+Sum <-   ddply(Optim_eval[Optim_eval$convcode == 0,],
+                   .(species, type),
+                   summarise,
+                   median_error = median(value, na.rm = TRUE),
+                   sum_error = sum(value, na.rm = TRUE),
+                   k = mean(free_param),
+                   AIC = 2*k + 2 * sum(value, na.rm = TRUE) 
+                )
+print(Sum)
 ```
-
 Based on AIC, we identified the likelihood fluctuation only model (model 2) as the best model in humans and mice. This makes sense, as it is more parsimonious then the full model, but still captures ongoing shifts in the relative precision between prior and likelihood (assuming a constant precision on the prior and periodic increases/decreases in the precision of the prior). Importantly, our model comparison indicated that normative model of evidence accumulation without the ad-hoc addition of oscillations (model 4) performs worse in explaing our data. As expected, our data were also less likely to be explained by model 5, since our conventional analyses clearly indicated an effect of perceptual history, which cannot be captured by the no integration model which has flat priors.  
 
 We have updated the description of our model in the Results and Methods section accordingly, deleting $\omega_{\psi}$: 
 
 *TODO*
 
-In the Results, we now summarize the model comparison and its rationale with a particular focus on the null models 4 and 5 (see also Comment X.X by Reviewer 3): 
+In the Results, we now summarize the model comparison and its rationale with a particular focus on the null models 4 and 5 (see also comment X.X.X by Reviewer 3): 
 
 *TODO*
 
@@ -8134,17 +8307,17 @@ We have included a separate paragraph to the method section, summarizing the mod
 
 *TODO*
 
-(ii) In the light of our response to Comments 1 - 9 above, we agree that a complete and extensive investigation of the relation between bimodal inference, learning about changes in the environment and the relation to metacognition may be beyond the scope of the current manuscript: Both Reviewer 1 and 3 (see below) have shared that the manuscript is too long and should be streamlined. Yet evaluating the full model space (e.g., comparing update rules for inferences about $H$ and $M$, testing for an influence of beliefs about $M$ on learning about $H$, validating oscillations in $\omega_{LLR}$ and $omega_{\psi}$ using pupillometry, motor behavior, LFPs etc.) would make the manuscript even longer. We are therefore happy to follow Prof. Fristons suggestions to omit section 5.8. We have changed the manuscript in the following ways:
+(ii) In the light of our response to Comments 1 - 9 above, we agree that a complete and extensive investigation of the relation between bimodal inference, learning about changes in the environment and the relation to metacognition may be beyond the scope of the current manuscript: Both Reviewer 1 and 3 (see below) have shared that the manuscript is too long and should be streamlined. Yet evaluating the full model space (e.g., comparing update rules for inferences about $H$ and $M$, testing for an influence of beliefs about $M$ on learning about $H$ etc.) would make the manuscript even longer. We are therefore happy to follow Prof. Fristons suggestions to omit section 5.8. We have changed the manuscript in the following ways:
 
-- When introducing $\omega_{LLR}$, we identify it as the precision afforded to the likelihood, referring to the Bayesian framework, and refer to fluctuations in mode as a hyperprior: **To allow for *bimodal inference*, i..e, alternating periods of internally- and externally-biased modes of perceptual processing that occur irrespective of the sequence of preceding experiences, we assumed that the relative influence of likelihood and prior vary according to fluctuations governed by $\omega_{LLR}$, i.e., a sine function (defined by amplitude $a$, frequency $f$ and phase $p$) that determines the precision afforded to the likelihood[@Feldman2010]. This implements a hyperprior[@Friston2005] in which the likelihood and prior precisions are shifted against each other at a dominant timescale defined by $f$: (...)**
+- When introducing $\omega_{LLR}$, we identify it as the precision afforded to the likelihood, referring to the Bayesian framework, and refer to fluctuations in mode as a hyperprior: **To allow for *bimodal inference*, i..e, alternating periods of internally- and externally-biased modes of perceptual processing that occur irrespective of the sequence of preceding experiences, we assumed that likelihood and prior vary in their influence on the perceptual decision according to fluctuations governed by $\omega_{LLR}$ and $\omega_{\psi}$, i.e., two anti-phase sine functions (defined by amplitude $a$, frequency $f$ and phase $p$) that determine the precision afforded to the likelihood and prior[@Feldman2010]. The implicit anti-phase fluctuations are mandated by Bayes-optimal formulations in which inference depends only on the relative values of prior and likelihood precision (i.e., the Kalman gain[@Mathys2014]). As such, $\omega_{LLR}$ and $\omega_{\psi}$ implement a hyperprior[@Friston2005] in which the likelihood and prior precisions are shifted against each other at a dominant timescale defined by $f$: (...)**
 
-- We have deleted the section 5.8 and added a summary of our modeling approach to the discussion, closely following the text recommended by Prof. Friston: (...) *Yet relying too strongly on serial dependencies may come at a cost: When accumulating over time, internal predictions may eventually override external information, leading to circular and false inferences about the state of the environment. In this work, we used model simulations to show that, akin to the wake-sleep-algorithm in machine learning[@Bengio2015], bimodal inference may help to determine whether errors result from external input or from internally-stored predictions (Figure 7): During internal mode, sensory processing is more strongly constrained by predictive processes that auto-encode the agent's environment. Conversely, during external mode, the network is driven predominantly by sensory inputs[@Honey2017]. Between-mode fluctuations may thus generate an unambiguous error signal that aligns internal predictions with the current state of the environment in iterative test-update-cycles[@Bengio2015]. On a broader scale, between-mode fluctuations may thus regulate the balance between feedforward versus feedback contributions to perception and thereby play a adaptive role in metacognition and reality monitoring[@Dijkstra2021].*
+- We have deleted the section 5.8 and added a summary of our modeling approach to the discussion, closely following the text recommended by Prof. Friston: (...) **Yet relying too strongly on serial dependencies may come at a cost: When accumulating over time, internal predictions may eventually override external information, leading to circular and false inferences about the state of the environment. Akin to the wake-sleep-algorithm in machine learning[@Bengio2015], bimodal inference may help to determine whether errors result from external input or from internally-stored predictions: During internal mode, sensory processing is more strongly constrained by predictive processes that auto-encode the agent's environment. Conversely, during external mode, the network is driven predominantly by sensory inputs[@Honey2017]. Between-mode fluctuations may thus generate an unambiguous error signal that aligns internal predictions with the current state of the environment in iterative test-update-cycles[@Bengio2015]. On a broader scale, between-mode fluctuations may thus regulate the balance between feedforward versus feedback contributions to perception and thereby play a adaptive role in metacognition and reality monitoring[@Dijkstra2021].**
 
-*From the perspective of the Bayesian brain hypothesis, we hypothesized that observers have certain hyperpriors that are apt for accommodating fluctuations in the predictability of their environment, i.e., people believe that their world is inherently volatile. To be Bayes optimal, it is therefore necessary to periodically re-evaluate posterior beliefs about the parameters that define an internal generative model of the external sensory environment. One way to do this is to periodically suspend the increase the precision afforded to sensory evidence relative to prior precisions in order to update Bayesian beliefs about model parameters.*
+**From the perspective of the Bayesian brain hypothesis, we hypothesized that observers have certain hyperpriors that are apt for accommodating fluctuations in the predictability of their environment, i.e., people believe that their world is inherently volatile. To be Bayes optimal, it is therefore necessary to periodically re-evaluate posterior beliefs about the parameters that define an internal generative model of the external sensory environment. One way to do this is to periodically suspend the increase the precision afforded to sensory evidence relative to prior precisions in order to update Bayesian beliefs about model parameters.**
 
-*The empirical evidence above suggests that the timescale of this periodic scheduling of evidence accumulation is scale invariant. This means there exists a timescale of periodic fluctuations in precision over every window or length of perceptual decision-making. Our bimodal inference approach models perceptual decisions under a generative model (based upon a hazard function to model serial dependencies between subsequent trials) with periodic fluctuations in the precision of sensory evidence relative to prior beliefs at a particular timescale. Remarkably, a systematic model comparison based on AIC indicated that a model with fluctuating precisions has much greater evidence, relative to a model in the absence of fluctuating precisions. The ad-hoc addition of oscillations to a normative Bayesian model of evidence accumulation[@Glaze2015] allowed us to quantify the dominant timescale of periodic fluctuations mode at approximately 0.11 1/$N_{trials}$ in humans and mice that is appropriate for these kinds of paradigms.*
+**The empirical evidence above suggests that the timescale of this periodic scheduling of evidence accumulation is scale invariant. This means there exists a timescale of periodic fluctuations in precision over every window or length of perceptual decision-making. Our bimodal inference approach models perceptual decisions under a generative model (based upon a hazard function to model serial dependencies between subsequent trials) with periodic fluctuations in the precision of sensory evidence relative to prior beliefs at a particular timescale. Remarkably, a systematic model comparison based on AIC indicated that a model with fluctuating precisions has much greater evidence, relative to a model in the absence of fluctuating precisions. The ad-hoc addition of oscillations to a normative Bayesian model of evidence accumulation[@Glaze2015] allowed us to quantify the dominant timescale of periodic fluctuations mode at approximately 0.11 1/$N_{trials}$ in humans and mice that is appropriate for these kinds of paradigms.**
 
-### Comment 11
+### Comment 11: Done
 
 **This begs the question as to whether you want to pursue the 1/f story. You refer to this as "noise". However, there is no noise in this setup. I think what you meant was that the fluctuations are scale free, because they evinced a power law. I am sure that there are scale free aspects of these kinds of hyperpriors; however, in the context of your paradigm I wonder whether you should just ignore the scale free aspect and focus on your estimated temporal scale implicit in f. This means you don't have to hand wave about self-organized criticality in the discussion and focus upon your hypothesis.**
 
@@ -8156,70 +8329,62 @@ We would like to thank the reviewer for this suggestion. We have agree that the 
 
 - Discussion: **Remarkably, a systematic model comparison based on AIC indicated that a model with fluctuating precisions has much greater evidence, relative to a model in the absence of fluctuating precisions. The ad-hoc addition of oscillations to a normative Bayesian model of evidence accumulation[@Glaze2015] allowed us to quantify the dominant timescale of periodic fluctuations mode at approximately 0.11 1/$N_{trials}$ in humans and mice that is appropriate for these kinds of paradigms.**
 
-### Comment 12
+### Comment 12: Done
 
 **A final move—to make the paper more focused and digestible—would be to put a lot of your defensive analyses (e.g. about general arousal et cetera) in supplementary material. You have to be careful not to exhaust the reader by putting up a lot of auxiliary material before the important messages in your report.**
 
-We have followed this suggestion and move the following sections to the supplement (*To Do*):
-
-- We now present the relation of mode to RTs and confidence in the context of predictive processing accounts of attention (see points below). The additional defensive analysis from section 5.3 (Internal and external modes of processing facilitate response behavior and enhance confidence in human perceptual decision-making) have been moved to the supplement. 
-
-- We moved section 5.4 (Fluctuations between internal and external mode modulate perceptual performance beyond the effect of general response biases) to the supplement. 
-
-- We summarize the upshot of section 5.5 (Internal mode is characterized by lower thresholds as well as by history-dependent changes in biases and lapses), since it provides a test against the null hypothesis that what we identify as internal mode processing is indeed periods of random or impulsive choices: **Text**. The statistics on the psychmetric functions have been moved to the supplement. 
-
-- We moved the corresponding paragraphs from the section on mouse behavior into the supplement. 
+- We have followed this suggestion and move the following sections to the supplement: section 5.3 (Internal and external modes of processing facilitate response behavior and enhance confidence in human perceptual decision-making), section 5.4 (Fluctuations between internal and external mode modulate perceptual performance beyond the effect of general response biases), section 5.5 (Internal mode is characterized by lower thresholds as well as by history-dependent changes in biases and lapses). 
 
 **Minor points**
 
-### Comment 13
+### Comment 13: Done
 
 **I cannot resist suggesting that you change your title to "Bimodal Inference in Mice and Men"**
 
 We thank you for this suggestion and have changed the title accordingly. 
 
-### Comment 14
+### Comment 14: Done
 
 **Please replace "infra-slow fluctuations" with "slow fluctuations". slow has some colloquial meaning in fMRI studies but not in any scale free context.**
 
 Done.
 
-### Comment 15
+### Comment 15: Done
 
 **Please replace "simulated data" with "simulations" in the abstract. Finally, please replace "robust learning and metacognition in volatile environments" with "enable optimal inference and learning in volatile environments."**
 
 Done. Since we have followed the suggestion to delete section 5.8, we have rephrased the last paragraph of the abstract into "We propose that between-mode fluctuations may benefit perception by generating unambiguous error signals that enable optimal inference and learning in volatile environments".
 
-### Comment 16
+### Comment 16: Done
 
 **Line 50, please replace "about the degree of noise inherent in encoding of sensory information" with "the precision of sensory information relative to prior (Bayesian) beliefs."**
 
 Done. 
 
-### Comment 17
+### Comment 17: Done
 
 **Line 125: please replace "a source of error" with "a source of bias"**
 
 Done.
 
-### Comment 18
+### Comment 18: Done
 
 **Line 141: please replace "one 1/f noise" with a scale invariant process with a 1/f power law" (here and throughout) this is not "noise" it is a particular kind of fluctuation.**
 
 Done.
 
-### Comment 19
+### Comment 19: Add citation for arousal, link to reviewer 3, link to response to alternative hypotheses
 
 **Line 178, when you say that the fluctuations may arise due to "changes in level of tonic arousal or on-task attention", I think you need to qualify this. In predictive processing, on-task attention is exactly the modulation of sensory precision, relative to prior precision that you are characterising here. Tonic arousal may be another thing may or may not confound your current results.**
 
-Thank you very much for pointing this out. We have adapted the manuscript to make the distinction between attention in the predictive processing sense and the broader issue of task engagement (reflecting fluctuations in arousal, fatigue etc.) clearer (see also comments above): 
+Thank you very much for pointing this out. We have adapted the discussion to make the distinction between attention in the predictive processing sense and the broader issue of task engagement (reflecting fluctuations in arousal, fatigue etc.) clearer (see also comments above): 
 
  **According to predictive processing, attention corresponds to the precision afforded to the probability distributions that underlie perceptual inference[@Feldman2010]. As outlined above, between-mode fluctuations can be understood as ongoing shifts in the precision afforded to likelihood (*external mode*) and prior (*internal mode*), respectively. When the precision afforded to prior or likelihood increases, posterior precision increases, which leads to faster RTs and higher confidence. When defined from the perspective of predictive processing as the precision afforded to likelihood and prior[@Feldman2010], fluctuations in attention may thus provide a plausible explanation for the quadratic relationship between mode and RTs and confidence (Figure 2H and J; Figure 4I, Figure 6I)**.
 
 **Outside of the predictive processing field, attention is often equated as engagement with the task, which may vary according to global variables such as arousal or fatigue. Importantly, our results speak against the proposition that intervals of internal mode processing reflect low task engagement: In addition to shorter RTs and elevated confidence, internal mode was not associated with a general increase in lapse (Supplemental Figures SX), arguing against the proposition that internal mode is associated with random or stereotypical responses that may reflect low task engagement. It is, however, important to note that arousal and attention are known to have non-linear effects on RTs and confidence. Future work should therefore more direct measures of attention and arousal (such as pupil size, motor behavior, or neural data) to better delineate fluctuations in these global variables from fluctuations in the mode of perceptual processing.** 
 
 
-### Comment 20
+### Comment 20: Done
 
 **When introducing Equation 2, please make it clear that the omega terms stand in for the precisions afforded to the likelihood (omega_LLR) and prior (omega_ψ) that constitute the log posterior.**
 
@@ -8231,7 +8396,7 @@ L_t = LLR_t * \omega_{LLR} + \psi_t(L_{t-1}, H) * \omega_{\psi}
 
 **You can then motivate Equation 6 and 7 as implementing the hyperprior in which the sensory and prior precisions fluctuate at a particular time scale**.
 
-We would like to thank the reviewer for this suggestion, which we have added to the introduction of equations (6) and (7): To allow for *bimodal inference*, i..e, alternating periods of internally- and externally-biased modes of perceptual processing that occur irrespective of the sequence of preceding experiences, we assumed that the relative influences of likelihood and prior show coherent anti-phase fluctuations governed by $\omega_{LLR}$ and $\omega_{\psi}$ that are determined by amplitude $a$, frequency $f$ and phase $p$. **This implements a hyperprior in which the sensory and prior precisions fluctuate at a particular time scale**:
+We would like to thank the reviewer for this suggestion, which we have added to the introduction of equations (6) and (7): **To allow for *bimodal inference*, i..e, alternating periods of internally- and externally-biased modes of perceptual processing that occur irrespective of the sequence of preceding experiences, we assumed that likelihood and prior vary in their influence on the perceptual decision according to fluctuations governed by $\omega_{LLR}$ and $\omega_{\psi}$, i.e., two anti-phase sine functions (defined by amplitude $a$, frequency $f$ and phase $p$) that determine the precision afforded to the likelihood and prior[@Feldman2010]. The implicit anti-phase fluctuations are mandated by Bayes-optimal formulations in which inference depends only on the relative values of prior and likelihood precision (i.e., the Kalman gain[@Mathys2014]). As such, $\omega_{LLR}$ and $\omega_{\psi}$ implement a hyperprior[@Friston2005] in which the likelihood and prior precisions are shifted against each other at a dominant timescale defined by $f$: (...)**
 
 \begin{equation}
 \omega_{LLR} = a_{LLR} * sin(f * t + p) + 1
@@ -8241,23 +8406,39 @@ We would like to thank the reviewer for this suggestion, which we have added to 
 \omega_{\psi} = a_{\psi} * sin(f * t + p + \pi) + 1
 \end{equation}
 
-### Comment 21
+### Comment 21: Done
 
 **You can also point out that the implicit anti-phase fluctuations are mandated by Bayes optimal formulations in which it is only the relative values of the prior and sensory precision that matter. Bayesian filters these precisions constitute the Kalman gain. You can find a derivation of why this in treatments of the hierarchical Gaussian filter is by Mathys et al.**
 
-We would like to thank the reviewer for this suggestion. We added this to the discussion of our model in the discussion:
+We would like to thank the reviewer for this suggestion. We added this information to the description of our model in the Results section (see comment above).
 
-- **Yet relying too strongly on serial dependencies may come at a cost: When accumulating over time, internal predictions may eventually override external information, leading to circular and false inferences about the state of the environment. In this work, we used model simulations to show that, akin to the wake-sleep-algorithm in machine learning[@Bengio2015], bimodal inference may help to determine whether errors result from external input or from internally-stored predictions (Figure 7): During internal mode, sensory processing is more strongly constrained by predictive processes that auto-encode the agent's environment. Conversely, during external mode, the network is driven predominantly by sensory inputs[@Honey2017]. Between-mode fluctuations may thus generate an unambiguous error signal that aligns internal predictions with the current state of the environment in iterative test-update-cycles[@Bengio2015]. On a broader scale, between-mode fluctuations may thus regulate the balance between feedforward versus feedback contributions to perception and thereby play a adaptive role in metacognition and reality monitoring[@Dijkstra2021].**
-
-(...)
-
-### Comment 22
+### Comment 22: Done (posterior estimates could be added)
 
 **In your first model simulations, I would make it clear in the main text which parameters you are optimizing's; namely (H, alpha, a_likelihood, a_prior f). Perhaps a little table with a brief description of the meaning of these hyper parameters would be useful?**
 
-TODO
+- We now identify the optimized parameters at the outset of the modeling section: **(...) We fitted the bimodal inference model outlined above to behavioral data Confidence database[@Rahnev2020] and IBL database[@Aguillon-Rodriguez2020] using a maximum likelihood procedure, optimizing the parameters $\alpha$ and $H$ as well as the amplitudes $amp_{LLR/psi}$, frequency $f$ and phase $p$ that determine $\omega_{\LLR}$ and $\omega_{\psi}$ (see Methods for details and Supplemental Table T2 for a summary of the parameters of the bimodal inference model).**
 
-### Comment 23
+- **The bimodal inference model characterizes each subject by a sensitivity parameter $\alpha$ that captures how strongly perception is driven by the available sensory information, and a hazard rate parameter $H$ that controls how heavily perception is biased by perceptual history. As a sanity check for model fit, we tested whether the frequency of stimulus- and history-congruent trials in the Confidence database[@Rahnev2020] and IBL database[@Aguillon-Rodriguez2020] correlate with the estimated parameters $\alpha$ and $H$, respectively (...).** 
+
+- We furthermore included a table summarizing the model parameters. 
+
+```{r Supplemental_Table_T2, cache = TRUE}
+
+library(kableExtra)
+Parameters <- data.frame(
+  Parameters = c("$\\alpha$", "$H$", "$amp_{LLR}$", "$amp_{\\psi}$", "$f$", "$p$"), 
+  Interpretation = c("Sensitivity to sensory information", 
+                     "Expected probability of a switch in the cause of sensory information (Hazard)", 
+                     "Amplitude of fluctuations in likelihood precision ($omega_{LLR}$)",
+                     "Amplitude of fluctuations in prior precision ($omega_{\\psi}$)", 
+                     "Frequency of $omega_{LLR}$ and $omega_{\\psi}$",
+                     "Phase ($p$ for $omega_{LLR}$; $p + \\pi$  for $omega_{\\psi}$)"))
+row.names(Parameters) <- NULL
+kbl(Parameters, format = "latex", longtable = T, booktabs = T) %>%
+kable_styling(font_size = 7, latex_options = c("repeat_header"))
+```
+
+### Comment 23: Done
 
 **Please remove Section 5.8. If you do not, you need to explain why — on line 586 - setting a = 0 is appropriate when a = 0, the log posterior in Equation 2 is zero because the precisions (omegas) are zero (by Equations 6 and 7).**
 
@@ -8350,7 +8531,7 @@ delta_AIC_log_reg_humans = compute_AIC(
 
 ### slider
 ### dynamic probabilities:
-M_STAT.slider_History_Preferred_vs_Accuracy$coefficients
+#M_STAT.slider_History_Preferred_vs_Accuracy$coefficients
 
 ## !! replace with Accuracy ~ Preferred model
 t.test((abs(M_STAT.slider_History_vs_Preferred$residuals)) - abs(M_STAT.slider_Preferred_vs_Accuracy$residuals)) ## replace with Accuracy ~ 
@@ -8423,11 +8604,19 @@ We have three sets of statistical analyses to test H1 against $H0_{1/2}$:
 
 **When fitting full and history-conditioned psychometric curves to the data from the IBL database, we observed that internal mode processing was associated with a history-dependent increase in bias and lapse as well as a history-independent increase in threshold (Supplmental Section X.X and Supplemental Figure SX). This provided further evidence for the hypothesis that internal mode processing is driven by an enhanced impact of perceptual history, as opposed to increased choice randomness.**   
 
-### Comment 3
+### Comment 3: Add model comparison, look for more DDM work on serial choice biases
 
 **From a mechanistic (sequential sampling) perspective, several previous papers have examined whether choice history biases influence the starting point or the drift rate of the evidence accumulation process. Under the former formulation, reliance on the evidence vs. reliance on the previous choice will be naturally anti-correlated (the less weight you place on the evidence the more impactful the choice history will be, assuming that the last choice is represented as a starting point bias). This seems to be mapping onto the computational model the authors describe, in which there is a weight on the prior, a weight on the likelihood and the assumption that these weights fluctuate in anti-phase. It is not obvious that this anti-phase relationship needs to be imposed ad-hoc. Or whether it would emerge naturally (using a mechanistic or Bayesian framework). More generally, the authors assert that without an external mechanism prior biases would be impossible to overcome, and this would misfit the data. However, it would be important to a) actually show that the results cannot be explained by a single mechanism in which the anti-phase relationship is emergent rather than ad-hoc, b) relate the current framework with previous mechanistic considerations of serial choice biases.**
 
-- is running: model simulations, likelihood of the models
+We would like to thank the reviewer for pointing this out. We agree that both normative Bayesian and mechanistic drift diffusion are bound to lead to anti-correlated effects of sensory information and perceptual history at individual trials. This, however, does not necessarily entail slow fluctuations in the impact of sensory information and perceptual history that evolves over many consective trials. We now provide a systematic model comparison and discuss our model in relation to drift diffusion models and descriptive models that assume slow changes in the latent parameters underlying perceptual decision-making. We also discuss the ad-hoc nature of the bimodal inference model in the subsection *Limitations and open questions*. 
+
+- Results: model comparison
+
+- Discussion: **In Bayesian models of perceptual decision-making, the relative precision of prior and likelihood determines their integration into the posterior that determines the content of perception. At the level of individual trials, the perceptual impact of internal predictions generated from perceptual history (prior precision) and external sensory information (likelihood precision) is thus necessarily anti-correlated. The same holds for mechanistic models of drift diffusion, which understand choice history biases as driven by changes in the starting point or the drift rate of evidence accumulation[@Urai2019]. Under the former formulation, perceptual history is bound to have a stronger influence on perception when the less weight is given to incoming sensory evidence, assuming that the last choice is represented as a starting point bias. The effects of choice history in normative Bayesian and mechanistic drift diffusion models can be mapped onto one another via the Bayesian formulation of drift diffusion[@Bitzer2014], where diffusion is equated with likelihood precision and starting point bias with prior precision[@Bitzer2014].**
+
+- **While it is thus clear that the impact of perceptual history and sensory evidence are anti-correlated *at each individual trial*, we here introduce anti-phase oscillations as an ad-hoc modification to model slow fluctuations in prior and likelihood precision that evolve *over many consecutive trials* and are not mandated by normative Bayesian or mechanistic drift diffusion models. The bimodal inference model provides a reasonable explanation of the linked autocorrelations in stimulus- and history-congruence, as evidenced by formal model comparison, successful prediction of RTs and confidence as out-of-training variables, and a qualitative reproduction of our empirical data from posterior model parameter as evidence against over- or under-fitting. Of note, similar non-stationarities have been observed in descriptive models that assume continuous[@Roy2021] or discrete[@Ashwood2022] changes in the latent states that modulate perceptual decision-making at slwo timescales.**
+
+- Limitations and open questions: **The addition of slow anti-phase oscillations to the integration of prior and likelihood represents in the bimodal inference model represents an ad-hoc modification to a normative Bayesian model of evidence accumulation[@Glaze2015]. It is an important task for future research to test whether such slow fluctuations can emerge spontaneously in hierarchical models of Bayesian inference, and whether they can be causally manipulated by expeimental variables. We speculate that between-mode fluctuations may partially separate the perceptual contribution of internal predictions and external sensory data in time, creating unambiguous learning signals that benefit inference about the precision of prior and likelihood, respectively. This proposition should be tested empirically by relating the phenomenon of bimodal inference to performance in, e.g., reversal learning, probabilistic reasoning, or metacognition.** 
 
 ### Comment 4
 
