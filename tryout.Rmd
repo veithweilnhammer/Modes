@@ -4073,7 +4073,6 @@ type_list = c(
 block_size = 10
 Optim_eval = data.frame()
 for (id in unique(PwData$subject_id)) {
-  progress(id)
   print(paste("human:", id, sep = " "))
   
     Input_Data = PwData[PwData$subject_id == id, c("Stimulus", "Response", "clear_RT", "clear_Confidence")]
@@ -4133,19 +4132,21 @@ for (id in unique(PwData$subject_id)) {
             upper = c(20, 10)
           }
         
-          
-          add_O =  optimx(
-            par,
-            match.fun(type_list[type_idx]),
-            Input_Data = train,
-            lower = lower,
-            upper = upper
-          )
+          suppressWarnings({
+            add_O =  optimx(
+              par,
+              match.fun(type_list[type_idx]),
+              Input_Data = train,
+              lower = lower,
+              upper = upper
+            )
+          })
+    
           
           
           add_O$subject_id = id
           add_O$block_id = trial_idx
-          add_O$trial_n = nrow(Input_Data)
+          add_O$trial_n = nrow(train)
           add_O$free_param = length(par)
           add_O$type = type_list[type_idx]
           add_O$AIC = compute_AIC(
@@ -4168,16 +4169,13 @@ for (id in unique(PwData$subject_id)) {
     }
     }
     write.csv(Optim_eval, "./Results/Optim_eval_human_interim.csv", row.names = FALSE)
+    #print(Optim_eval)
+    Sum <-   ddply(Optim_eval,
+                   .(type),
+                   summarise,
+                   LL = mean(-value, na.rm = TRUE))
+    print(Sum)
 }
-
-#print(Optim_eval)
-Sum <-   ddply(
-   Optim_eval,
-    .(type),
-    summarise,
-   LL = mean(AIC, na.rm = TRUE)
-  )
-print(Sum)
 ```
 
 ```{r evaluate_mouse, cache = TRUE}
@@ -4320,18 +4318,16 @@ for (id in min(MwData$subject_id)) {
         }
       }
     }
-    write.csv(Optim_eval, "./Results/Optim_eval_mouse_interim.csv", row.names = FALSE)
+    write.csv(Optim_eval,
+              "./Results/Optim_eval_mouse_interim.csv",
+              row.names = FALSE)
+    Sum <-   ddply(Optim_eval,
+                   .(type),
+                   summarise,
+                   LL = mean(abs(value), na.rm = TRUE))
+    print(Sum)
   }
 }
-
-#print(Optim_eval)
-Sum <-   ddply(
-   Optim_eval,
-    .(type),
-    summarise,
-   LL = mean(abs(value), na.rm = TRUE)
-  )
-print(Sum)
 ```
 
 ```{r random_walk, cache = TRUE}
