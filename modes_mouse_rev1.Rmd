@@ -8189,11 +8189,11 @@ In the light of the considerations above and our response to comment X.X.X by Re
 
 - **Consequently, our findings predict that human participants lack full metacognitive insight into how strongly external signals and internal predictions contribute to perceptual decision-making. Stronger biases toward perceptual history thus lead to two seemingly contradictory effects, more frequent errors (Supplemental Figure 1C) and increasing subjective confidence (Figure 2I-J). This observation generates an intriguing prediction regarding the association of between-mode fluctuations and perceptual metacognition: Metacognitive efficiency should be lower in individuals who spend more time in internal mode, since their confidence reports are less predictive of whether the corresponding perceptual decision is correct. We computed each participant's M-ratio[@Fleming2014] (meta-d'/d' = `r mean(Mode_Meta$meta_dprime_ratio, na.rm = TRUE)` ± `r sd(Mode_Meta$meta_dprime_ratio, na.rm = TRUE)/sqrt(length(Mode_Meta$meta_dprime_ratio))`) to probe this hypothesis independently of inter-individual differences in perceptual performance. Indeed, we found that biases toward internal information (i.e., as defined by the average probability of history-congruence) were stronger in participants with lower metacognitive efficiency ($\beta$ = $`r STAT.Meta_dprime_ratio_vs_internal$coefficients[2,1]`$ ± $`r STAT.Meta_dprime_ratio_vs_internal$coefficients[2,2]`$, T($`r STAT.Meta_dprime_ratio_vs_internal$coefficients[2,3]`$) = $`r STAT.Meta_dprime_ratio_vs_internal$coefficients[2,4]`$, p = $`r STAT.Meta_dprime_ratio_vs_internal$coefficients[2,5]`$).**
 
-- **In sum, the above results indicate that reporting behavior and metacognition do not map linearly onto the mode of sensory processing, suggesting that slow fluctuations in the respective impact of external and internal information are most likely to affect perception at an early level of sensory analysis[@St.John-Saaltink2016; @Cicchini2021]. Such low-level processing may thus integrate perceptual history with external inputs into a decision variable[@Kepecs2008] that influences not only perceptual choices, but also downstream functions such as speed of response and subjective confidence.** 
+- **In sum, the above results indicate that reporting behavior and metacognition do not map linearly onto the mode of sensory processing, suggesting that slow fluctuations in the respective impact of external and internal information are most likely to affect perception at an early level of sensory analysis[@St.John-Saaltink2016; @Cicchini2021]. Such low-level processing may thus integrate perceptual history with external inputs into a decision variable[@Kepecs2008] that influences not only perceptual choices, but also the speed and confidence at which they are made.** 
 
 - **In what follows, we probe alternative explanations for between-mode fluctuations, test for the existence of modes in mice, and propose a predictive processing model that explains fluctuations in mode ongoing shifts in the precision afforded to external sensory information relative to internal predictions driven by perceptual history.**
 
-- Second, we have re-written our discussion of the quadratic relationship of mode to RTs and Confidence, focusing on predictive coding models attention: **According to predictive processing, attention corresponds to the precision afforded to the probability distributions that underlie perceptual inference[@Feldman2010]. As outlined above, between-mode fluctuations can be understood as ongoing shifts in the precision afforded to likelihood (*external mode*) and prior (*internal mode*), respectively. When the precision afforded to prior or likelihood increases, posterior precision increases, which leads to faster RTs and higher confidence. When defined from the perspective of predictive processing as the precision afforded to likelihood and prior[@Feldman2010], fluctuations in attention may thus provide a plausible explanation for the quadratic relationship of mode to RTs and confidence (Figure 2H and J; Figure 4I, Figure 6I)**.
+- Second, we have re-written our discussion of the quadratic relationship of mode to RTs and Confidence, focusing on predictive coding models attention: **How does attention relate between-mode fluctuations? According to predictive processing, attention corresponds to the precision afforded to the probability distributions that underlie perceptual inference[@Feldman2010]. As outlined above, between-mode fluctuations can be understood as ongoing shifts in the precision afforded to likelihood (*external mode*) and prior (*internal mode*), respectively. When the precision afforded to prior or likelihood increases, posterior precision increases, which leads to faster RTs and higher confidence. When defined from the perspective of predictive processing as the precision afforded to likelihood and prior[@Feldman2010], fluctuations in attention may thus provide a plausible explanation for the quadratic relationship of mode to RTs and confidence (Figure 2H and J; Figure 4I, Figure 6I)**.
 
 - Third, we have added a more general discussion of our findings in the light of fluctuations in task engagement: **Outside of the predictive processing field, attention is often understood as engagement with the task, which may vary according to global variables such as arousal or fatigue. Importantly, our results speak against the proposition that intervals of internal mode processing reflect low task engagement: In addition to shorter RTs and elevated confidence, internal mode was not associated with a general increase in lapse (Supplemental Figures SX), arguing against the proposition that internal mode is associated with random or stereotypical responses that may reflect low task engagement. It is, however, important to note that arousal and attention are known to have non-linear effects on RTs and confidence. Future work should therefore more direct measures of attention and arousal (such as pupil size, motor behavior, or neural data) to better delineate fluctuations in these global variables from fluctuations in the mode of perceptual processing.** 
 
@@ -8282,8 +8282,14 @@ Optim_eval$species = "humans"
 Optim_eval_mice = read.csv("./Results/Optim_eval_mouse_interim.csv")
 Optim_eval_mice$species = "mice"
 
-Optim_eval = rbind(Optim_eval[,c("value", "type", "free_param", "trial_n", "species", "convcode")], Optim_eval_mice[,c("value", "type", "free_param", "trial_n", "species", "convcode")])
+Optim_eval = rbind(Optim_eval[,c("value", "type", "free_param", "trial_n", "species", "convcode", "subject_id")], Optim_eval_mice[,c("value", "type", "free_param", "trial_n", "species", "convcode", "subject_id")])
 Optim_eval$type = gsub("_mouse", "", Optim_eval$type)
+
+Optim_eval$rel_value = NA
+for (type_idx in unique(Optim_eval$type)){
+Optim_eval[Optim_eval$type == type_idx,]$rel_value = Optim_eval[Optim_eval$type == type_idx,]$value - Optim_eval[Optim_eval$type == "fit_glaze_osc_zeta_v1_no_integration",]$value 
+}
+
 Sum <-   ddply(Optim_eval[Optim_eval$convcode == 0,],
                    .(species, type),
                    summarise,
@@ -8291,14 +8297,35 @@ Sum <-   ddply(Optim_eval[Optim_eval$convcode == 0,],
                    sum_error = sum(value, na.rm = TRUE),
                    k = mean(free_param),
                    AIC = 2*k + 2 * sum(value, na.rm = TRUE) 
-                )
+                ) 
 
-p_distribution_Sum <- ggplot(Optim_eval[Optim_eval$convcode == 0,], aes(x = value, color = type, fill = type)) + 
-  geom_histogram(fill = "white", position = "dodge") +
-  theme_classic(base_size = 6) + xlim(0,1) +
-    scale_color_brewer(palette = "Set1", direction = -1) + scale_fill_brewer(palette = "Set1", direction = -1) + 
-    theme(legend.position = "top") + facet_wrap(~species) 
+Sum_Subj <-   ddply(Optim_eval[Optim_eval$convcode == 0,],
+                   .(subject_id, type, species),
+                   summarise,
+                   median_error = median(value, na.rm = TRUE),
+                   sum_error = sum(value, na.rm = TRUE),
+                   k = mean(free_param),
+                   AIC = 2*k + 2 * sum(value, na.rm = TRUE) 
+                ) 
+
+p_distribution_Sum <- ggplot(Optim_eval[Optim_eval$convcode == 0 & Optim_eval$type != "fit_glaze_osc_zeta_v1_one_amp",], 
+                             aes(x = value,  y=..density..,  color = type, fill = type)) + 
+  #geom_density(color = "white", alpha=.25, bw = 0.025, size = 0.5) + 
+  geom_histogram(position = "dodge", alpha = 0.5, center = 0) +
+  theme_classic(base_size = 6) +
+    scale_color_brewer(palette = "Dark2", direction = +1) + scale_fill_brewer(palette = "Dark2", direction = +1) +  
+    theme(legend.position = "top") + facet_wrap(~species, ncol = 1) 
 p_distribution_Sum
+
+p_distribution_Sum_Subj <- ggplot(Sum_Subj[Sum_Subj$type != "fit_glaze_osc_zeta_v1_one_amp",], 
+                             aes(x = AIC,  y=..density..,  color = type, fill = type)) + 
+  #geom_density(color = "white", alpha=.25, bw = 0.025, size = 0.5) + 
+  geom_histogram(position = "dodge", alpha = 0.5) +
+  theme_classic(base_size = 6) + xlim(-10,500) +
+    scale_color_brewer(palette = "Dark2", direction = +1) + scale_fill_brewer(palette = "Dark2", direction = +1) +  
+    theme(legend.position = "top") + facet_wrap(~species, ncol = 2)
+p_distribution_Sum_Subj
+
 print(Sum)
 ```
 Based on AIC, we identified the likelihood fluctuation only model (model 2) as the best model in humans and mice. This makes sense, as it is more parsimonious then the full model, but still captures ongoing shifts in the relative precision between prior and likelihood (assuming a constant precision on the prior and periodic increases/decreases in the precision of the prior). Importantly, our model comparison indicated that normative model of evidence accumulation without the ad-hoc addition of oscillations (model 4) performs worse in explaing our data. As expected, our data were also less likely to be explained by model 5, since our conventional analyses clearly indicated an effect of perceptual history, which cannot be captured by the no integration model which has flat priors.  
@@ -8387,10 +8414,9 @@ Done.
 
 Thank you very much for pointing this out. We have adapted the discussion to make the distinction between attention in the predictive processing sense and the broader issue of task engagement (reflecting fluctuations in arousal, fatigue etc.) clearer (see also comments above): 
 
- **According to predictive processing, attention corresponds to the precision afforded to the probability distributions that underlie perceptual inference[@Feldman2010]. As outlined above, between-mode fluctuations can be understood as ongoing shifts in the precision afforded to likelihood (*external mode*) and prior (*internal mode*), respectively. When the precision afforded to prior or likelihood increases, posterior precision increases, which leads to faster RTs and higher confidence. When defined from the perspective of predictive processing as the precision afforded to likelihood and prior[@Feldman2010], fluctuations in attention may thus provide a plausible explanation for the quadratic relationship between mode and RTs and confidence (Figure 2H and J; Figure 4I, Figure 6I)**.
+**How does attention relate between-mode fluctuations? According to predictive processing, attention corresponds to the precision afforded to the probability distributions that underlie perceptual inference[@Feldman2010]. As outlined above, between-mode fluctuations can be understood as ongoing shifts in the precision afforded to likelihood (*external mode*) and prior (*internal mode*), respectively. When the precision afforded to prior or likelihood increases, posterior precision increases, which leads to faster RTs and higher confidence. When defined from the perspective of predictive processing as the precision afforded to likelihood and prior[@Feldman2010], fluctuations in attention may thus provide a plausible explanation for the quadratic relationship between mode and RTs and confidence (Figure 2H and J; Figure 4I, Figure 6I)**.
 
 **Outside of the predictive processing field, attention is often equated as engagement with the task, which may vary according to global variables such as arousal or fatigue. Importantly, our results speak against the proposition that intervals of internal mode processing reflect low task engagement: In addition to shorter RTs and elevated confidence, internal mode was not associated with a general increase in lapse (Supplemental Figures SX), arguing against the proposition that internal mode is associated with random or stereotypical responses that may reflect low task engagement. It is, however, important to note that arousal and attention are known to have non-linear effects on RTs and confidence. Future work should therefore more direct measures of attention and arousal (such as pupil size, motor behavior, or neural data) to better delineate fluctuations in these global variables from fluctuations in the mode of perceptual processing.** 
-
 
 ### Comment 20: Done
 
@@ -8627,17 +8653,15 @@ We would like to thank the reviewer for pointing this out. We agree that both no
 
 - Results: model comparison
 
-- Discussion: **In Bayesian models of perceptual decision-making, the relative precision of prior and likelihood determines their integration into the posterior that determines the content of perception. At the level of individual trials, the perceptual impact of internal predictions generated from perceptual history (prior precision) and external sensory information (likelihood precision) is thus necessarily anti-correlated. The same holds for mechanistic models of drift diffusion, which understand choice history biases as driven by changes in the starting point[@Glaze2015] or the drift rate of evidence accumulation[@Urai2019]. Under the former formulation, perceptual history is bound to have a stronger influence on perception when the less weight is given to incoming sensory evidence, assuming that the last choice is represented as a starting point bias. The effects of choice history in normative Bayesian and mechanistic drift diffusion models can be mapped onto one another via the Bayesian formulation of drift diffusion[@Bitzer2014], where the inverse of likelihood precision determines the degree of diffusion and prior precision determines the absolute shift in starting point[@Bitzer2014].**
+- Discussion: **In Bayesian models of perceptual decision-making, the relative precision of prior and likelihood determines their integration into the posterior that determines the content of perception. At the level of individual trials, the perceptual impact of internal predictions generated from perceptual history (prior precision) and external sensory information (likelihood precision) is thus necessarily anti-correlated. The same holds for mechanistic models of drift diffusion, which understand choice history biases as driven by changes in the starting point[@Glaze2015] or the drift rate of evidence accumulation[@Urai2019]. Under the former formulation, perceptual history is bound to have a stronger influence on perception when the less weight is given to incoming sensory evidence, assuming that the last choice is represented as a starting point bias. The effects of choice history in normative Bayesian and mechanistic drift diffusion models can be mapped onto one another via the Bayesian formulation of drift diffusion[@Bitzer2014], where the inverse of likelihood precision determines the amount of noise in the accumulation of new evidence and prior precision determines the absolute shift in its starting point[@Bitzer2014].**
 
 - **While it is thus clear that the impact of perceptual history and sensory evidence are anti-correlated *at each individual trial*, we here introduce anti-phase oscillations as an ad-hoc modification to model slow fluctuations in prior and likelihood precision that evolve *over many consecutive trials* and are not mandated by normative Bayesian or mechanistic drift diffusion models. The bimodal inference model provides a reasonable explanation of the linked autocorrelations in stimulus- and history-congruence, as evidenced by formal model comparison, successful prediction of RTs and confidence as out-of-training variables, and a qualitative reproduction of our empirical data from posterior model parameter as evidence against over- or under-fitting. Of note, similar non-stationarities have been observed in descriptive models that assume continuous[@Roy2021] or discrete[@Ashwood2022] changes in the latent states that modulate perceptual decision-making at slow timescales.**
 
 - Limitations and open questions: **The addition of slow anti-phase oscillations to the integration of prior and likelihood represents in the bimodal inference model represents an ad-hoc modification to a normative Bayesian model of evidence accumulation[@Glaze2015]. It is an important task for future research to test whether such slow fluctuations can emerge spontaneously in hierarchical models of Bayesian inference, and whether they can be causally manipulated by experimental variables. We speculate that between-mode fluctuations may partially separate the perceptual contribution of internal predictions and external sensory data in time, creating unambiguous learning signals that benefit inference about the precision of prior and likelihood, respectively. This proposition should be tested empirically by relating the phenomenon of bimodal inference to performance in, e.g., reversal learning, probabilistic reasoning, or metacogntive tasks.** 
 
-### Comment 4
+### Comment 4: Done
 
 **The authors need to unpack their definition of history biases since in previous work biases due to the response or the identity of the stimulus at the previous trial are treated differently. Here, the authors focus on response biases but it is not clear whether they could examine also stimulus-driven history biases (in paradigms where stimulus-response is remapped on each trial).**
-
-We defined the history-biases by comparing the *response about the perceived* stimulus category (A vs. B) at the current and at the preceding trial. An alternative would be to define history biases by comparing the *presented* stimulus category. Such an alternative approach may  be considered exspecially for paradigms where observers receive feedback about whether a choice was correct, because this would let them infer the presented stimulus-category.
 
 ```{r choice_history, cache = TRUE}
 if (!load_summary_data) {
@@ -8662,13 +8686,19 @@ PwData$Stimulus_minus_1 = c(NA, PwData$Stimulus[1:length(PwData$Stimulus)-1])
 PwData$Stimulus_minus_1[PwData$Trial == 1] = NA
 full_logit_Sum_Stimulus_History <-
     glmer(Response ~ Stimulus + Stimulus_minus_1 + (1|study_id/subject_id),
-        data = PwData[PwData$Response >= 0 & PwData$Response <= 1,],
+        data = PwData[PwData$Response >= 0 & PwData$Response <= 1 & PwData$Stimulus_minus_1 != PwData$Response_minus_1,],
+        family = binomial)
+
+full_logit_Sum_Choice_History <-
+    glmer(Response ~ Stimulus + Response_minus_1 + (1|study_id/subject_id),
+        data = PwData[PwData$Response >= 0 & PwData$Response <= 1 & PwData$Stimulus_minus_1 != PwData$Response_minus_1,],
         family = binomial)
 } else {
   full_logit_Sum_Stimulus_History <- readRDS(file = "./Results/full_logit_Sum_Stimulus_History.rds")
+  full_logit_Sum_Choice_History <- readRDS(file = "./Results/full_logit_Sum_Choice_History.rds")
 }
 STAT.full_logit_Sum_Stimulus_History <- summary(full_logit_Sum_Stimulus_History) 
-
+STAT.full_logit_Sum_Choice_History <- summary(full_logit_Sum_Choice_History)
 
 ##
 ## mice
@@ -8685,30 +8715,41 @@ M_STAT.Difference_Stimulus_Choice_History = t.test(M_Behav$null_Stimulus_History
 if (compute_mouse_logreg) {
     M_full_logit_Sum_Stimulus_History <-
       glmer(
+        Response ~ Stimulus + Stimulus_minus_1 + (1 | subject_id),
+        data = MwData[MwData$Response >= 0 & MwData$Response <= 1 & MwData$Stimulus_minus_1 != MwData$Response_minus_1, ],
+        family = binomial
+      )
+    
+    M_full_logit_Sum_Choice_History <-
+      glmer(
         Response ~ Stimulus + Response_minus_1 + (1 | subject_id),
-        data = MwData[MwData$Response >= 0 & MwData$Response <= 1, ],
+        data = MwData[MwData$Response >= 0 & MwData$Response <= 1 & MwData$Stimulus_minus_1 != MwData$Response_minus_1, ],
         family = binomial
       )
     
   } else {
     M_full_logit_Sum_Stimulus_History <-
       readRDS(file = "./Results/M_full_logit_Sum_Stimulus_History.rds")
+     M_full_logit_Sum_Choice_History <-
+      readRDS(file = "./Results/M_full_logit_Sum_Choice_History.rds")
    
   }
   M_STAT.full_logit_Sum_Stimulus_History <- summary(M_full_logit_Sum_Stimulus_History)
- 
+  M_STAT.full_logit_Sum_Choice_History <- summary(M_full_logit_Sum_Choice_History)
 
   if (save_summary_data) {
     save(mean_Stimulus_History,
          error_Stimulus_History,
          STAT.Global_Stimulus_History_Accuracy, 
          STAT.Difference_Stimulus_Choice_History,
-         STAT.full_logit_Sum_Stimulus_History,
+         M_STAT.full_logit_Sum_Stimulus_History,
+         M_STAT.full_logit_Sum_Choice_History,
          M_mean_Stimulus_History,
          M_error_Stimulus_History,
          M_STAT.Global_Stimulus_History_Accuracy, 
          M_STAT.Difference_Stimulus_Choice_History,
          M_STAT.full_logit_Sum_Stimulus_History,
+         M_STAT.full_logit_Sum_Choice_History,
          file = "./Summary_Data/choice_history.Rdata")
   }
   
@@ -8717,19 +8758,23 @@ if (compute_mouse_logreg) {
 }
 ```
 
-We defined the history-biases by comparing the *response about the perceived* stimulus category (A vs. B) at the current and at the preceding trial (choice history). An alternative would be to define history biases by comparing the *presented* stimulus category (stimulus history. We have included a section to the supplement that outlines why our data are better explained by effects of choice history as opposed to stimulus history:
+We thank the reviewer for raising this imporant point. We defined the history-biases reported in our main manuscript by comparing the *response about the perceived* stimulus category (A vs. B) at the current and at the preceding trial (choice history). An alternative would have been to define history biases by comparing the choice at the current trial to the stimulus category *presented* at the preceding trial(stimulus history). As we show below, perceptual responses tended to be biased not only toward choice history, but also (but to a lesser degree) to stimulus history. This is expected, as perception was *stimulus-congruent* on approximately 75% of trials, causing the effects of the preceding response and the preceding stimulus to be highly correlated. We therefore compared the effects on choice history and stimulus history induced by trials were perception was *stimulus-incongruent*, since those trials lead to opposite predictions regarding the perceptual choice at the subsequent trial. 
 
-- **In our main manuscript, we investigated the effects of perceptual history, which we defined as the impact of choice at the preceding trial on the choice at the current trial (henceforth *choice history*). Importantly, an alternative approach to this could be to look at *stimulus history*, which is defined as the impact of the stimulus presented at the preceding trial on the choice at the present trial. Here, we compare the effects of choice-history reported in the main manuscript to the effects of stimulus-history in humans and in mice.** 
+As expected, perceptual choices were attracted toward perceptual choices at preceding stimulus-incongruent trials (i.e., a positive effect of choice history). By contrast, perceptual choices tended to be repelled away from the stimulus presented the the preceding trial. This repulsion of choices away from stimuli presented at stimulus-incongruent trials confirms that the choices at stimulus-incongruent trials were the primary driver of serial effects in perception in both humans and mice.
 
-- **In humans, we found a significant bias toward stimulus history (`r mean_Stimulus_History`% ± `r  error_Stimulus_History`% of trials, $\beta$ = $`r STAT.Global_Stimulus_History_Accuracy$coefficients[1,1]`$ ± $`r STAT.Global_Stimulus_History_Accuracy$coefficients[1,2]`$, T($`r STAT.Global_Stimulus_History_Accuracy$coefficients[1,3]`$) = $`r STAT.Global_Stimulus_History_Accuracy$coefficients[1,4]`$, p = $`r STAT.Global_Stimulus_History_Accuracy$coefficients[1,5]`$) which was smaller than the bias toward choice history ( $\beta$ = $`r STAT.Difference_Stimulus_Choice_History$coefficients[1,1]`$ ± $`r STAT.Difference_Stimulus_Choice_History$coefficients[1,2]`$, T($`r STAT.Difference_Stimulus_Choice_History$coefficients[1,3]`$) = $`r STAT.Difference_Stimulus_Choice_History$coefficients[1,4]`$, p = $`r STAT.Difference_Stimulus_Choice_History$coefficients[1,5]`$).**
+We now refer to our analysis on stimulus history as an additional confound, which we present in detail in the Supplement of our manuscript, in the subsection X.X of the Results:
 
-- **Logistic regression confirmed the stimulus history made a significant contribution to perception ($\beta$ = $`r STAT.full_logit_Sum$coefficients[3,1]`$ ± $`r STAT.full_logit_Sum$coefficients[3,2]`$, z = $`r STAT.full_logit_Sum$coefficients[3,3]`$, p = $`r STAT.full_logit_Sum$coefficients[3,4]`$) over and above the ongoing stream of current sensory information ($\beta$ = $`r STAT.full_logit_Sum$coefficients[2,1]`$ ± $`r STAT.full_logit_Sum$coefficients[2,2]`$, z = $`r STAT.full_logit_Sum$coefficients[2,3]`$, p = $`r STAT.full_logit_Sum$coefficients[2,4]`$) and general response biases toward one of the two potential outcomes ($\beta$ = $`r STAT.full_logit_Sum$coefficients[1,1]`$ ± $`r STAT.full_logit_Sum$coefficients[1,2]`$, z = $`r STAT.full_logit_Sum$coefficients[1,3]`$, p = $`r STAT.full_logit_Sum$coefficients[1,4]`$). AIC was elevated by $\delta_{AIC}$ = `r -delta_AIC_log_reg_humans` in the stimulus-history model in comparison to the choice history model used in the main manuscript. The above results suggest that the human data were better explained by the effects of choice history as opposed to the effects of stimulus history.** 
+- Results: **Moreover, we ensured that that the serial effects reported here were driven by the choices reported as opposed to the stimuli presented at the preceding trial (Supplemental Secion X.X).**
 
-- **Like humans, mice showed a significant bias toward stimulus history (`r mean_Stimulus_History`% ± `r  error_Stimulus_History`% of trials, $\beta$ = $`r STAT.Global_Stimulus_History_Accuracy$coefficients[1,1]`$ ± $`r STAT.Global_Stimulus_History_Accuracy$coefficients[1,2]`$, T($`r STAT.Global_Stimulus_History_Accuracy$coefficients[1,3]`$) = $`r STAT.Global_Stimulus_History_Accuracy$coefficients[1,4]`$, p = $`r STAT.Global_Stimulus_History_Accuracy$coefficients[1,5]`$)  which was less pronounced than the bias toward choice history ($\beta$ = $`r STAT.Difference_Stimulus_Choice_History$coefficients[1,1]`$ ± $`r STAT.Difference_Stimulus_Choice_History$coefficients[1,2]`$, T($`r STAT.Difference_Stimulus_Choice_History$coefficients[1,3]`$) = $`r STAT.Difference_Stimulus_Choice_History$coefficients[1,4]`$, p = $`r STAT.Difference_Stimulus_Choice_History$coefficients[1,5]`$).**
+- Supplement: **In our main manuscript, we investigated the effects of perceptual history, which we defined as the impact of the choice at the preceding trial on the choice at the current trial (henceforth *choice history*). Importantly, an alternative approach to this could be to look at *stimulus history*, which is defined as the impact of the stimulus presented at the preceding trial on the choice at the present trial. Here, we compare the effects of choice-history reported in the main manuscript to the effects of stimulus-history in humans and in mice.** 
 
-- **Logistic regression confirmed the stimulus history made a significant contribution to perception ($\beta$ = $`r STAT.full_logit_Sum$coefficients[3,1]`$ ± $`r STAT.full_logit_Sum$coefficients[3,2]`$, z = $`r STAT.full_logit_Sum$coefficients[3,3]`$, p = $`r STAT.full_logit_Sum$coefficients[3,4]`$) over and above the ongoing stream of current sensory information ($\beta$ = $`r STAT.full_logit_Sum$coefficients[2,1]`$ ± $`r STAT.full_logit_Sum$coefficients[2,2]`$, z = $`r STAT.full_logit_Sum$coefficients[2,3]`$, p = $`r STAT.full_logit_Sum$coefficients[2,4]`$) and general response biases toward one of the two potential outcomes ($\beta$ = $`r STAT.full_logit_Sum$coefficients[1,1]`$ ± $`r STAT.full_logit_Sum$coefficients[1,2]`$, z = $`r STAT.full_logit_Sum$coefficients[1,3]`$, p = $`r STAT.full_logit_Sum$coefficients[1,4]`$). in line with our reusults in humans, AIC was elevated by $\delta_{AIC}$ = `r -delta_AIC_log_reg_humans` in the stimulus-history model in comparison to the choice history-model.** 
+- **We observed a significant bias toward stimulus history (humans: `r mean_Stimulus_History`% ± `r  error_Stimulus_History`% of trials, $\beta$ = $`r STAT.Global_Stimulus_History_Accuracy$coefficients[1,1]`$ ± $`r STAT.Global_Stimulus_History_Accuracy$coefficients[1,2]`$, T($`r STAT.Global_Stimulus_History_Accuracy$coefficients[1,3]`$) = $`r STAT.Global_Stimulus_History_Accuracy$coefficients[1,4]`$, p = $`r STAT.Global_Stimulus_History_Accuracy$coefficients[1,5]`$; mice: `r M_mean_Stimulus_History`% ± `r  M_error_Stimulus_History`% of trials, $\beta$ = $`r M_STAT.Global_Stimulus_History_Accuracy$coefficients[1,1]`$ ± $`r M_STAT.Global_Stimulus_History_Accuracy$coefficients[1,2]`$, T($`r M_STAT.Global_Stimulus_History_Accuracy$coefficients[1,3]`$) = $`r M_STAT.Global_Stimulus_History_Accuracy$coefficients[1,4]`$, p = $`r M_STAT.Global_Stimulus_History_Accuracy$coefficients[1,5]`$). The bias toward stimulus history was smaller than the bias toward choice history (humans: $\beta$ = $`r STAT.Difference_Stimulus_Choice_History$coefficients[1,1]`$ ± $`r STAT.Difference_Stimulus_Choice_History$coefficients[1,2]`$, T($`r STAT.Difference_Stimulus_Choice_History$coefficients[1,3]`$) = $`r STAT.Difference_Stimulus_Choice_History$coefficients[1,4]`$, p = $`r STAT.Difference_Stimulus_Choice_History$coefficients[1,5]`$; mice: T(`r M_STAT.Difference_Stimulus_Choice_History$parameter`) = `r M_STAT.Difference_Stimulus_Choice_History$statistic`, p = $`r M_STAT.Difference_Stimulus_Choice_History$p.value`$ ).**
 
-- **The above results suggest that, on both humans and mice, our data were better explained by the effects of choice history as opposed to the effects of stimulus history.** 
+- **The attraction of choices toward stimuli presented at preceding trial is expected, as perception was *stimulus-congruent* on approximately 75% of trials, causing choices and stimuli to be highly correlated. We therefore compared the effects on choice history and stimulus history induced by trials were perception was *stimulus-incongruent* (i.e., *error* trials), since those trials lead to opposite predictions regarding the perceptual choice at the subsequent trial.** 
+
+- **As expected form the findings presented in the main manuscript, perceptual choices were attracted toward perceptual choices at preceding stimulus-incongruent trials (i.e., a positive effect of choice history; humans: $\beta$ = $`r STAT.full_logit_Sum_Choice_History$coefficients[3,1]`$ ± $`r STAT.full_logit_Sum_Choice_History$coefficients[3,2]`$, z = $`r STAT.full_logit_Sum_Choice_History$coefficients[3,3]`$, p = $`r STAT.full_logit_Sum_Choice_History$coefficients[3,4]`$: mice: $\beta$ = $`r M_STAT.full_logit_Sum_Choice_History$coefficients[3,1]`$ ± $`r M_STAT.full_logit_Sum_Choice_History$coefficients[3,2]`$, z = $`r M_STAT.full_logit_Sum_Choice_History$coefficients[3,3]`$, p = $`r M_STAT.full_logit_Sum_Choice_History$coefficients[3,4]`$). By contrast, perceptual choices tended to be repelled away from the stimulus presented the preceding trial (i.e., a negative effect of stimulus history; humans: $\beta$ = $`r STAT.full_logit_Sum_Stimulus_History$coefficients[3,1]`$ ± $`r STAT.full_logit_Sum_Stimulus_History$coefficients[3,2]`$, z = $`r STAT.full_logit_Sum_Stimulus_History$coefficients[3,3]`$, p = $`r STAT.full_logit_Sum_Stimulus_History$coefficients[3,4]`$: mice: $\beta$ = $`r M_STAT.full_logit_Sum_Stimulus_History$coefficients[3,1]`$ ± $`r M_STAT.full_logit_Sum_Stimulus_History$coefficients[3,2]`$, z = $`r M_STAT.full_logit_Sum_Stimulus_History$coefficients[3,3]`$, p = $`r M_STAT.full_logit_Sum_Stimulus_History$coefficients[3,4]`$). This repulsion of choices away from stimuli presented at stimulus-incongruent trials confirmed that the choices at stimulus-incongruent trials were the primary driver of serial effects in perception in both humans and mice.**
+
+- **In sum, the above results suggest that, in both humans and mice, serial dependencies were better explained by the effects of choice history as opposed to the effects of stimulus history. This aligns with a result recently published for the IBL database, where mice were shown to follow an action-kernel as opposed to an stimulus-kernel model when integrating information across trials[@Findling2023].** 
 
 ### Comment 5: Done
 
@@ -8837,6 +8882,35 @@ p_Sum_Rep_Alt_Sim
 ### Comment 6
 
 **The arousal hypothesis seems to be ruled out too easily, merely in the presence of a non-monotonic "state" vs. RT pattern. Arousal can have an inverted U-shaped effect on behavioural performance and recent paper has demonstrated a non-monotonic effect of tonic arousal (baseline pupil) on RTs and accuracy (https://www.biorxiv.org/content/10.1101/2023.07.28.550956.abstract). More generally, the RT and confidence analyses need to be complemented, perhaps by computational modelling using sequential sampling models, as these behavioural metrics have multiple mechanistic mappings (e.g., a fast RT might correspond to high SNR or an impulsive decisions driven by a starting point bias).**
+
+We would like to thank the reviewer for this important point. Considering this comment and the comment X.X made by Reviewer 1, we realize that the quadratic relationship between mode and RTs/confidence do not represent a convincing defensive analysis against the potential contributions of arousal to the phenomenon that we have identified as between-mode fluctuations. Rather, we interpret the fluctuations of RTs/confidence with mode as indicative of a scenario in which betwee-mode fluctuations modulate a decision-variable that determines not only the perceptual choices, but also the speed and confidence at which they are made. 
+
+Therefore, as a first response to this comment, we have re-phrased our assessment of RT and confidence in the following way:
+
+- **The above results point to the existence of systematic fluctuations in the *decision variable*[@Kepecs2008] that determines perceptual choices, leading to enhanced sensitivity to external stimulus information during external mode and increased biases toward preceding choices during internal mode. As such, fluctuations in mode should influence downstream aspects of behavior and cognition that operate on the perceptual decision variable[@Kepecs2008]. To test this hypothesis with respect to motor behavior and metacognition, we asked how between-mode fluctuations relate to response times (RTs) and confidence reports. (...). **
+
+- **(...) In sum, the above results indicate that reporting behavior and metacognition do not map linearly onto the mode of sensory processing, suggesting that slow fluctuations in the respective impact of external and internal information are most likely to affect perception at an early level of sensory analysis[@St.John-Saaltink2016; @Cicchini2021]. Such low-level processing may thus integrate perceptual history with external inputs into a decision variable[@Kepecs2008] that influences not only perceptual choices, but also the speed and confidence at which they are made.** 
+
+- **In what follows, we probe alternative explanations for between-mode fluctuations, test for the existence of modes in mice, and propose a predictive processing model that explains fluctuations in mode ongoing shifts in the precision afforded to external sensory information relative to internal predictions driven by perceptual history.**
+
+Second, we have re-structured the section of defensive analyses, where we contrast the phenomenon that we identify as fluctuating modes in perception with (i) sterotypical or random responses as evidence of low task engagement, (ii) insufficient training on the task, (iii), a post-perceptual strategy applied in situations of low confidence, and (iv), the effects of stimulus history. To streamline the manuscript, we report those analyses in detail in the supplement. 
+
+- **TEXT**
+
+Following the comment X.X by Reviewer 1, we now use the predictive coding definition of attention to explain the quadratic relationship of mode to RTs/confidence[@Feldman2010]. Based on the Bayesian formulation of drift diffusion[@Bitzer2014], we propose that the effects of likelihood on prior precision on the decision variable and, consequently, on confidence and RTs can be trasferred to mechanistic framework of drift diffusion. Specifically, we relate likelihood precision to noise in the accumulation process, and prior precision to the amount of shift in the starting point (see also our response to comment X.X of Reviewr 3). As a third response to this comment, we have re-written our discussion of the quadratic relationship of mode to RT/confidence in the light of the predictive processing definition of attention[@Feldmann2010] and its relation to mechanstic drif diffusion models. 
+
+**In Bayesian models of perceptual decision-making, the relative precision of prior and likelihood determines their integration into the posterior that determines the content of perception. At the level of individual trials, the perceptual impact of internal predictions generated from perceptual history (prior precision) and external sensory information (likelihood precision) is thus necessarily anti-correlated. The same holds for mechanistic models of drift diffusion, which understand choice history biases as driven by changes in the starting point[@Glaze2015] or the drift rate of evidence accumulation[@Urai2019]. Under the former formulation, perceptual history is bound to have a stronger influence on perception when the less weight is given to incoming sensory evidence, assuming that the last choice is represented as a starting point bias. The effects of choice history in normative Bayesian and mechanistic drift diffusion models can be mapped onto one another via the Bayesian formulation of drift diffusion[@Bitzer2014], where the inverse of likelihood precision determines the amount of noise in the accumulation of new evidence and prior precision determines the absolute shift in its starting point[@Bitzer2014].**
+
+Given this correspondence, we believe that we would not gain addi
+
+
+Third, we have re-written our discussion of the quadratic relationship of mode to RTs and Confidence, focusing on predictive coding models attention, which we relate to mechanistic drift diffusion models: **How does attention relate between-mode fluctuations? According to predictive processing, attention corresponds to the precision afforded to the probability distributions that underlie perceptual inference[@Feldman2010]. As outlined above, between-mode fluctuations can be understood as ongoing shifts in the precision afforded to likelihood (*external mode*) and prior (*internal mode*), respectively. When the precision afforded to prior or likelihood increases, posterior precision increases, which leads to faster RTs and higher confidence. When defined from the perspective of predictive processing as the precision afforded to likelihood and prior[@Feldman2010], fluctuations in attention may thus provide a plausible explanation for the quadratic relationship of mode to RTs and confidence (Figure 2H and J; Figure 4I, Figure 6I)**.
+
+- Fourth, we have added a more general discussion of our findings in the light of fluctuations in task engagement: **Outside of the predictive processing field, attention is often understood as engagement with the task, which may vary according to global variables such as arousal or fatigue. Importantly, our results speak against the proposition that intervals of internal mode processing reflect low task engagement: In addition to shorter RTs and elevated confidence, internal mode was not associated with a general increase in lapse (Supplemental Figures SX), arguing against the proposition that internal mode is associated with random or stereotypical responses that may reflect low task engagement. It is, however, important to note that arousal and attention are known to have non-linear effects on RTs and confidence. Future work should therefore more direct measures of attention and arousal (such as pupil size, motor behavior, or neural data) to better delineate fluctuations in these global variables from fluctuations in the mode of perceptual processing.** 
+
+Following the suggestions of Reviewer 1, we now present our analyses on RT and confidence in a more descriptive way,. We rephrased our discussion of attention in the context of predictive processing, relating attention to the precision of likelihood and prior distribution. Both internal mode and external mode go along with elevated precision in the prior and likelihood, respectively. Thus, both internal and external mode lead to increased precision in the posterior, which provides an explanation for the quadratic or U-shaped relation of mode of confidence.
+
+
 
 Thanks for important point. Following comment X.X, attention in the predictive coding sense. Conceivable that low task engagement lead to slower responses.
 
