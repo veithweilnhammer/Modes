@@ -88,7 +88,7 @@ compute_slider_mouse_data = FALSE
 filter_mouse_data = FALSE
 compute_pretraining_data_mouse = FALSE
 
-load_mouse_data = TRUE
+load_mouse_data = FALSE
 apply_mouse_exclusion_criteria = FALSE
 
 compute_mouse_group_acf = FALSE
@@ -8282,7 +8282,8 @@ Optim_eval$species = "humans"
 Optim_eval_mice = read.csv("./Results/Optim_eval_mouse_interim.csv")
 Optim_eval_mice$species = "mice"
 
-Optim_eval = rbind(Optim_eval, Optim_eval_mice)
+Optim_eval = rbind(Optim_eval[,c("value", "type", "free_param", "trial_n", "species", "convcode")], Optim_eval_mice[,c("value", "type", "free_param", "trial_n", "species", "convcode")])
+Optim_eval$type = gsub("_mouse", "", Optim_eval$type)
 Sum <-   ddply(Optim_eval[Optim_eval$convcode == 0,],
                    .(species, type),
                    summarise,
@@ -8291,6 +8292,13 @@ Sum <-   ddply(Optim_eval[Optim_eval$convcode == 0,],
                    k = mean(free_param),
                    AIC = 2*k + 2 * sum(value, na.rm = TRUE) 
                 )
+
+p_distribution_Sum <- ggplot(Optim_eval[Optim_eval$convcode == 0,], aes(x = value, color = type, fill = type)) + 
+  geom_histogram(fill = "white", position = "dodge") +
+  theme_classic(base_size = 6) + xlim(0,1) +
+    scale_color_brewer(palette = "Set1", direction = -1) + scale_fill_brewer(palette = "Set1", direction = -1) + 
+    theme(legend.position = "top") + facet_wrap(~species) 
+p_distribution_Sum
 print(Sum)
 ```
 Based on AIC, we identified the likelihood fluctuation only model (model 2) as the best model in humans and mice. This makes sense, as it is more parsimonious then the full model, but still captures ongoing shifts in the relative precision between prior and likelihood (assuming a constant precision on the prior and periodic increases/decreases in the precision of the prior). Importantly, our model comparison indicated that normative model of evidence accumulation without the ad-hoc addition of oscillations (model 4) performs worse in explaing our data. As expected, our data were also less likely to be explained by model 5, since our conventional analyses clearly indicated an effect of perceptual history, which cannot be captured by the no integration model which has flat priors.  
@@ -8442,8 +8450,7 @@ kable_styling(font_size = 7, latex_options = c("repeat_header"))
 
 **Please remove Section 5.8. If you do not, you need to explain why — on line 586 - setting a = 0 is appropriate when a = 0, the log posterior in Equation 2 is zero because the precisions (omegas) are zero (by Equations 6 and 7).**
 
-We have removed the section 5.8. When setting the amplitude parameters to zero, $\omega_{LLR}$ and $\omega_{\psi}$ are constant at 1, creating a unimodal control model.  
-
+We have removed the section 5.8. When setting the amplitude parameters to zero, $\omega_{LLR}$ and $\omega_{\psi}$ are constant at 1, creating a unimodal control model that corresponds to the normative Bayesian evidence accumulation model proposed by Glaze et al[@Glaze2015].  
 
 ## Reviewer 2
 
@@ -8453,17 +8460,21 @@ We have removed the section 5.8. When setting the amplitude parameters to zero, 
 
 **This is a very interesting and well-written manuscript, dealing with an important question. The findings are novel and provide an innovative account of interpreting visual perception. I am not an expert in modeling, so I will restrict my comments to the theoretical framework and the experimental approach. I have a few minor questions that I would like the authors to answer or clarify.**
 
+We would like to thank the reviewer for the evaluating our manuscript. We have added the discussion of potential effects at the motor-level to our discussion. 
+
 **Minor questions**
 
-### Comment 1
-**History congruent perception was defined on the basis of response repetitions. Are we really sure that responses are repeated due to some variant of a perceptual decision process (internal or external) or may arise on the motor-level - independent of a perceptual source? For instance, a response primed by residual activation in the motor system may represent a local effect independent from a general response bias.**
+### Comment 1: Done
 
-- Discussion
+**History congruent perception was defined on the basis of response repetitions. Are we really sure that responses are repeated due to some variant of a perceptual decision process (internal or external) or may arise on the motor-level - independent of a perceptual source? For instance, a response primed by residual activation in the motor system may represent a local effect independent from a general response bias. If indeed, a response repetition is initiated by whatever reasons (non-perceptual), wouldn't this imply that the repeated response is per se more related to previous than to current visual information and would hence signal a reduced sensitivity to current external information? The authors are discussing the option of stereotypically repeated responses in the context of alertness. However, a tendency to repeat responses may arise due to other reasons. For instance, may the motor priming effects mentioned possibly explain faster RTs along with a stronger bias when in internal-mode.**
 
-### Comment 2
-**If indeed, a response repetition is initiated by whatever reasons (non-perceptual), wouldn't this imply that the repeated response is per se more related to previous than to current visual information and would hence signal a reduced sensitivity to current external information? The authors are discussing the option of stereotypically repeated responses in the context of alertness. However, a tendency to repeat responses may arise due to other reasons. For instance, may the motor priming effects mentioned possibly explain faster RTs along with a stronger bias when in internal-mode.**
+Thanks a lot for pointing this out. In this manuscript, we attempt to characterize the phenomenon of bimodal inference at the level of behavioral data. The confidence database consists only of behavioral data. At the time of publishing this paper as a preprint, the IBL database had also released only behavioral data. We realize that is very difficult to discern effects that occur at the level of perception from effects that occur at the level of behavior. Not all studies in the confidence database have used a counter-balanced mapping between the perceptual decision and the associated motor-response. In the IBL data, the mapping between the perceptual decision and the associated motor-response is fixed (turning a response wheel left or right depending on the perceived location of a grating). Confidence reports also only provide a very information on motor- vs. perceptual effects. One may speculate that, if a response was driven by residual activity in the motor system, it may be more likely to be a lapse and be accompanied by reduced confidence. We found that confidence was, on average, elevated for history-congruent choices. 
 
-- Discussion
+That being said, behavioral analyses alone are insufficient to rule out the contribution of motor-related effects to seriality in choices. This control analysis would require analyses of additional types of data, such as video tracking of the motor response or even neural data collected in brain areas directly related to motor behavior. While this analysis is beyond the scope of the present manuscript, we plan to carry out these analyses using the recent data publication of the IBL, that contains, among others, video tracking of the motor response (turning of the response wheel) and neuropixel recording across the whole brain, including premotor and motor cortex. 
+
+- We have added these considerations to the discussion of potential confounds:
+
+**Residual activation of the motor system may provide another contribution to serial biases in perceptual choices[@Mawase2018]. Such motor-driven priming may lead to errors in randomized psychophysical designs, contributing to the phenomenon that resemble the internally-biased processing that we defined at the level of perception[@Pomper2022]. Moreover, residual activation of the motor system may lead to faster responses, and thus constitutes an alternative explanation for the quadratic relationship of mode with RTs[@Mawase2018]. At the same time, we observed elevated confidence for stronger biases toward internal mode. This may contradict the proposition that residual activation of the motor system is the primary driver of serial choice biases, since strong motor-driven priming should lead to frequent lapses that are typically associated reduced confidence[@Kepecs2012]. Likewise, perceptual history effects have repeatedly been replicated in experiments with counter-balanced stimulus-response mappings[@Braun2018: Feigin2021].  No-response paradigms, in which perceptual decision are inferred from eye-movements alone, could help to better differentiate perceptual from motor-related effects. Likewise, video-tracking of response behavior and neural recording from motor- and premotor, which has recently been released for the IBL database[IBL2023], may provide further insight into the relation of motor behavior to the perceptual phenomenon of between-mode fluctuations.** 
 
 ## Reviewer 3 
 
@@ -8475,13 +8486,13 @@ We have removed the section 5.8. When setting the amplitude parameters to zero, 
 
 **Major comments:**
 
-### Comment 1
+### Comment 1: TODO
 
 **The authors collapse across various datasets in which different tasks were employed. However, some details on the nature of these different tasks and a discussion on the rationale of collapsing behavioural metrics across them is missing. The authors mention that all tasks involved binary perceptual decisions. In some parts of the manuscript the term "false alarms" is mentioned, indicating a detection protocol. Other terms in the methods section (e.g., "set size") might need further clarification. Importantly, it is not clear how reaction times were calculated in the various tasks and whether some experiments involved free response paradigms while others interrogation/ cued paradigms (in which case RTs can be defined as the latency between the response cue and the response).**
 
 - go through all the papers that we investigated in the confidence database and check for these points (what paradigm etc.): type of 2AFC task, response mapping, response time, feedback.
 
-### Comment 2
+### Comment 2: Done
 
 **The key premise that when participants do not rely on the external stimulus they rely more on the previous trial needs to be more clearly (and statistically) contrasted against a null hypothesis. For instance, an null hypothesis could be that when participants place a lower weight on the stimulus they simply choose randomly. It is important to specify a null hypothesis such that the key premise does not appear self-evident or circular.**
 
@@ -8567,28 +8578,32 @@ delta_AIC_log_reg_mice = compute_AIC(
 )
 ```
 
-We would like to thank the reviewer for highlighting this important point. Following this suggestion, we have tested our main hypothesis ($H1$: periods of reduced stimulus-congruence are periods of enhanced reliance on history-congruence) against the following null hypotheses:
+We would like to thank the reviewer for highlighting this important point. Following this suggestion, we have explicitly tested our main hypothesis ($H1$: periods of reduced stimulus-congruence are periods of enhanced reliance on history-congruence) against the following null hypotheses:
 
 - $H0_1$: Periods of reduced stimulus-congruence are periods of enhanced random choices
 - $H0_2$: Periods of reduced stimulus-congruence are periods of enhanced general bias
 
-We have three sets of statistical analyses to test H1 against $H0_{1/2}$:
+We present three sets of statistical analyses to test H1 against $H0_{1/2}$:
 
-- First, we used logistic regression to predict individual choices. Under H1, one would expect a significant effect of perceptual history in a logistic regression model that predicts individual choices from the external stimulus, perceptual history and general response bias. At the model level, one would expect higher AIC in a model without perceptual history as a predictor of individual choices, indicating that perceptual history influences choices beyond noise ($H0_1$) and general response bias ($H0_2$). Both would not be the case under $H0_{1/2}$. In both humans and mice, we found a significant effect of perceptual history on choices while controlling for bias. When eliminating perceptual history as a predictor of individual choices, we found higher AIC (providing model-level evidence against $H0_1$ and $H0_2$). We complemented this analysis by computing AIC in individual observers (Supplemental Figure S4), and again found lower higher AIC in models from which perceptual history was eliminated. We have addes these analyses to the main manuscript. 
+- First, we used logistic regression to predict individual choices. Under H1, one would expect a significant effect of perceptual history in a logistic regression model that predicts individual choices from the external stimulus, perceptual history and general response bias. At the model level, one would expect higher AIC in a model without perceptual history as a predictor of individual choices, indicating that perceptual history influences choices beyond noise ($H0_1$) and general response bias ($H0_2$). Both would not be the case under $H0_{1/2}$. In both humans and mice, we found a significant effect of perceptual history on choices while controlling for bias. When eliminating perceptual history as a predictor of individual choices, we found higher AIC (providing model-level evidence against $H0_1$ and $H0_2$). We complemented this analysis by computing AIC in individual observers (Supplemental Figure S4), and again found lower higher AIC in models from which perceptual history was eliminated. The following analyses have been added to the main manuscript. 
 
 **Humans:**
 
-- **The hypothesis that ongoing changes in the sensitivity to external information are driven by internal predictions induced via perceptual history needs to be contrasted against two alternative hypotheses: When making errors, observers may exhibit stronger general biases toward one of the two potential outcomes or simply choose randomly. Logistic regression confirmed that perceptual history made a significant contribution to perception ($\beta$ = $`r STAT.full_logit_Sum$coefficients[3,1]`$ ± $`r STAT.full_logit_Sum$coefficients[3,2]`$, z = $`r STAT.full_logit_Sum$coefficients[3,3]`$, p = $`r STAT.full_logit_Sum$coefficients[3,4]`$) over and above the ongoing stream of external sensory information ($\beta$ = $`r STAT.full_logit_Sum$coefficients[2,1]`$ ± $`r STAT.full_logit_Sum$coefficients[2,2]`$, z = $`r STAT.full_logit_Sum$coefficients[2,3]`$, p = $`r STAT.full_logit_Sum$coefficients[2,4]`$) and general response biases toward ($\beta$ = $`r STAT.full_logit_Sum$coefficients[1,1]`$ ± $`r STAT.full_logit_Sum$coefficients[1,2]`$, z = $`r STAT.full_logit_Sum$coefficients[1,3]`$, p = $`r STAT.full_logit_Sum$coefficients[1,4]`$). When eliminating perceptual history as a predictor of individual choices, AIC increased by $\delta_{AIC}$ = `r -delta_AIC_log_reg_humans`, providing additional model-level evidence against both choice randomness and general response bias as the sole modulators of perceptual performance (see Supplemental Figure S4A-B for parameter- and model-level inference at the level of individual observers).**
+**Fluctuations between internal and external mode cannot be explained by changes in the probability of stereotypical or random choices**
+
+- Results: **The hypothesis that ongoing changes in the sensitivity to external information are driven by internal predictions induced via perceptual history needs to be contrasted against two alternative hypotheses: When making errors, observers may act respond stereotypically, i.e., exhibit stronger general biases toward one of the two potential outcomes, or simply choose randomly. Logistic regression confirmed that perceptual history made a significant contribution to perception ($\beta$ = $`r STAT.full_logit_Sum$coefficients[3,1]`$ ± $`r STAT.full_logit_Sum$coefficients[3,2]`$, z = $`r STAT.full_logit_Sum$coefficients[3,3]`$, p = $`r STAT.full_logit_Sum$coefficients[3,4]`$) over and above the ongoing stream of external sensory information ($\beta$ = $`r STAT.full_logit_Sum$coefficients[2,1]`$ ± $`r STAT.full_logit_Sum$coefficients[2,2]`$, z = $`r STAT.full_logit_Sum$coefficients[2,3]`$, p = $`r STAT.full_logit_Sum$coefficients[2,4]`$) and general response biases toward ($\beta$ = $`r STAT.full_logit_Sum$coefficients[1,1]`$ ± $`r STAT.full_logit_Sum$coefficients[1,2]`$, z = $`r STAT.full_logit_Sum$coefficients[1,3]`$, p = $`r STAT.full_logit_Sum$coefficients[1,4]`$). When eliminating perceptual history as a predictor of individual choices, AIC increased by $\delta_{AIC}$ = `r -delta_AIC_log_reg_humans`, providing model-level evidence against both choice randomness and general response bias as the sole modulators of perceptual performance (see Supplemental Figure S4A-B for parameter- and model-level inference at the level of individual observers).**
 
 **Mice:**
 
 - **In line with humans, mice were biased toward perceptual history in `r mean(M_Behav$History, na.rm = TRUE)`% ± `r sd(M_Behav$History, na.rm = TRUE)/sqrt(length(M_Behav$History))`% of trials (T(`r M_STAT.Global_History_Accuracy$parameter`) = `r M_STAT.Global_History_Accuracy$statistic`, p = $`r M_STAT.Global_History_Accuracy$p.value`$; Figure 4A and Supplemental Figure S1D). Perceptual history effects remained significant ($\beta$ = $`r M_STAT.full_logit_Sum$coefficients[3,1]`$ ± $`r M_STAT.full_logit_Sum$coefficients[3,2]`$, z = $`r M_STAT.full_logit_Sum$coefficients[3,3]`$, p = $`r M_STAT.full_logit_Sum$coefficients[3,4]`$) when controlling for external sensory information ($\beta$ = $`r M_STAT.full_logit_Sum$coefficients[2,1]`$ ± $`r M_STAT.full_logit_Sum$coefficients[2,2]`$, z = $`r M_STAT.full_logit_Sum$coefficients[2,3]`$, p = $`r M_STAT.full_logit_Sum$coefficients[2,4]`$) and general response biases toward one of the two potential outcomes ($\beta$ = $`r M_STAT.full_logit_Sum$coefficients[1,1]`$ ± $`r M_STAT.full_logit_Sum$coefficients[1,2]`$, z = $`r M_STAT.full_logit_Sum$coefficients[1,3]`$, p = $`r M_STAT.full_logit_Sum$coefficients[1,4]`$). When eliminating perceptual history as a predictor of individual choices, AIC increased by  $\delta_{AIC}$ = `r -delta_AIC_log_reg_mice`, arguing against the notion that choice randomness and general response bias are the only determinants of perceptual performance (see Supplemental Figure S4C-D for parameter- and model-level inference within individual mice).**
 
-- Second, We analyzed dynamic changes in history- and stimulus-congruence (i.e., smoothed probabilities for stimulus-congruence, history-congruence and general response bias in sliding 10 trial time-windows). Under H1, one would expect a significant negative correlation between the dynamic probability of stimulus- and history-congruence. At the model level, one would expect higher AIC in a model without history-congruence as a predictor of stimulus-congruence, indicating that changes in the probability of history-congruence influence stimulus-congruence beyond noise ($H0_1$) and general response bias ($H0_2$). Both would not be the case under $H0_{1/2}$. In both humans and mice, we found a significant negative correlation between history-congruence and stimulus-congruence while controlling for general response bias. When eliminating the dynamic probability of history-congruence as a predictor of stimulus-congruence, we found higher AIC (providing model-level evidence against $H0_1$ and $H0_2$). The section 5.4 or our original manuscript (*Fluctuations between internal and external mode modulate perceptual performance beyond the effect of general response biases*) complements these control analyses and has been moved to the supplement to stream-line the manuscript (following the Comment X.X by Reviewer 1 and Comment X.X by Reviewer 3). We have modified the main manuscript in the following way:
+- Second, we analyzed dynamic changes in history- and stimulus-congruence (i.e., smoothed probabilities for stimulus-congruence, history-congruence and general response bias in sliding 10 trial time-windows). Under H1, one would expect a significant negative correlation between the dynamic probability of stimulus- and history-congruence. At the model level, one would expect higher AIC in a model without history-congruence as a predictor of stimulus-congruence, indicating that changes in the probability of history-congruence influence stimulus-congruence beyond noise ($H0_1$) and general response bias ($H0_2$). Both would not be the case under $H0_{1/2}$. In both humans and mice, we found a significant negative correlation between history-congruence and stimulus-congruence while controlling for general response bias. When eliminating the dynamic probability of history-congruence as a predictor of stimulus-congruence, we found higher AIC (providing model-level evidence against $H0_1$ and $H0_2$). The section 5.4 or our original manuscript (*Fluctuations between internal and external mode modulate perceptual performance beyond the effect of general response biases*) complements these control analyses and has been moved to the supplement to stream-line the manuscript (following the Comment X.X by Reviewer 1 and Comment X.X by Reviewer 3). We have modified the main manuscript in the following way:
 
 **Humans:**
 
-- **Finally, we ensured that fluctuations in stimulus- and history-congruence are linked to each other, while controlling for fluctuations in the strength of general response biases. When perceptual choices were less biased toward external information, participants relied more strongly on internal information acquired from perceptual history (and vice versa, $\beta$ = $`r STAT.slider_History_vs_Accuracy$coefficients[2,1]`$ ± $`r STAT.slider_History_vs_Accuracy$coefficients[2,2]`$, T($`r STAT.slider_History_vs_Accuracy$coefficients[2,3]`$) = $`r STAT.slider_History_vs_Accuracy$coefficients[2,4]`$, p = $`r STAT.slider_History_vs_Accuracy$coefficients[2,5]`$). Eliminating the dynamic fluctuations in history-congruence as a predictor of fluctuations in stimulus-congruence yielded an increase in AIC by \delta_{AIC} + `r delta_AIC_correlation_humans`. This provided model-level evidence against the null hypotheses that fluctuations in stimulus-congruence are driven exclusively by choice randomness or general response bias (see Supplemental Section X.X for an in-depth assessment of general response bias).** 
+- Results: **Finally, we ensured that fluctuations in stimulus- and history-congruence are linked to each other, while controlling for fluctuations in the strength of general response biases. When perceptual choices were less biased toward external information, participants relied more strongly on internal information acquired from perceptual history (and vice versa, $\beta$ = $`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[2,1]`$ ± $`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[2,2]`$, T($`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[2,3]`$) = $`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[2,4]`$, p = $`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[2,5]`$), controlling for fluctuations in the strength of general response biases ($\beta$ = $`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,1]`$ ± $`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,2]`$, T($`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,3]`$) = $`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,4]`$, p = $`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,5]`$).**
+
+- Results: **(...) Likewise, eliminating the dynamic fluctuations in history-congruence as a predictor of fluctuations in stimulus-congruence yielded an increase in AIC by \delta_{AIC} + `r delta_AIC_correlation_humans`. This provided model-level evidence against the null hypotheses that fluctuations in stimulus-congruence are driven exclusively by choice randomness or general response bias (see Supplemental Section X.X for an in-depth assessment of general response bias).** 
 
 **Mice:**
 
@@ -8598,13 +8613,13 @@ We have three sets of statistical analyses to test H1 against $H0_{1/2}$:
 
 **Humans:**
 
-**To rule out the possibility that the reduced sensitivity to external information that we identified as internal mode processing is in fact driven by enhanced choice randomness as opposed to perceptual history, we estimated full and history-dependent psychometric curves for internal, external, and across modes (Supplemental Section X.X and Supplemental Figure SX). If internal mode processing reflects an enhanced impact of perceptual history, one would expect a history-dependent increase in biases and lapses as well as a history-independent increase in threshold. Conversely, if internal mode processing were driven by random choices, one would expect a history-independent increase in biases and threshold, and no change in bias. In line with our hypothesis, we found that internal mode processing was associated with a history-dependent increase in bias and lapse as well as a history-independent increase in threshold. This suggests that internal mode processing is indeed driven by an enhanced impact of perceptual history.**   
+**Finally, to rule out the possibility that the reduced sensitivity to external information that we identified as internal mode processing is in fact driven by enhanced choice randomness as opposed to perceptual history, we estimated full and history-dependent psychometric curves for internal, external, and across modes (Supplemental Section X.X and Supplemental Figure SX). If, as hypothesized, internal mode processing reflects an enhanced impact of perceptual history, one would expect a history-dependent increase in biases and lapses as well as a history-independent increase in threshold. Conversely, if internal mode processing were driven by random choices, one would expect a history-independent increase in biases and threshold, and no change in bias. In line with our hypothesis, we found that internal mode processing was associated with a history-dependent increase in bias and lapse as well as a history-independent increase in threshold. This confirms that internal mode processing is indeed driven by an enhanced impact of perceptual history (Supplemental Section X.X and Supplemental Figure SX).**   
 
 **Mice:**
 
-**When fitting full and history-conditioned psychometric curves to the data from the IBL database, we observed that internal mode processing was associated with a history-dependent increase in bias and lapse as well as a history-independent increase in threshold (Supplmental Section X.X and Supplemental Figure SX). This provided further evidence for the hypothesis that internal mode processing is driven by an enhanced impact of perceptual history, as opposed to increased choice randomness.**   
+**When fitting full and history-conditioned psychometric curves to the data from the IBL database, we observed that internal mode processing was associated with a history-dependent increase in bias and lapse as well as a history-independent increase in threshold (Supplemental Section X.X and Supplemental Figure SX). This provided further evidence for the hypothesis that internal mode processing is driven by an enhanced impact of perceptual history, as opposed to increased choice randomness.**   
 
-### Comment 3: Add model comparison, look for more DDM work on serial choice biases
+### Comment 3: Add model comparison
 
 **From a mechanistic (sequential sampling) perspective, several previous papers have examined whether choice history biases influence the starting point or the drift rate of the evidence accumulation process. Under the former formulation, reliance on the evidence vs. reliance on the previous choice will be naturally anti-correlated (the less weight you place on the evidence the more impactful the choice history will be, assuming that the last choice is represented as a starting point bias). This seems to be mapping onto the computational model the authors describe, in which there is a weight on the prior, a weight on the likelihood and the assumption that these weights fluctuate in anti-phase. It is not obvious that this anti-phase relationship needs to be imposed ad-hoc. Or whether it would emerge naturally (using a mechanistic or Bayesian framework). More generally, the authors assert that without an external mechanism prior biases would be impossible to overcome, and this would misfit the data. However, it would be important to a) actually show that the results cannot be explained by a single mechanism in which the anti-phase relationship is emergent rather than ad-hoc, b) relate the current framework with previous mechanistic considerations of serial choice biases.**
 
@@ -8612,17 +8627,104 @@ We would like to thank the reviewer for pointing this out. We agree that both no
 
 - Results: model comparison
 
-- Discussion: **In Bayesian models of perceptual decision-making, the relative precision of prior and likelihood determines their integration into the posterior that determines the content of perception. At the level of individual trials, the perceptual impact of internal predictions generated from perceptual history (prior precision) and external sensory information (likelihood precision) is thus necessarily anti-correlated. The same holds for mechanistic models of drift diffusion, which understand choice history biases as driven by changes in the starting point or the drift rate of evidence accumulation[@Urai2019]. Under the former formulation, perceptual history is bound to have a stronger influence on perception when the less weight is given to incoming sensory evidence, assuming that the last choice is represented as a starting point bias. The effects of choice history in normative Bayesian and mechanistic drift diffusion models can be mapped onto one another via the Bayesian formulation of drift diffusion[@Bitzer2014], where diffusion is equated with likelihood precision and starting point bias with prior precision[@Bitzer2014].**
+- Discussion: **In Bayesian models of perceptual decision-making, the relative precision of prior and likelihood determines their integration into the posterior that determines the content of perception. At the level of individual trials, the perceptual impact of internal predictions generated from perceptual history (prior precision) and external sensory information (likelihood precision) is thus necessarily anti-correlated. The same holds for mechanistic models of drift diffusion, which understand choice history biases as driven by changes in the starting point[@Glaze2015] or the drift rate of evidence accumulation[@Urai2019]. Under the former formulation, perceptual history is bound to have a stronger influence on perception when the less weight is given to incoming sensory evidence, assuming that the last choice is represented as a starting point bias. The effects of choice history in normative Bayesian and mechanistic drift diffusion models can be mapped onto one another via the Bayesian formulation of drift diffusion[@Bitzer2014], where the inverse of likelihood precision determines the degree of diffusion and prior precision determines the absolute shift in starting point[@Bitzer2014].**
 
-- **While it is thus clear that the impact of perceptual history and sensory evidence are anti-correlated *at each individual trial*, we here introduce anti-phase oscillations as an ad-hoc modification to model slow fluctuations in prior and likelihood precision that evolve *over many consecutive trials* and are not mandated by normative Bayesian or mechanistic drift diffusion models. The bimodal inference model provides a reasonable explanation of the linked autocorrelations in stimulus- and history-congruence, as evidenced by formal model comparison, successful prediction of RTs and confidence as out-of-training variables, and a qualitative reproduction of our empirical data from posterior model parameter as evidence against over- or under-fitting. Of note, similar non-stationarities have been observed in descriptive models that assume continuous[@Roy2021] or discrete[@Ashwood2022] changes in the latent states that modulate perceptual decision-making at slwo timescales.**
+- **While it is thus clear that the impact of perceptual history and sensory evidence are anti-correlated *at each individual trial*, we here introduce anti-phase oscillations as an ad-hoc modification to model slow fluctuations in prior and likelihood precision that evolve *over many consecutive trials* and are not mandated by normative Bayesian or mechanistic drift diffusion models. The bimodal inference model provides a reasonable explanation of the linked autocorrelations in stimulus- and history-congruence, as evidenced by formal model comparison, successful prediction of RTs and confidence as out-of-training variables, and a qualitative reproduction of our empirical data from posterior model parameter as evidence against over- or under-fitting. Of note, similar non-stationarities have been observed in descriptive models that assume continuous[@Roy2021] or discrete[@Ashwood2022] changes in the latent states that modulate perceptual decision-making at slow timescales.**
 
-- Limitations and open questions: **The addition of slow anti-phase oscillations to the integration of prior and likelihood represents in the bimodal inference model represents an ad-hoc modification to a normative Bayesian model of evidence accumulation[@Glaze2015]. It is an important task for future research to test whether such slow fluctuations can emerge spontaneously in hierarchical models of Bayesian inference, and whether they can be causally manipulated by expeimental variables. We speculate that between-mode fluctuations may partially separate the perceptual contribution of internal predictions and external sensory data in time, creating unambiguous learning signals that benefit inference about the precision of prior and likelihood, respectively. This proposition should be tested empirically by relating the phenomenon of bimodal inference to performance in, e.g., reversal learning, probabilistic reasoning, or metacognition.** 
+- Limitations and open questions: **The addition of slow anti-phase oscillations to the integration of prior and likelihood represents in the bimodal inference model represents an ad-hoc modification to a normative Bayesian model of evidence accumulation[@Glaze2015]. It is an important task for future research to test whether such slow fluctuations can emerge spontaneously in hierarchical models of Bayesian inference, and whether they can be causally manipulated by experimental variables. We speculate that between-mode fluctuations may partially separate the perceptual contribution of internal predictions and external sensory data in time, creating unambiguous learning signals that benefit inference about the precision of prior and likelihood, respectively. This proposition should be tested empirically by relating the phenomenon of bimodal inference to performance in, e.g., reversal learning, probabilistic reasoning, or metacogntive tasks.** 
 
 ### Comment 4
 
 **The authors need to unpack their definition of history biases since in previous work biases due to the response or the identity of the stimulus at the previous trial are treated differently. Here, the authors focus on response biases but it is not clear whether they could examine also stimulus-driven history biases (in paradigms where stimulus-response is remapped on each trial).**
 
-We defined the history-biases by comparing the *response about the perceived* stimulus category (A vs. B) at the current and at the preceding trial. An alternative would be to define history biases by comparing the *presented* stimulus category. Such an alternative approach may  be considered expecially for paradigms where observers receive feedback about whether a choice was correct, because this would let them infer the presented stimulus-category.
+We defined the history-biases by comparing the *response about the perceived* stimulus category (A vs. B) at the current and at the preceding trial. An alternative would be to define history biases by comparing the *presented* stimulus category. Such an alternative approach may  be considered exspecially for paradigms where observers receive feedback about whether a choice was correct, because this would let them infer the presented stimulus-category.
+
+```{r choice_history, cache = TRUE}
+if (!load_summary_data) {
+  
+## humans
+
+## General effect of stimulus-history
+Behav$null_Stimulus_History = Behav$Stimulus_History - 50
+mean_Stimulus_History = mean(Behav$Stimulus_History, na.rm = TRUE)
+error_Stimulus_History = sd(Behav$Stimulus_History, na.rm = TRUE)/sqrt(length(Behav$Stimulus_History))
+  
+Global_Stimulus_History_Accuracy <- lmer(null_Stimulus_History ~ Accuracy + (1 | study_id), data = Behav)
+STAT.Global_Stimulus_History_Accuracy = summary(Global_Stimulus_History_Accuracy)
+
+## Difference between choice- and stimulus-history
+Difference_Stimulus_Choice_History = lmer(null_Stimulus_History-null_History ~ 1 + (1 | study_id), data = Behav)
+STAT.Difference_Stimulus_Choice_History = summary(Difference_Stimulus_Choice_History)
+
+if (compute_logreg) {
+## Comparison of the explanatory power of stimulus- and choice history
+PwData$Stimulus_minus_1 = c(NA, PwData$Stimulus[1:length(PwData$Stimulus)-1])
+PwData$Stimulus_minus_1[PwData$Trial == 1] = NA
+full_logit_Sum_Stimulus_History <-
+    glmer(Response ~ Stimulus + Stimulus_minus_1 + (1|study_id/subject_id),
+        data = PwData[PwData$Response >= 0 & PwData$Response <= 1,],
+        family = binomial)
+} else {
+  full_logit_Sum_Stimulus_History <- readRDS(file = "./Results/full_logit_Sum_Stimulus_History.rds")
+}
+STAT.full_logit_Sum_Stimulus_History <- summary(full_logit_Sum_Stimulus_History) 
+
+
+##
+## mice
+##
+## General effect of stimulus-history
+M_Behav$null_Stimulus_History = M_Behav$Stimulus_History - 50
+M_mean_Stimulus_History = mean(M_Behav$Stimulus_History, na.rm = TRUE)
+M_error_Stimulus_History = sd(M_Behav$Stimulus_History, na.rm = TRUE)/sqrt(length(M_Behav$Stimulus_History))
+M_STAT.Global_Stimulus_History_Accuracy = t.test(M_Behav$null_Stimulus_History)
+
+## Difference between choice- and stimulus-history
+M_STAT.Difference_Stimulus_Choice_History = t.test(M_Behav$null_Stimulus_History - M_Behav$null_History)
+
+if (compute_mouse_logreg) {
+    M_full_logit_Sum_Stimulus_History <-
+      glmer(
+        Response ~ Stimulus + Response_minus_1 + (1 | subject_id),
+        data = MwData[MwData$Response >= 0 & MwData$Response <= 1, ],
+        family = binomial
+      )
+    
+  } else {
+    M_full_logit_Sum_Stimulus_History <-
+      readRDS(file = "./Results/M_full_logit_Sum_Stimulus_History.rds")
+   
+  }
+  M_STAT.full_logit_Sum_Stimulus_History <- summary(M_full_logit_Sum_Stimulus_History)
+ 
+
+  if (save_summary_data) {
+    save(mean_Stimulus_History,
+         error_Stimulus_History,
+         STAT.Global_Stimulus_History_Accuracy, 
+         STAT.Difference_Stimulus_Choice_History,
+         STAT.full_logit_Sum_Stimulus_History,
+         M_mean_Stimulus_History,
+         M_error_Stimulus_History,
+         M_STAT.Global_Stimulus_History_Accuracy, 
+         M_STAT.Difference_Stimulus_Choice_History,
+         M_STAT.full_logit_Sum_Stimulus_History,
+         file = "./Summary_Data/choice_history.Rdata")
+  }
+  
+} else {
+  load("./Summary_Data/choice_history.Rdata")
+}
+```
+
+In our main manuscript, we investigated the effects of perceptual history, which we defined as the impact of choice at the preceding trial on the choice at the current trial (henceforth *choice history*). Importantly, an alternative approach to this could be to look at *stimulus history*, which is defined as the impact of the stimulus presented at the preceding trial on the choice at the present trial. Here, we compare the effects of choice-history reported in the main manuscript to the effects of stimulus-history in humans and in mice. 
+
+In humans, we found a significant bias toward stimulus history (`r mean(Behav$Stimulus_History, na.rm = TRUE)`% ± `r sd(Behav$Stimulus_History, na.rm = TRUE)/sqrt(length(Behav$Stimulus_History))`% of trials, $\beta$ = $`r STAT.Global_Stimulus_History_Accuracy$coefficients[1,1]`$ ± $`r STAT.Global_Stimulus_History_Accuracy$coefficients[1,2]`$, T($`r STAT.Global_Stimulus_History_Accuracy$coefficients[1,3]`$) = $`r STAT.Global_Stimulus_History_Accuracy$coefficients[1,4]`$, p = $`r STAT.Global_Stimulus_History_Accuracy$coefficients[1,5]`$) 
+that was, however, smaller than the bias toward choice history ( $\beta$ = $`r STAT.Difference_Stimulus_Choice_History$coefficients[1,1]`$ ± $`r STAT.Difference_Stimulus_Choice_History$coefficients[1,2]`$, T($`r STAT.Difference_Stimulus_Choice_History$coefficients[1,3]`$) = $`r STAT.Difference_Stimulus_Choice_History$coefficients[1,4]`$, p = $`r STAT.Difference_Stimulus_Choice_History$coefficients[1,5]`$). 
+
+Logistic regression confirmed the stimulus history made a significant contribution to perception ($\beta$ = $`r STAT.full_logit_Sum$coefficients[3,1]`$ ± $`r STAT.full_logit_Sum$coefficients[3,2]`$, z = $`r STAT.full_logit_Sum$coefficients[3,3]`$, p = $`r STAT.full_logit_Sum$coefficients[3,4]`$) over and above the ongoing stream of current sensory information ($\beta$ = $`r STAT.full_logit_Sum$coefficients[2,1]`$ ± $`r STAT.full_logit_Sum$coefficients[2,2]`$, z = $`r STAT.full_logit_Sum$coefficients[2,3]`$, p = $`r STAT.full_logit_Sum$coefficients[2,4]`$) and general response biases toward one of the two potential outcomes ($\beta$ = $`r STAT.full_logit_Sum$coefficients[1,1]`$ ± $`r STAT.full_logit_Sum$coefficients[1,2]`$, z = $`r STAT.full_logit_Sum$coefficients[1,3]`$, p = $`r STAT.full_logit_Sum$coefficients[1,4]`$). AIC was elevated by $\delta_{AIC}$ = `r -delta_AIC_log_reg_humans` in the stimulus-history model in comparison to the choice history model used in the main manuscript. The above results suggest that the human data were better explained by the effects of choice history as opposed to the effects of stimulus history. 
+
+
 
 ### Comment 5
 
