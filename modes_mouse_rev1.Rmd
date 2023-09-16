@@ -88,7 +88,7 @@ compute_slider_mouse_data = FALSE
 filter_mouse_data = FALSE
 compute_pretraining_data_mouse = FALSE
 
-load_mouse_data = FALSE
+load_mouse_data = TRUE
 apply_mouse_exclusion_criteria = FALSE
 
 compute_mouse_group_acf = FALSE
@@ -4065,8 +4065,10 @@ type_list = c(
 
 block_size = 10
 Optim_eval = data.frame()
+n_start = 4149
 #for (id in unique(PwData$subject_id)) {
-for (id in unique(PwData$subject_id[PwData$subject_id > max(PwData$subject_id)/2])) {
+#for (id in unique(PwData$subject_id[PwData$subject_id > max(PwData$subject_id)/2])) {
+for (id in unique(PwData$subject_id[PwData$subject_id >= n_start])) {
   print(paste("human:", id, sep = " "))
   
     Input_Data = PwData[PwData$subject_id == id, c("Stimulus", "Response", "clear_RT", "clear_Confidence")]
@@ -4077,7 +4079,6 @@ for (id in unique(PwData$subject_id[PwData$subject_id > max(PwData$subject_id)/2
     
     if (nrow(Input_Data)  > block_size) {
       for (trial_idx in seq(from = 1, to = nrow(Input_Data) - block_size  + 1, by = block_size)) {
-      #for (trial_idx  in c(1)) {
         train =  Input_Data[seq(from = trial_idx,
                                 to = trial_idx + block_size  - 1,
                                 by = 1), ]
@@ -4163,7 +4164,7 @@ for (id in unique(PwData$subject_id[PwData$subject_id > max(PwData$subject_id)/2
     }
     }
     
-    write.csv(Optim_eval, "./Results/Optim_eval_human_interim_min_4021.csv", row.names = FALSE)
+    write.csv(Optim_eval, paste("./Results/Optim_eval_human_interim_min_", as.character(n_start), ".csv", sep = ""), row.names = FALSE)
     Sum <-   ddply(Optim_eval,
                    .(type),
                    summarise,
@@ -4203,9 +4204,11 @@ source("./Functions/fit_glaze_osc_zeta_v1_random_walk_mouse.R",
 
 
 block_size = 10
+n_start = 100
 Optim_eval = data.frame()
 #for (id in unique(MwData$subject_id)) {
-for (id in unique(MwData$subject_id[MwData$subject_id > max(MwData$subject_id)/2])) {
+#for (id in unique(MwData$subject_id[MwData$subject_id > max(MwData$subject_id)/2])) {
+for (id in unique(MwData$subject_id[MwData$subject_id > n_start])) {
   print(paste("mouse:", id, sep = " "))
   for (session_id in unique(MwData[MwData$subject_id == id, ]$session_id)) {
     print(paste("session:", session_id, sep = " "))
@@ -4310,7 +4313,7 @@ for (id in unique(MwData$subject_id[MwData$subject_id > max(MwData$subject_id)/2
   }
   
           write.csv(Optim_eval,
-              "./Results/Optim_eval_mouse_interim_min_100.csv",
+              paste("./Results/Optim_eval_mouse_interim_min_", as.character(n_start), ".csv", sep = ""),
               row.names = FALSE)
           
           # Sum <- ddply(Optim_eval,
