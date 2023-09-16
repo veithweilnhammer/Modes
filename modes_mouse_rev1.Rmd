@@ -2946,8 +2946,6 @@ Finally, a sigmoid transform of the posterior $L_t$ yields the probability of ob
 P(y_t = 1) = 1 - P(y_t = 0) = \frac{1}{1 + exp(-\zeta * L_t)}
 \end{equation}
 
-
-
 ```{r optimization, cache = TRUE}
 
 if (!load_summary_data) {
@@ -3669,7 +3667,6 @@ Fitting the bimodal inference model outlined above to behavioral data (see Metho
 mice: $\beta$ = $`r M_STAT.Optim_Accuracy_Precision$coefficients[2,1]`$ ± $`r M_STAT.Optim_Accuracy_Precision$coefficients[2,2]`$, T($`r M_STAT.Optim_Accuracy_Precision$coefficients[2,3]`$) = $`r M_STAT.Optim_Accuracy_Precision$coefficients[2,4]`$, p = $`r M_STAT.Optim_Accuracy_Precision$coefficients[2,5]`$). 
 Likewise, $H$ was negatively correlated with the frequency of history-congruent perceptual choices (humans: $\beta$ = $`r STAT.Optim_History_Hazard$coefficients[2,1]`$ ± $`r STAT.Optim_History_Hazard$coefficients[2,2]`$, T($`r STAT.Optim_History_Hazard$coefficients[2,3]`$) = $`r STAT.Optim_History_Hazard$coefficients[2,4]`$, p = $`r STAT.Optim_History_Hazard$coefficients[2,5]`$; 
 mice:  $\beta$ = $`r M_STAT.Optim_History_Hazard$coefficients[2,1]`$ ± $`r M_STAT.Optim_History_Hazard$coefficients[2,2]`$, T($`r M_STAT.Optim_History_Hazard$coefficients[2,3]`$) = $`r M_STAT.Optim_History_Hazard$coefficients[2,4]`$, p = $`r M_STAT.Optim_History_Hazard$coefficients[2,5]`$). 
-
 Our behavioral analyses have shown that humans and mice showed significant effects of perceptual history that impaired performance in randomized psychophysical experiments[@Kiyonaga2017; @Urai2017; @Braun2018; @Abrahamyan2016; @Bergen2019] (Figure 2A and 3A). We therefore expected that humans and mice underestimated the true hazard rate $\hat{H}$ of the experimental environments (Confidence database[@Rahnev2020]: $\hat{H}_{Humans}$ = `r mean((100 - Behav$Stimulus_History)/100, na.rm = TRUE)` ± `r sd((100 - Behav$Stimulus_History)/100, na.rm = TRUE)/nrow(Behav)`); IBL database[@Aguillon-Rodriguez2020]: $\hat{H}_{Mice}$ = `r mean((100 - M_Behav$Stimulus_History)/100, na.rm = TRUE)` ± `r sd((100 - M_Behav$Stimulus_History)/100, na.rm = TRUE)/nrow(M_Behav)`). Indeed, when fitting the bimodal inference model outlined above to the trial-wise perceptual choices (see Methods), we found that the estimated (i.e., subjective) hazard rate $H$ was lower than $\hat{H}$ for both humans (H = `r mean(Optim_Behav$Hazard, na.rm = TRUE)` ± `r sd(Optim_Behav$Hazard, na.rm = TRUE)/nrow(Optim_Behav)`, $\beta$ = $`r STAT.Optim_Underestimation$coefficients[1,1]`$ ± $`r STAT.Optim_Underestimation$coefficients[1,2]`$, T($`r STAT.Optim_Underestimation$coefficients[1,3]`$) = $`r STAT.Optim_Underestimation$coefficients[1,4]`$, p = $`r STAT.Optim_Underestimation$coefficients[1,5]`$)
 and mice (H = `r mean(Optim_M_Behav$Hazard, na.rm = TRUE)` ± `r sd(Optim_M_Behav$Hazard, na.rm = TRUE)/nrow(Optim_M_Behav)`, $\beta$ = $`r M_STAT.Optim_Underestimation$coefficients[1,1]`$ ± $`r M_STAT.Optim_Underestimation$coefficients[1,2]`$, T($`r M_STAT.Optim_Underestimation$coefficients[1,3]`$) = $`r M_STAT.Optim_Underestimation$coefficients[1,4]`$, p = $`r M_STAT.Optim_Underestimation$coefficients[1,5]`$).
 
@@ -8165,7 +8162,7 @@ LLR_t = log(\frac{u_t}{1-u_t})
 
 Our model simulations on the adaptive benefits of bimodal inference rest on the assumption that $\alpha$ may change unpredictably. The construct $M$ is a belief about $\alpha$ that may be useful for, e.g., communicating the precision of sensory encoding to other cognitive domains or agents. To our mind, $\alpha$ is a feature of low-level sensory encoding that cannot be modulated by top-down beliefs such as $M$. This is why we did not include $M$ in equation (2). 
 
-### Comment 3: Link to reviewer 3, add citation for non-linear arousal effects
+### Comment 3: Done
 
 **Why do you assume that non-specific increases in attention and arousal will increase reaction times? If one has very precise prior beliefs (and is not attending to stimuli), would you not expect a decrease in reaction time?**
 
@@ -8195,7 +8192,9 @@ In the light of the considerations above and our response to comment X.X.X by Re
 
 - Second, we have re-written our discussion of the quadratic relationship of mode to RTs and Confidence, focusing on predictive coding models attention: **How does attention relate between-mode fluctuations? According to predictive processing, attention corresponds to the precision afforded to the probability distributions that underlie perceptual inference[@Feldman2010]. As outlined above, between-mode fluctuations can be understood as ongoing shifts in the precision afforded to likelihood (*external mode*) and prior (*internal mode*), respectively. When the precision afforded to prior or likelihood increases, posterior precision increases, which leads to faster RTs and higher confidence. When defined from the perspective of predictive processing as the precision afforded to likelihood and prior[@Feldman2010], fluctuations in attention may thus provide a plausible explanation for the quadratic relationship of mode to RTs and confidence (Figure 2H and J; Figure 4I, Figure 6I)**.
 
-- Third, we have added a more general discussion of our findings in the light of fluctuations in task engagement: **Outside of the predictive processing field, attention is often understood as engagement with the task, which may vary according to global variables such as arousal or fatigue. Importantly, our results speak against the proposition that intervals of internal mode processing reflect low task engagement: In addition to shorter RTs and elevated confidence, internal mode was not associated with a general increase in lapse (Supplemental Figures SX), arguing against the proposition that internal mode is associated with random or stereotypical responses that may reflect low task engagement. It is, however, important to note that arousal and attention are known to have non-linear effects on RTs and confidence. Future work should therefore more direct measures of attention and arousal (such as pupil size, motor behavior, or neural data) to better delineate fluctuations in these global variables from fluctuations in the mode of perceptual processing.** 
+- Third, we have added a more general discussion of our findings in the light of fluctuations in task engagement: **Outside of the predictive processing field, attention is often understood in the context of engagement with the task[@Matthew2010], which may vary according the availability of cognitive resources that are modulated by factors such as tonic arousal, fatigue or familiarity with the task. Importantly, our results indicate that internal mode processing can be completely reduced to intervals of low task engagement: In addition to shorter RTs and elevated confidence, internal mode was not associated with a general increase in lapse (Supplemental Figures SX), arguing against the proposition that internal mode is associated with random or stereotypical responses that may reflect low task engagement.** 
+
+- **In interpreting the impact of between-mode fluctuations on perceptual accuracy, speed of response and confidence, it is important to consider that global modulators such as tonic arousal are known to have non-linear effects task performance[@Yerkes1908]: In perceptual tasks, performance seems so be highest during mid-level arousal, whereas low- and high-level arousal lead to reduced accuracy and slower responses[@Beerendonk2023]. This contrasts with the effects of bimodal inference, where accuracy increases linearly as one moves from internal to external mode, and responses become faster at both ends of the mode spectrum. Of note, high phasic arousal has been shown to suppress biases in decision-making in humans and mice across domains[@deGee2014; @deGee2017; @deGee2020], including biases toward perceptual history[@Urai2017] that we implicate in internal mode processing. Future work should therefore more direct measures of arousal (such as pupil size[@deGee2014; @Urai2017; @deGee2020; @deGee2022; @Beerendonk2023], motor behavior[@deGee2022], or neural data[@IBL2023]) to better delineate bimodal inference from fluctuations in global modulators of task performance.**
 
 ### Comment 4: Done
 
@@ -8249,7 +8248,7 @@ M'_t = M'_{t-1} + \beta_M *\omega_{LLR} * \epsilon_M
 
 Allowing the learning rate itself to vary as a function of preceding experiences would add an additional level of complexity that we sought to omit in this analysis. However, we fully agree that choosing a Bayesian framework (e.g., a three-level HGF) would indeed be more consistent.
 
-### Comment 9: Model comparison
+### Comment 9: Done
 
 **I am sure you have answers to these questions - but with each new question the reader is left more and more skeptical that there is a coherent story behind your analyses. It would have been more convincing had you just committed to a Bayesian filter and made your points using one update scheme, under ideal Bayesian observer assumptions.**
 
@@ -8269,13 +8268,13 @@ We would like to thank Prof. Friston for these very helpful and precise suggesti
 
 **Model comparison. We assessed the following model space based on AIC:**
 
-- **The full *bimodal inference model* (model 1) incorporates the influence of sensory information according to the parameter $\alpha$ (likelihood); the integration of evidence across trials according to the free parameter $H$ (prior); anti-phase oscillations in between the precision of likelihood and prior according to $\omega_{LLR}$ and $omega_{\psi}$ according to parameters $a_{LLR}$ (amplitude likelihood fluctuation), $a_{\psi}$ (amplitude prior fluctuation), $f$ (frequency) and $p$ (phase). The bimodal inference model is the most complex, as it allows prior and likelihood precision to fluctuate at different amplitudes.** 
+- **The full *bimodal inference model* (model 1) incorporates the influence of sensory information according to the parameter $\alpha$ (likelihood); the integration of evidence across trials according to the free parameter $H$ (prior); anti-phase oscillations in between likelihood and prior precision according to $\omega_{LLR}$ and $omega_{\psi}$ according to parameters $a_{LLR}$ (amplitude likelihood fluctuation), $a_{\psi}$ (amplitude prior fluctuation), $f$ (frequency) and $p$ (phase). The bimodal inference model is the most complex, as it allows prior and likelihood precision to fluctuate at different amplitudes.** 
 
-- **The *likelihood-oscillation-only model* (model 2) incorporates the influence of sensory information according to parameter $\alpha$ (likelihood); the integration of evidence across trials according to free parameter $H$ (prior); oscillations in the precision of likelihood according to $\omega_{LLR}$ with free parameters $a_{LLR}$ (amplitude likelihood fluctuation), $f$ (frequency) and $p$ (phase).**
+- **The *likelihood-oscillation-only model* (model 2) incorporates the influence of sensory information according to parameter $\alpha$ (likelihood); the integration of evidence across trials according to free parameter $H$ (prior); oscillations in likelihood precision according to $\omega_{LLR}$ with free parameters $a_{LLR}$ (amplitude likelihood fluctuation), $f$ (frequency) and $p$ (phase).**
 
-- **The *prior-oscillation-only model* (model 3) incorporates the influence of sensory information according to parameter $\alpha$ (likelihood); the integration of evidence across trials according to free parameter $H$ (prior); oscillations in the precision of prior according to $\omega_{\psi}$ with free parameters $a_{\psi}$ (amplitude prior fluctuation), $f$ (frequency) and $p$ (phase). Please note that all models 1-3 lead to shifts in the relative precision of likelihood and prior.** 
+- **The *prior-oscillation-only model* (model 3) incorporates the influence of sensory information according to parameter $\alpha$ (likelihood); the integration of evidence across trials according to free parameter $H$ (prior); oscillations in the prior precision according to $\omega_{\psi}$ with free parameters $a_{\psi}$ (amplitude prior fluctuation), $f$ (frequency) and $p$ (phase). Please note that all models 1-3 lead to shifts in the relative precision of likelihood and prior.** 
 
-- **The *normative-evidence-accumulation* (model 4) incorporates the influence of sensory information according to parameter $\alpha$ (likelihood); the integration of evidence across trials according to free parameter $H$ (prior); no oscillations. This model corresponds to the model proposed by Glaze et al. and captures normative evidence accumulation in unpredictable environments using a Bayesian update scheme[@Glaze2015]. Importantly, model 4 thus represents the null hypothesis that fluctuations in mode emerge from a normative Bayesian model without the ad-hoc addition of oscillations as in model 1-3.**
+- **The *normative-evidence-accumulation* (model 4) incorporates the influence of sensory information according to parameter $\alpha$ (likelihood); the integration of evidence across trials according to free parameter $H$ (prior); no oscillations. Model 4 corresponds to the model proposed by Glaze et al. and captures normative evidence accumulation in unpredictable environments using a Bayesian update scheme[@Glaze2015]. Importantly, model 4 thus represents the null hypothesis that fluctuations in mode emerge from a normative Bayesian model without the ad-hoc addition of oscillations as in model 1-3.**
 
 - **The *no-evidence-accumulation* (model 5) incorporates the influence of sensory information according to parameter $\alpha$ (likelihood); no integration of evidence across trials; no oscillation. This model has no effective (flat) priors. It represents the null hypothesis that observers do not use prior information derived from serial dependency.** 
 
@@ -8303,7 +8302,7 @@ Optim_eval$type = gsub("fit_glaze_osc_zeta_v1_one_amp", "Model X: Only one ampli
 Optim_eval$type = gsub("fit_glaze_osc_zeta_v1" , "1: Bimodal inference", Optim_eval$type)
 
 
-Sum <-   ddply(Optim_eval[Optim_eval$convcode == 0,],
+Sum_AIC_Models <-   ddply(Optim_eval[Optim_eval$convcode == 0,],
                    .(species, type),
                    summarise,
                    median_error = median(value, na.rm = TRUE),
@@ -8312,7 +8311,8 @@ Sum <-   ddply(Optim_eval[Optim_eval$convcode == 0,],
                    AIC = 2*k + 2 * sum(value, na.rm = TRUE) 
                 ) 
 
-Sum_Subj <-   ddply(Optim_eval[Optim_eval$convcode == 0,],
+
+Sum_Subj_Model_AIC <-   ddply(Optim_eval[Optim_eval$convcode == 0,],
                    .(unique_id, type, species),
                    summarise,
                    median_error = median(value, na.rm = TRUE),
@@ -8320,60 +8320,78 @@ Sum_Subj <-   ddply(Optim_eval[Optim_eval$convcode == 0,],
                    k = mean(free_param),
                    AIC = 2*k + 2 * sum(value, na.rm = TRUE) 
                 ) 
+# p_distribution_Sum <- ggplot(Optim_eval[Optim_eval$convcode == 0 & Optim_eval$type != "Model X: Only one amplitude",], 
+#                              aes(x = value,  y=..density..,  color = type, fill = type)) + 
+#   #geom_density(color = "white", alpha=.25, bw = 0.025, size = 0.5) + 
+#   geom_histogram(position = "dodge", alpha = 0.5, center = 0) +
+#   theme_classic(base_size = 6) +
+#     scale_color_brewer(palette = "Dark2", direction = +1) + scale_fill_brewer(palette = "Dark2", direction = +1) +  
+#     theme(legend.position = "top") + facet_wrap(~species, ncol = 1) 
+# p_distribution_Sum
 
-p_distribution_Sum <- ggplot(Optim_eval[Optim_eval$convcode == 0 & Optim_eval$type != "Model X: Only one amplitude",], 
-                             aes(x = value,  y=..density..,  color = type, fill = type)) + 
-  #geom_density(color = "white", alpha=.25, bw = 0.025, size = 0.5) + 
-  geom_histogram(position = "dodge", alpha = 0.5, center = 0) +
-  theme_classic(base_size = 6) +
-    scale_color_brewer(palette = "Dark2", direction = +1) + scale_fill_brewer(palette = "Dark2", direction = +1) +  
-    theme(legend.position = "top") + facet_wrap(~species, ncol = 1) 
-p_distribution_Sum
-
-p_distribution_Sum_Subj <- ggplot(Sum_Subj[Sum_Subj$type != "Model X: Only one amplitude",], 
-                             aes(x = round_any(AIC,25),  y=..density..,  color = type, fill = type)) + 
-  #geom_density(color = "white", alpha=.25, bw = 0.025, size = 0.5) + 
-  geom_histogram(position = "dodge", alpha = 0.5) +
-  theme_classic(base_size = 6) + xlim(-10, max(Sum_Subj[Sum_Subj$type != "Model X: Only one amplitude",]$AIC)) +
-  labs(x = "AIC (Individual sessions)", color = "Model", fill ="Model") +
-    scale_color_brewer(palette = "Dark2", direction = +1) + scale_fill_brewer(palette = "Dark2", direction = +1) + 
-    theme(legend.position = "top") + facet_wrap(~species, ncol = 2)
-p_distribution_Sum_Subj
-
-print(Sum)
+print(Sum_AIC_Models)
 ```
 
+The formal model comparison yielded clear evidence for a superiority of the bimodal inference model, in particular over the normative Bayesian model of evidence accumulation. The model successfully predicted both within-training variables (as a sanity-check) and out-of-training variables. Simulations from posterior model parameters closely followed the empirical data (Figure X), which was not the case for reduced models. We summarize these findings in the Results section and have added a Supplemental Figure SX to show the distribution of observer-level AICs at the session-level (see below):
 
-The formal model comparison yielded clear evidence for a superiority of the bimodal inference model, in particular over the normative Bayesian model of evidence accumulation. The model successfully predicted both within-training variables (as a sanity-check) and out-of-training variables. Simulations from posterior model parameters closely followed the empirical data (Figure X), which was not the case for reduced models. We summarize these findings in the Results section and have added a Supplemental Figure SX to show the distribution of AICs at the session-level (see below).
+- **We used a maximum likelihood procedure to fit the bimodal inference model to the behavioral data from the Confidence database[@Rahnev2020] and IBL database[@Aguillon-Rodriguez2020]. We validated our model in three steps: First, we compared the bimodal inference model against a set of four control models to show that bimodal inference does not emerge spontaneously in normative Bayesian models of evidence accumulation, but requires the ad-hoc addition of anti-phase oscillations in prior and likelihood precision. To this end, we successively removed the anti-phase oscillations and the integration of information across trials from the bimodal inference model (model 1) and performed a model comparison based on AIC.** 
 
+- **Model 2 ($AIC_2$ = 'r Sum_AIC_Models[Sum_AIC_Models$species == "humans" & Sum_AIC_Models$type == "2: likelihood-oscillation-only model",]$AIC' and 'r Sum_AIC_Models[Sum_AIC_Models$species == "mice" & Sum_AIC_Models$type == "2: likelihood-oscillation-only model",]$AIC' in mice) and Model 3 ($AIC_3$ = 'r Sum_AIC_Models[Sum_AIC_Models$species == "humans" & Sum_AIC_Models$type == "3: prior-oscillation-only model",]$AIC' and 'r Sum_AIC_Models[Sum_AIC_Models$species == "mice" & Sum_AIC_Models$type == "3: prior-oscillation-only model",]$AIC' in mice) incorporated only oscillations of either likelihood or prior precision. Model 4 ($AIC_4$ = 'r Sum_AIC_Models[Sum_AIC_Models$species == "humans" & Sum_AIC_Models$type == "4: normative-evidence-accumulation",]$AIC' and 'r Sum_AIC_Models[Sum_AIC_Models$species == "mice" & Sum_AIC_Models$type == "4: normative-evidence-accumulation",]$AIC' in mice) lacked any oscillations of likelihood and prior precision and corresponded to the normative model proposed by Glaze et al.[@Glaze2015]. In model 5 ($AIC_4$ = 'r Sum_AIC_Models[Sum_AIC_Models$species == "humans" & Sum_AIC_Models$type == "5: no-evidence-accumulation",]$AIC' and 'r Sum_AIC_Models[Sum_AIC_Models$species == "mice" & Sum_AIC_Models$type == "5: no-evidence-accumulation",]$AIC' in mice), we furthermore removed the integration of information across trials, such that perception depended only in incoming sensory information.** 
 
+- **The bimodal inference model achieved the lowest AIC across the full model space ($AIC_1$ = 'r Sum_AIC_Models[Sum_AIC_Models$species == "humans" & Sum_AIC_Models$type == "1: Bimodal inference",]$AIC' and 'r Sum_AIC_Models[Sum_AIC_Models$species == "mice" & Sum_AIC_Models$type == "1: Bimodal inference",]$AIC' in mice) and was clearly superior to the normative Bayesian model of evidence accumulation ($\delta_{AIC}$ = 'r Sum_AIC_Models[Sum_AIC_Models$species == "humans" & Sum_AIC_Models$type == "1: Bimodal inference",]$AIC - Sum_AIC_Models[Sum_AIC_Models$species == "humans" & Sum_AIC_Models$type == "4: normative-evidence-accumulation",]$AIC' and 'r Sum_AIC_Models[Sum_AIC_Models$species == "mice" & Sum_AIC_Models$type == "1: Bimodal inference",]$AIC - Sum_AIC_Models[Sum_AIC_Models$species == "mice" & Sum_AIC_Models$type == "4: normative-evidence-accumulation",]$AIC' in mice; Supplemental Figure SX).**
 
+- **As a second validation of the bimodal inference model, we tested how well the posterior model predicted within-training and out-of-training variables. The bimodal inference model characterizes each subject by a sensitivity parameter $\alpha$ that captures how strongly perception is driven by the available sensory information, and a hazard rate parameter $H$ that controls how heavily perception is biased by perceptual history. As a sanity check for model fit, we tested whether the frequency of stimulus- and history-congruent trials in the Confidence database[@Rahnev2020] and IBL database[@Aguillon-Rodriguez2020] correlate with the estimated parameters $\alpha$ and $H$, respectively. As expected, the estimated sensitivity toward stimulus information $\alpha$ was positively correlated with the frequency of stimulus-congruent perceptual choices (humans: $\beta$ = $`r STAT.Optim_Accuracy_Precision$coefficients[2,1]`$ ± $`r STAT.Optim_Accuracy_Precision$coefficients[2,2]`$, T($`r STAT.Optim_Accuracy_Precision$coefficients[2,3]`$) = $`r STAT.Optim_Accuracy_Precision$coefficients[2,4]`$, p = $`r STAT.Optim_Accuracy_Precision$coefficients[2,5]`$; mice: $\beta$ = $`r M_STAT.Optim_Accuracy_Precision$coefficients[2,1]`$ ± $`r M_STAT.Optim_Accuracy_Precision$coefficients[2,2]`$, T($`r M_STAT.Optim_Accuracy_Precision$coefficients[2,3]`$) = $`r M_STAT.Optim_Accuracy_Precision$coefficients[2,4]`$, p = $`r M_STAT.Optim_Accuracy_Precision$coefficients[2,5]`$). Likewise, $H$ was negatively correlated with the frequency of history-congruent perceptual choices (humans: $\beta$ = $`r STAT.Optim_History_Hazard$coefficients[2,1]`$ ± $`r STAT.Optim_History_Hazard$coefficients[2,2]`$, T($`r STAT.Optim_History_Hazard$coefficients[2,3]`$) = $`r STAT.Optim_History_Hazard$coefficients[2,4]`$, p = $`r STAT.Optim_History_Hazard$coefficients[2,5]`$; mice:  $\beta$ = $`r M_STAT.Optim_History_Hazard$coefficients[2,1]`$ ± $`r M_STAT.Optim_History_Hazard$coefficients[2,2]`$, T($`r M_STAT.Optim_History_Hazard$coefficients[2,3]`$) = $`r M_STAT.Optim_History_Hazard$coefficients[2,4]`$, p = $`r M_STAT.Optim_History_Hazard$coefficients[2,5]`$).** 
+
+- **Our behavioral analyses have shown that humans and mice showed significant effects of perceptual history that impaired performance in randomized psychophysical experiments[@Kiyonaga2017; @Urai2017; @Braun2018; @Abrahamyan2016; @Bergen2019] (Figure 2A and 3A). We therefore expected that humans and mice underestimated the true hazard rate $\hat{H}$ of the experimental environments (Confidence database[@Rahnev2020]: $\hat{H}_{Humans}$ = `r mean((100 - Behav$Stimulus_History)/100, na.rm = TRUE)` ± `r sd((100 - Behav$Stimulus_History)/100, na.rm = TRUE)/nrow(Behav)`); IBL database[@Aguillon-Rodriguez2020]: $\hat{H}_{Mice}$ = `r mean((100 - M_Behav$Stimulus_History)/100, na.rm = TRUE)` ± `r sd((100 - M_Behav$Stimulus_History)/100, na.rm = TRUE)/nrow(M_Behav)`). Indeed, when fitting the bimodal inference model outlined above to the trial-wise perceptual choices (see Methods), we found that the estimated (i.e., subjective) hazard rate $H$ was lower than $\hat{H}$ for both humans (H = `r mean(Optim_Behav$Hazard, na.rm = TRUE)` ± `r sd(Optim_Behav$Hazard, na.rm = TRUE)/nrow(Optim_Behav)`, $\beta$ = $`r STAT.Optim_Underestimation$coefficients[1,1]`$ ± $`r STAT.Optim_Underestimation$coefficients[1,2]`$, T($`r STAT.Optim_Underestimation$coefficients[1,3]`$) = $`r STAT.Optim_Underestimation$coefficients[1,4]`$, p = $`r STAT.Optim_Underestimation$coefficients[1,5]`$) and mice (H = `r mean(Optim_M_Behav$Hazard, na.rm = TRUE)` ± `r sd(Optim_M_Behav$Hazard, na.rm = TRUE)/nrow(Optim_M_Behav)`, $\beta$ = $`r M_STAT.Optim_Underestimation$coefficients[1,1]`$ ± $`r M_STAT.Optim_Underestimation$coefficients[1,2]`$, T($`r M_STAT.Optim_Underestimation$coefficients[1,3]`$) = $`r M_STAT.Optim_Underestimation$coefficients[1,4]`$, p = $`r M_STAT.Optim_Underestimation$coefficients[1,5]`$).**
+
+- **To further probe the validity of the bimodal inference model, we tested whether posterior model quantities could explain aspects of the behavioral data that the model was not fitted to. We predicted that the posterior decision variable $L_t$ not only encodes perceptual choices (i.e., the variable used for model estimation), but should also predict the speed of response and subjective confidence[@Kepecs2008; @Braun2018]. Indeed, the estimated trial-wise posterior decision certainty $|L_t|$ correlated negatively with RTs in humans ($\beta$ = $`r STAT.Optim_RT_Certainty$coefficients[2,1]`$ ± $`r STAT.Optim_RT_Certainty$coefficients[2,2]`$, T($`r STAT.Optim_RT_Certainty$coefficients[2,3]`$) = $`r STAT.Optim_RT_Certainty$coefficients[2,4]`$, p = $`r STAT.Optim_RT_Certainty$coefficients[2,5]`$) and TDs mice ($\beta$ = $`r M_STAT.Optim_RT_Certainty$coefficients[2,1]`$ ± $`r M_STAT.Optim_RT_Certainty$coefficients[2,2]`$, T($`r M_STAT.Optim_RT_Certainty$coefficients[2,3]`$) = $`r M_STAT.Optim_RT_Certainty$coefficients[2,4]`$, p = $`r M_STAT.Optim_RT_Certainty$coefficients[2,5]`$). Likewise, subjective confidence reports were positively correlated with the estimated posterior decision certainty in humans ($\beta$ = $`r STAT.Optim_Confidence_Certainty$coefficients[2,1]`$ ± $`r STAT.Optim_Confidence_Certainty$coefficients[2,2]`$, T($`r STAT.Optim_Confidence_Certainty$coefficients[2,3]`$) = $`r STAT.Optim_Confidence_Certainty$coefficients[2,4]`$, p = $`r STAT.Optim_Confidence_Certainty$coefficients[2,5]`$).** 
+
+- **The dynamic accumulation of information inherent to our model entails that biases toward perceptual history are stronger when the posterior decision certainty at the preceding trial is high[@Glaze2015; @Braun2018; @Bergen2019]. Due to the link between posterior decision certainty and confidence, we reasoned that confident perceptual choices should be more likely to induce history-congruent perception at the subsequent trial[@Braun2018; @Bergen2019]. Indeed, logistic regression indicated that history-congruence was predicted by the posterior decision certainty $|L_{t-1}|$  (humans: $\beta$ = $`r STAT.Optim_History_mu_minus_1$coefficients[2,1]`$ ± $`r STAT.Optim_History_mu_minus_1$coefficients[2,2]`$, z = $`r STAT.Optim_History_mu_minus_1$coefficients[2,3]`$, p = $`r STAT.Optim_History_mu_minus_1$coefficients[2,4]`$; mice: $\beta$ = $`r M_STAT.Optim_History_mu_minus_1$coefficients[2,1]`$ ± $`r M_STAT.Optim_History_mu_minus_1$coefficients[2,2]`$, z = $`r M_STAT.Optim_History_mu_minus_1$coefficients[2,3]`$, p = $`r M_STAT.Optim_History_mu_minus_1$coefficients[2,4]`$) and subjective confidence (humans: $\beta$ = $`r STAT.Optim_History_Confidence_minus_1$coefficients[2,1]`$ ± $`r STAT.Optim_History_Confidence_minus_1$coefficients[2,2]`$, z = $`r STAT.Optim_History_Confidence_minus_1$coefficients[2,3]`$, p = $`r STAT.Optim_History_Confidence_minus_1$coefficients[2,4]`$) at the preceding trial.**
+
+- **As a third validation of the bimodal inference model, we used the posterior model parameters to simulate synthetic perceptual choices and repeated the behavioral analyses conducted for the empirical data. Simulations from the bimodal inference model closely replicated our results empirical results outlined above: Simulated perceptual decisions resulted from a competition of perceptual history with incoming sensory signals (Figure 6A). Stimulus- and history-congruence were significantly auto-correlated (Figure 6B-C), fluctuating in anti-phase as a scale-invariant process with a 1/f power law (Figure 6D-F). Simulated posterior certainty[@Kepecs2008; @Urai2017; @Braun2018] (i.e., the absolute of the posterior log ratio $|L_t|$) showed a quadratic relationship to the mode of sensory processing (Figure 6H), mirroring the relation of RTs and confidence reports to external and internal biases in perception (Figure 2G-H and Figure 4G-H). Crucially, the overlap between empirical and simulated data broke down when we removed the anti-phase oscillations or the accumulation of evidence over time from the bimodal inference model (see Supplemental Figure S7-10).**
+
+- **In sum, computational modeling thus suggested that between-mode fluctuations are best explained by two interlinked processes (Figure 1E): (i), the dynamic accumulation of information across successive trials mandated by normative Bayesian model of evidence accumulation and, (ii), ongoing anti-phase oscillations in the impact of external and internal information.**
 
 ```{r Supplemental_Figure_SX, cache = TRUE}
-p_distribution_Sum_Subj <- ggplot(Sum_Subj[Sum_Subj$type != "Model X: Only one amplitude",], 
-                             aes(x = round_any(AIC,25),  y=..density..,  color = type, fill = type)) + 
-  #geom_density(color = "white", alpha=.25, bw = 0.025, size = 0.5) + 
+p_distribution_Sum_Subj_Model_AIC <-
+  ggplot(Sum_Subj_Model_AIC[Sum_Subj_Model_AIC$type != "Model X: Only one amplitude", ],
+         aes(
+           x = round_any(AIC, 25),
+           y = ..density..,
+           color = type,
+           fill = type
+         )) +
   geom_histogram(position = "dodge", alpha = 0.5) +
-  theme_classic(base_size = 6) + xlim(-10, max(Sum_Subj[Sum_Subj$type != "Model X: Only one amplitude",]$AIC)) +
-  labs(x = "AIC (Individual sessions)", color = "Model", fill ="Model") +
-    scale_color_brewer(palette = "Dark2", direction = +1) + scale_fill_brewer(palette = "Dark2", direction = +1) + 
-    theme(legend.position = "top") + facet_wrap(~species, ncol = 2)
-p_distribution_Sum_Subj
+  theme_classic(base_size = 6) + xlim(-10, max(Sum_Subj_Model_AIC[Sum_Subj_Model_AIC$type != "Model X: Only one amplitude", ]$AIC)) +
+  labs(x = "AIC (subject-level)", y = "Density", color = "Model", fill = "Model", subtitle = "B") +
+  scale_color_brewer(palette = "Dark2", direction = +1) + scale_fill_brewer(palette = "Dark2", direction = +1) +
+  theme(legend.position = "none") + facet_wrap( ~ species, ncol = 2)
+
+p_distribution_Sum_Model_AIC <-
+  ggplot(Sum_AIC_Models[Sum_AIC_Models$type != "Model X: Only one amplitude", ],
+         aes(
+           y = type,
+           x = AIC,
+           color = type,
+           fill = type
+         )) +
+  geom_col(alpha = 0.5, width = 0.1) +
+  theme_classic(base_size = 6) + 
+  scale_y_discrete(labels=c("M 1", "M 2", "M 3", "M 4", "M 4"))+
+  labs(x = "AIC (group-level)", y = "Model", color = "Model", fill = "Model", subtitle = "A") +
+  scale_color_brewer(palette = "Dark2", direction = +1) + scale_fill_brewer(palette = "Dark2", direction = +1) +
+  theme(legend.position = "top") + facet_wrap( ~ species, ncol = 2)
+
+lay <- rbind(c(1), c(2))
+grid.arrange(
+p_distribution_Sum_Model_AIC,
+p_distribution_Sum_Subj_Model_AIC,
+layout_matrix = lay,
+heights = c(0.75,1),
+widths = c(1))
 ```
 
-Based on AIC, we identified the likelihood fluctuation only model (model 2) as the best model in humans and mice. This makes sense, as it is more parsimonious then the full model, but still captures ongoing shifts in the relative precision between prior and likelihood (assuming a constant precision on the prior and periodic increases/decreases in the precision of the prior). Importantly, our model comparison indicated that normative model of evidence accumulation without the ad-hoc addition of oscillations (model 4) performs worse in explain our data. As expected, our data were also less likely to be explained by model 5, since our conventional analyses clearly indicated an effect of perceptual history, which cannot be captured by the no integration model which has flat priors.  
-
-We have updated the description of our model in the Results and Methods section accordingly, deleting $\omega_{\psi}$: 
-
-*TODO*
-
-In the Results, we now summarize the model comparison and its rationale with a particular focus on the null models 4 and 5 (see also comment X.X.X by Reviewer 3): 
-
-*TODO*
-
-We have included a separate paragraph to the method section, summarizing the model comparison:
-
-*TODO*
+**Supplemental Figure SX. Comparison of the bimodal inference model against reduced control models.** **A. Group-level AIC.** The bimodal inference model (Model 1) achieved the lowest AIC across the full model space ($AIC_1$ = 'r Sum_AIC_Models[Sum_AIC_Models$species == "humans" & Sum_AIC_Models$type == "1: Bimodal inference",]$AIC' and 'r Sum_AIC_Models[Sum_AIC_Models$species == "mice" & Sum_AIC_Models$type == "1: Bimodal inference",]$AIC' in mice). Model 2 ($AIC_2$ = 'r Sum_AIC_Models[Sum_AIC_Models$species == "humans" & Sum_AIC_Models$type == "2: likelihood-oscillation-only model",]$AIC' and 'r Sum_AIC_Models[Sum_AIC_Models$species == "mice" & Sum_AIC_Models$type == "2: likelihood-oscillation-only model",]$AIC' in mice) and Model 3 ($AIC_3$ = 'r Sum_AIC_Models[Sum_AIC_Models$species == "humans" & Sum_AIC_Models$type == "3: prior-oscillation-only model",]$AIC' and 'r Sum_AIC_Models[Sum_AIC_Models$species == "mice" & Sum_AIC_Models$type == "3: prior-oscillation-only model",]$AIC' in mice) incorporated only oscillations of either likelihood or prior precision. Model 4 ($AIC_4$ = 'r Sum_AIC_Models[Sum_AIC_Models$species == "humans" & Sum_AIC_Models$type == "4: normative-evidence-accumulation",]$AIC' and 'r Sum_AIC_Models[Sum_AIC_Models$species == "mice" & Sum_AIC_Models$type == "4: normative-evidence-accumulation",]$AIC' in mice) lacked any oscillations of likelihood and prior precision and corresponded to the normative model proposed by Glaze et al.[@Glaze2015]. In model 5 ($AIC_4$ = 'r Sum_AIC_Models[Sum_AIC_Models$species == "humans" & Sum_AIC_Models$type == "5: no-evidence-accumulation",]$AIC' and 'r Sum_AIC_Models[Sum_AIC_Models$species == "mice" & Sum_AIC_Models$type == "5: no-evidence-accumulation",]$AIC' in mice), we furthermore removed the integration of information across trials, such that perception depended only in incoming sensory information. **B. Subject-level AIC.** Here, we show the distribution of AIC values at the subject-level. AICs for the bimodal inference tended to be smaller than AICs for the comparator models.
 
 (ii) In the light of our response to Comments 1 - 9 above, we agree that a complete and extensive investigation of the relation between bimodal inference, learning about changes in the environment and the relation to metacognition may be beyond the scope of the current manuscript: Both Reviewer 1 and 3 (see below) have shared that the manuscript is too long and should be streamlined. Yet evaluating the full model space (e.g., comparing update rules for inferences about $H$ and $M$, testing for an influence of beliefs about $M$ on learning about $H$ etc.) would make the manuscript even longer. We are therefore happy to follow Prof. Fristons suggestions to omit section 5.8. We have changed the manuscript in the following ways:
 
@@ -8441,7 +8459,7 @@ Done.
 
 Done.
 
-### Comment 19: Add citation for arousal, link to reviewer 3, link to response to alternative hypotheses
+### Comment 19
 
 **Line 178, when you say that the fluctuations may arise due to "changes in level of tonic arousal or on-task attention", I think you need to qualify this. In predictive processing, on-task attention is exactly the modulation of sensory precision, relative to prior precision that you are characterising here. Tonic arousal may be another thing may or may not confound your current results.**
 
@@ -8449,7 +8467,9 @@ Thank you very much for pointing this out. We have adapted the discussion to mak
 
 **How does attention relate between-mode fluctuations? According to predictive processing, attention corresponds to the precision afforded to the probability distributions that underlie perceptual inference[@Feldman2010]. As outlined above, between-mode fluctuations can be understood as ongoing shifts in the precision afforded to likelihood (*external mode*) and prior (*internal mode*), respectively. When the precision afforded to prior or likelihood increases, posterior precision increases, which leads to faster RTs and higher confidence. When defined from the perspective of predictive processing as the precision afforded to likelihood and prior[@Feldman2010], fluctuations in attention may thus provide a plausible explanation for the quadratic relationship between mode and RTs and confidence (Figure 2H and J; Figure 4I, Figure 6I)**.
 
-**Outside of the predictive processing field, attention is often equated as engagement with the task, which may vary according to global variables such as arousal or fatigue. Importantly, our results speak against the proposition that intervals of internal mode processing reflect low task engagement: In addition to shorter RTs and elevated confidence, internal mode was not associated with a general increase in lapse (Supplemental Figures SX), arguing against the proposition that internal mode is associated with random or stereotypical responses that may reflect low task engagement. It is, however, important to note that arousal and attention are known to have non-linear effects on RTs and confidence. Future work should therefore more direct measures of attention and arousal (such as pupil size, motor behavior, or neural data) to better delineate fluctuations in these global variables from fluctuations in the mode of perceptual processing.** 
+**Outside of the predictive processing field, attention is often understood in the context of engagement with the task[@Matthew2010], which may vary according the availability of cognitive resources that are modulated by factors such as tonic arousal, fatigue or familiarity with the task. Importantly, our results indicate that internal mode processing can be completely reduced to intervals of low task engagement: In addition to shorter RTs and elevated confidence, internal mode was not associated with a general increase in lapse (Supplemental Figures SX), arguing against the proposition that internal mode is associated with random or stereotypical responses that may reflect low task engagement.** 
+
+**In interpreting the impact of between-mode fluctuations on perceptual accuracy, speed of response and confidence, it is important to consider that global modulators such as tonic arousal are known to have non-linear effects task performance[@Yerkes1908]: In perceptual tasks, performance seems so be highest during mid-level arousal, whereas low- and high-level arousal lead to reduced accuracy and slower responses[@Beerendonk2023]. This contrasts with the effects of bimodal inference, where accuracy increases linearly as one moves from internal to external mode, and responses become faster at both ends of the mode spectrum. Of note, high phasic arousal has been shown to suppress biases in decision-making in humans and mice across domains[@deGee2014; @deGee2017; @deGee2020], including biases toward perceptual history[@Urai2017] that we implicate in internal mode processing. Future work should therefore more direct measures of arousal (such as pupil size[@deGee2014; @Urai2017; @deGee2020; @deGee2022; @Beerendonk2023], motor behavior[@deGee2022], or neural data[@IBL2023]) to better delineate bimodal inference from fluctuations in global modulators of task performance.**
 
 ### Comment 20: Done
 
@@ -8479,7 +8499,7 @@ We would like to thank the reviewer for this suggestion, which we have added to 
 
 We would like to thank the reviewer for this suggestion. We added this information to the description of our model in the Results section (see comment above).
 
-### Comment 22: Done (posterior estimates could be added)
+### Comment 22: Done
 
 **In your first model simulations, I would make it clear in the main text which parameters you are optimizing's; namely (H, alpha, a_likelihood, a_prior f). Perhaps a little table with a brief description of the meaning of these hyper parameters would be useful?**
 
@@ -8487,7 +8507,7 @@ We would like to thank the reviewer for this suggestion. We added this informati
 
 - **The bimodal inference model characterizes each subject by a sensitivity parameter $\alpha$ that captures how strongly perception is driven by the available sensory information, and a hazard rate parameter $H$ that controls how heavily perception is biased by perceptual history. As a sanity check for model fit, we tested whether the frequency of stimulus- and history-congruent trials in the Confidence database[@Rahnev2020] and IBL database[@Aguillon-Rodriguez2020] correlate with the estimated parameters $\alpha$ and $H$, respectively (...).** 
 
-- We furthermore included a table summarizing the model parameters. 
+- We furthermore included a table summarizing the model parameters: 
 
 ```{r Supplemental_Table_T2, cache = TRUE}
 
