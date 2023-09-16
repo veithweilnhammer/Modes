@@ -1,0 +1,1155 @@
+---
+title: "Untitled"
+author: "Veith Weilnhammer"
+date: "2023-09-16"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Internal mode processing cannot be reduced to stereotypical or random response behavior
+
+**The core assumption of bimodal inference - that ongoing changes in the sensitivity to external information are driven by internal predictions induced via perceptual history - needs to be contrasted against two alternative hypotheses: When making errors, observers may not engage with the task and respond stereotypically, i.e., exhibit stronger general biases toward one of the two potential outcomes, or simply choose randomly. Logistic regression confirmed that perceptual history made a significant contribution to perception ($\beta$ = $`r STAT.full_logit_Sum$coefficients[3,1]`$ ± $`r STAT.full_logit_Sum$coefficients[3,2]`$, z = $`r STAT.full_logit_Sum$coefficients[3,3]`$, p = $`r STAT.full_logit_Sum$coefficients[3,4]`$) over and above the ongoing stream of external sensory information ($\beta$ = $`r STAT.full_logit_Sum$coefficients[2,1]`$ ± $`r STAT.full_logit_Sum$coefficients[2,2]`$, z = $`r STAT.full_logit_Sum$coefficients[2,3]`$, p = $`r STAT.full_logit_Sum$coefficients[2,4]`$) and general response biases toward ($\beta$ = $`r STAT.full_logit_Sum$coefficients[1,1]`$ ± $`r STAT.full_logit_Sum$coefficients[1,2]`$, z = $`r STAT.full_logit_Sum$coefficients[1,3]`$, p = $`r STAT.full_logit_Sum$coefficients[1,4]`$).** 
+
+**When eliminating perceptual history as a predictor of individual choices at individual trials, AIC increased by $\delta_{AIC}$ = `r -delta_AIC_log_reg_humans` (see Supplemental Figure S4A-B for parameter- and model-level inference at the level of individual observers). Likewise, when eliminating slow fluctuations in history-congruence as a predictor of slow fluctuations in stimulus-congruence across trials, we observed an increase in AIC by \delta_{AIC} + `r delta_AIC_correlation_humans`. These results provided model-level evidence against the null hypotheses that fluctuations in stimulus-congruence are driven exclusively by choice randomness or general response bias (see Supplemental Section X.X for an in-depth assessment of general response bias).**
+
+**To further probe whether the reduced sensitivity to external information that we relate to internal mode processing is in fact driven by enhanced choice randomness as opposed to perceptual history, we estimated full and history-dependent psychometric curves for internal, external, and across modes (Supplemental Section X.X and Supplemental Figure SX). If, as we hypothesized, internal mode processing reflects an enhanced impact of perceptual history, one would expect a history-dependent increase in biases and lapses as well as a history-independent increase in threshold. Conversely, if internal mode processing were driven by random choices, one would expect a history-independent increase in biases and threshold, and no change in bias. In line with our hypothesis, we found that internal mode processing was associated with a history-dependent increase in bias and lapse as well as a history-independent increase in threshold. This confirms that internal mode processing is indeed driven by an enhanced impact of perceptual history (see Supplemental Section X.X and Supplemental Figure SX for an in-depth assessment of psychometric curves).**   
+
+**In line with this, the quadratic relationship between mode and confidence (see Figure X) suggested that biases toward internal information do not reflect a post-perceptual strategy that repeats preceding choices when the subjective confidence in the perceptual decision is low. While responses became faster with increased exposure to the experiments of the Confidence database, the frequency of history-congruent choices increased over time, speaking against the proposition that participants may stereotypically repeat preceding choices when not yet familiar with the experimental task (see Supplemental Section).** 
+
+**Taken together, our results thus argue against recurring intervals of low task engagement, which may be signaled by stereotypical or random responses, as a explanation for the phenomenon that we identify as bimodal inference.** 
+
+## Internal mode processing is driven by choice as opposed to stimulus history
+
+```{r choice_history, cache = TRUE}
+if (!load_summary_data) {
+  
+## humans
+
+## General effect of stimulus-history
+Behav$null_Stimulus_History = Behav$Stimulus_History - 50
+mean_Stimulus_History = mean(Behav$Stimulus_History, na.rm = TRUE)
+error_Stimulus_History = sd(Behav$Stimulus_History, na.rm = TRUE)/sqrt(length(Behav$Stimulus_History))
+  
+Global_Stimulus_History_Accuracy <- lmer(null_Stimulus_History ~ Accuracy + (1 | study_id), data = Behav)
+STAT.Global_Stimulus_History_Accuracy = summary(Global_Stimulus_History_Accuracy)
+
+## Difference between choice- and stimulus-history
+Difference_Stimulus_Choice_History = lmer(null_Stimulus_History-null_History ~ 1 + (1 | study_id), data = Behav)
+STAT.Difference_Stimulus_Choice_History = summary(Difference_Stimulus_Choice_History)
+
+if (compute_logreg) {
+## Comparison of the explanatory power of stimulus- and choice history
+PwData$Stimulus_minus_1 = c(NA, PwData$Stimulus[1:length(PwData$Stimulus)-1])
+PwData$Stimulus_minus_1[PwData$Trial == 1] = NA
+full_logit_Sum_Stimulus_History <-
+    glmer(Response ~ Stimulus + Stimulus_minus_1 + (1|study_id/subject_id),
+        data = PwData[PwData$Response >= 0 & PwData$Response <= 1 & PwData$Stimulus_minus_1 != PwData$Response_minus_1,],
+        family = binomial)
+
+full_logit_Sum_Choice_History <-
+    glmer(Response ~ Stimulus + Response_minus_1 + (1|study_id/subject_id),
+        data = PwData[PwData$Response >= 0 & PwData$Response <= 1 & PwData$Stimulus_minus_1 != PwData$Response_minus_1,],
+        family = binomial)
+} else {
+  full_logit_Sum_Stimulus_History <- readRDS(file = "./Results/full_logit_Sum_Stimulus_History.rds")
+  full_logit_Sum_Choice_History <- readRDS(file = "./Results/full_logit_Sum_Choice_History.rds")
+}
+STAT.full_logit_Sum_Stimulus_History <- summary(full_logit_Sum_Stimulus_History) 
+STAT.full_logit_Sum_Choice_History <- summary(full_logit_Sum_Choice_History)
+
+##
+## mice
+##
+## General effect of stimulus-history
+M_Behav$null_Stimulus_History = M_Behav$Stimulus_History - 50
+M_mean_Stimulus_History = mean(M_Behav$Stimulus_History, na.rm = TRUE)
+M_error_Stimulus_History = sd(M_Behav$Stimulus_History, na.rm = TRUE)/sqrt(length(M_Behav$Stimulus_History))
+M_STAT.Global_Stimulus_History_Accuracy = t.test(M_Behav$null_Stimulus_History)
+
+## Difference between choice- and stimulus-history
+M_STAT.Difference_Stimulus_Choice_History = t.test(M_Behav$null_Stimulus_History - M_Behav$null_History)
+
+if (compute_mouse_logreg) {
+    M_full_logit_Sum_Stimulus_History <-
+      glmer(
+        Response ~ Stimulus + Stimulus_minus_1 + (1 | subject_id),
+        data = MwData[MwData$Response >= 0 & MwData$Response <= 1 & MwData$Stimulus_minus_1 != MwData$Response_minus_1, ],
+        family = binomial
+      )
+    
+    M_full_logit_Sum_Choice_History <-
+      glmer(
+        Response ~ Stimulus + Response_minus_1 + (1 | subject_id),
+        data = MwData[MwData$Response >= 0 & MwData$Response <= 1 & MwData$Stimulus_minus_1 != MwData$Response_minus_1, ],
+        family = binomial
+      )
+    
+  } else {
+    M_full_logit_Sum_Stimulus_History <-
+      readRDS(file = "./Results/M_full_logit_Sum_Stimulus_History.rds")
+     M_full_logit_Sum_Choice_History <-
+      readRDS(file = "./Results/M_full_logit_Sum_Choice_History.rds")
+   
+  }
+  M_STAT.full_logit_Sum_Stimulus_History <- summary(M_full_logit_Sum_Stimulus_History)
+  M_STAT.full_logit_Sum_Choice_History <- summary(M_full_logit_Sum_Choice_History)
+
+  if (save_summary_data) {
+    save(mean_Stimulus_History,
+         error_Stimulus_History,
+         STAT.Global_Stimulus_History_Accuracy, 
+         STAT.Difference_Stimulus_Choice_History,
+         M_STAT.full_logit_Sum_Stimulus_History,
+         M_STAT.full_logit_Sum_Choice_History,
+         M_mean_Stimulus_History,
+         M_error_Stimulus_History,
+         M_STAT.Global_Stimulus_History_Accuracy, 
+         M_STAT.Difference_Stimulus_Choice_History,
+         M_STAT.full_logit_Sum_Stimulus_History,
+         M_STAT.full_logit_Sum_Choice_History,
+         file = "./Summary_Data/choice_history.Rdata")
+  }
+  
+} else {
+  load("./Summary_Data/choice_history.Rdata")
+}
+```
+
+**In our main manuscript, we investigated the effects of perceptual history, which we defined as the impact of the choice at the preceding trial on the choice at the current trial (henceforth *choice history*). Importantly, an alternative approach to this could be to look at *stimulus history*, which is defined as the impact of the stimulus presented at the preceding trial on the choice at the present trial. Here, we compare the effects of choice-history reported in the main manuscript to the effects of stimulus-history in humans and in mice.** 
+
+- **We observed a significant bias toward stimulus history (humans: `r mean_Stimulus_History`% ± `r  error_Stimulus_History`% of trials, $\beta$ = $`r STAT.Global_Stimulus_History_Accuracy$coefficients[1,1]`$ ± $`r STAT.Global_Stimulus_History_Accuracy$coefficients[1,2]`$, T($`r STAT.Global_Stimulus_History_Accuracy$coefficients[1,3]`$) = $`r STAT.Global_Stimulus_History_Accuracy$coefficients[1,4]`$, p = $`r STAT.Global_Stimulus_History_Accuracy$coefficients[1,5]`$; mice: `r M_mean_Stimulus_History`% ± `r  M_error_Stimulus_History`% of trials, $\beta$ = $`r M_STAT.Global_Stimulus_History_Accuracy$coefficients[1,1]`$ ± $`r M_STAT.Global_Stimulus_History_Accuracy$coefficients[1,2]`$, T($`r M_STAT.Global_Stimulus_History_Accuracy$coefficients[1,3]`$) = $`r M_STAT.Global_Stimulus_History_Accuracy$coefficients[1,4]`$, p = $`r M_STAT.Global_Stimulus_History_Accuracy$coefficients[1,5]`$). The bias toward stimulus history was smaller than the bias toward choice history (humans: $\beta$ = $`r STAT.Difference_Stimulus_Choice_History$coefficients[1,1]`$ ± $`r STAT.Difference_Stimulus_Choice_History$coefficients[1,2]`$, T($`r STAT.Difference_Stimulus_Choice_History$coefficients[1,3]`$) = $`r STAT.Difference_Stimulus_Choice_History$coefficients[1,4]`$, p = $`r STAT.Difference_Stimulus_Choice_History$coefficients[1,5]`$; mice: T(`r M_STAT.Difference_Stimulus_Choice_History$parameter`) = `r M_STAT.Difference_Stimulus_Choice_History$statistic`, p = $`r M_STAT.Difference_Stimulus_Choice_History$p.value`$ ).**
+
+- **The attraction of choices toward stimuli presented at preceding trial is expected, as perception was *stimulus-congruent* on approximately 75% of trials, causing choices and stimuli to be highly correlated. We therefore compared the effects on choice history and stimulus history induced by trials were perception was *stimulus-incongruent* (i.e., *error* trials), since those trials lead to opposite predictions regarding the perceptual choice at the subsequent trial.** 
+
+- **As expected form the findings presented in the main manuscript, perceptual choices were attracted toward perceptual choices at preceding stimulus-incongruent trials (i.e., a positive effect of choice history; humans: $\beta$ = $`r STAT.full_logit_Sum_Choice_History$coefficients[3,1]`$ ± $`r STAT.full_logit_Sum_Choice_History$coefficients[3,2]`$, z = $`r STAT.full_logit_Sum_Choice_History$coefficients[3,3]`$, p = $`r STAT.full_logit_Sum_Choice_History$coefficients[3,4]`$: mice: $\beta$ = $`r M_STAT.full_logit_Sum_Choice_History$coefficients[3,1]`$ ± $`r M_STAT.full_logit_Sum_Choice_History$coefficients[3,2]`$, z = $`r M_STAT.full_logit_Sum_Choice_History$coefficients[3,3]`$, p = $`r M_STAT.full_logit_Sum_Choice_History$coefficients[3,4]`$). By contrast, perceptual choices tended to be repelled away from the stimulus presented the preceding trial (i.e., a negative effect of stimulus history; humans: $\beta$ = $`r STAT.full_logit_Sum_Stimulus_History$coefficients[3,1]`$ ± $`r STAT.full_logit_Sum_Stimulus_History$coefficients[3,2]`$, z = $`r STAT.full_logit_Sum_Stimulus_History$coefficients[3,3]`$, p = $`r STAT.full_logit_Sum_Stimulus_History$coefficients[3,4]`$: mice: $\beta$ = $`r M_STAT.full_logit_Sum_Stimulus_History$coefficients[3,1]`$ ± $`r M_STAT.full_logit_Sum_Stimulus_History$coefficients[3,2]`$, z = $`r M_STAT.full_logit_Sum_Stimulus_History$coefficients[3,3]`$, p = $`r M_STAT.full_logit_Sum_Stimulus_History$coefficients[3,4]`$). This repulsion of choices away from stimuli presented at stimulus-incongruent trials confirmed that the choices at stimulus-incongruent trials were the primary driver of serial effects in perception in both humans and mice.**
+
+- **In sum, the above results suggest that, in both humans and mice, serial dependencies were better explained by the effects of choice history as opposed to the effects of stimulus history. This aligns with a result recently published for the IBL database, where mice were shown to follow an action-kernel as opposed to an stimulus-kernel model when integrating information across trials[@Findling2023].** 
+
+## Fluctuations between internal and external mode modulate perceptual performance beyond the effect of general response biases
+
+```{r bias_slider, cache = TRUE, warning = FALSE}
+
+##
+## relation of history-dependent biases and general response biases to fluctuations in stimulus-congruency
+##
+
+if (!load_summary_data) {
+
+if (extract_additional_Slider_Data == TRUE) {
+Slider_Data = PwData[, c(1, 4, 5, 7, 36, 37)]
+
+Slider_Data$Preferred = NA
+Slider_Data$Preferred_slider = NA
+for (subj_idx in unique(Slider_Data$subject_id)) {
+print(subj_idx)
+responses = Slider_Data[Slider_Data$subject_id == subj_idx, ]$Response
+
+outcomes = unique(responses)
+
+n = rep(NA, length(outcomes))
+for (outcome_idx in c(1,length(outcomes))) {
+n[outcome_idx] = sum(responses == outcomes[outcome_idx])
+}
+
+Slider_Data[Slider_Data$subject_id == subj_idx, ]$Preferred = rep(0, length(responses))
+Slider_Data[Slider_Data$subject_id == subj_idx, ]$Preferred[responses == outcomes[which(n == max(n))]] = 1
+Slider_Data[Slider_Data$subject_id == subj_idx, ]$Preferred_slider = f_compute_slider(Slider_Data[Slider_Data$subject_id == subj_idx, ]$Preferred, sliding_window)
+}
+} else {Slider_Data <- read.csv(paste(root, "Slider_Data.csv", sep = ""))}
+
+slider_History_Preferred_vs_Accuracy <- lmer(Accuracy_slider ~ History_slider + Preferred_slider + (1|study_id/subject_id), data = Slider_Data)
+STAT.slider_History_Preferred_vs_Accuracy <- summary(slider_History_Preferred_vs_Accuracy)
+
+slider_History_vs_Preferred <- lmer(History_slider ~ Preferred_slider + (1|study_id/subject_id), data = Slider_Data)
+STAT.slider_History_vs_Preferred <- summary(slider_History_vs_Preferred)
+
+Global_History_Preferred_vs_Bias <- lmer(Accuracy ~ History + Bias + (1|study_id), data = Behav)
+STAT.Global_History_Preferred_vs_Bias <- summary(Global_History_Preferred_vs_Bias)
+
+    Variance_History_General <- 
+    ddply(
+    Slider_Data, 
+    .(subject_id, study_id),
+    summarise,
+    var_History = sd(History_slider, na.rm = TRUE) - sd(Preferred_slider, na.rm = TRUE)
+  )
+
+Variance_History_vs_Preferred <- lmer(var_History ~ 1 + (1|study_id), data = Variance_History_General)
+STAT.Variance_History_vs_Preferred <- summary(Variance_History_vs_Preferred)
+  
+  
+  if (save_summary_data) {
+    save(Variance_History_General,
+         STAT.Variance_History_vs_Preferred,
+         STAT.Global_History_Preferred_vs_Bias,
+         STAT.slider_History_vs_Preferred,
+         STAT.slider_History_Preferred_vs_Accuracy,
+         file = "./Summary_Data/bias_slider.Rdata")
+  }
+  
+} else {
+  load("./Summary_Data/bias_slider.Rdata")
+}
+```
+
+```{r mouse_bias_slider, cache = TRUE}
+
+if (!load_summary_data) {
+  
+  if (extract_mouse_additional_Slider_Data == TRUE) {
+    source("./Functions/f_compute_slider.R", local = knitr::knit_global())
+    M_Slider_Data = MwData[, c(1,2, 4, 6, 37, 38)]
+    
+    M_Slider_Data$Preferred = NA
+    M_Slider_Data$Preferred_slider = NA
+    for (subj_idx in unique(M_Slider_Data$subject_id)) {
+      print(subj_idx)
+      responses = M_Slider_Data[M_Slider_Data$subject_id == subj_idx, ]$Response
+      
+      outcomes = unique(responses)
+      
+      n = rep(NA, length(outcomes))
+      for (outcome_idx in c(1,length(outcomes))) {
+        n[outcome_idx] = sum(responses == outcomes[outcome_idx])
+      }
+      
+      M_Slider_Data[M_Slider_Data$subject_id == subj_idx, ]$Preferred = rep(0, length(responses))
+      M_Slider_Data[M_Slider_Data$subject_id == subj_idx, ]$Preferred[responses == outcomes[which(n == max(n))]] = 1
+      M_Slider_Data[M_Slider_Data$subject_id == subj_idx, ]$Preferred_slider = f_compute_slider(M_Slider_Data[M_Slider_Data$subject_id == subj_idx, ]$Preferred, sliding_window)
+    }
+  } else {M_Slider_Data <- read.csv(paste(root, "M_Slider_Data.csv", sep = ""))}
+  
+  M_slider_History_Preferred_vs_Accuracy <- lmer(Accuracy_slider ~ History_slider + Preferred_slider + (1|subject_id/session_id), data = M_Slider_Data)
+  M_STAT.slider_History_Preferred_vs_Accuracy <- summary(M_slider_History_Preferred_vs_Accuracy)
+  
+  M_slider_Preferred_vs_Accuracy <- lmer(Accuracy_slider ~ Preferred_slider + (1|subject_id/session_id), data = M_Slider_Data)
+  M_STAT.slider_Preferred_vs_Accuracy <- summary(M_slider_Preferred_vs_Accuracy)
+  
+  M_slider_History_vs_Preferred <- lmer(History_slider ~ Preferred_slider + (1|subject_id/session_id), data = M_Slider_Data)
+  M_STAT.slider_History_vs_Preferred <- summary(M_slider_History_vs_Preferred)
+  
+  M_Global_History_Preferred_vs_Bias <- lm(Accuracy ~ History + Bias, data = M_Behav)
+  M_STAT.Global_History_Preferred_vs_Bias <- summary(M_Global_History_Preferred_vs_Bias)
+  
+  M_Variance_History_General <- 
+    ddply(
+      M_Slider_Data, 
+      .(subject_id, session_id),
+      summarise,
+      var_History = sd(History_slider, na.rm = TRUE) - sd(Preferred_slider, na.rm = TRUE)
+    )
+  
+  M_Variance_History_vs_Preferred <- lmer(var_History ~ 1 + (1|session_id), data = M_Variance_History_General)
+  M_STAT.Variance_History_vs_Preferred <- summary(M_Variance_History_vs_Preferred)
+  
+  if (save_summary_data) {
+    save(M_STAT.slider_History_Preferred_vs_Accuracy,
+         M_STAT.slider_Preferred_vs_Accuracy,
+         M_STAT.slider_History_vs_Preferred,
+         M_STAT.Global_History_Preferred_vs_Bias,
+         M_Variance_History_General,
+         M_STAT.Variance_History_vs_Preferred,
+         file = "./Summary_Data/mouse_bias_slider.Rdata")
+  }
+  
+} else {
+  load("./Summary_Data/mouse_bias_slider.Rdata")
+}
+```
+
+The hypothesis that perception may cycle through opposing internally- and externally-biased modes is motivated by correlative evidence that recurring intervals of stronger perceptual history temporally reduce the participants' sensitivity to external information. Importantly, the history-dependent biases that characterize internal mode processing must be differentiated from general response biases. In binary perceptual decision-making, general response biases are defined by a propensity to choose one of the two outcomes more often than the alternative. Indeed, human participants selected the more frequent of the two possible outcomes in `r mean(Behav$Bias, na.rm = TRUE)`% ± `r sd(Behav$Bias, na.rm = TRUE)/sqrt(length(Behav$Bias))`% of trials, and  mice selected the more frequent of the two possible outcomes in `r mean(M_Behav$Bias, na.rm = TRUE)`% ± `r sd(M_Behav$Bias, na.rm = TRUE)/sqrt(length(M_Behav$Bias))`% of trials
+
+Two caveats have to be considered to make sure that the effect of history-congruence is distinct from the effect of general response biases. First, history-congruent states become more likely for larger response biases that cause a increasing imbalance in the likelihood of the two outcomes (humans: $\beta$ = $`r STAT.slider_History_vs_Preferred$coefficients[2,1]`$ ± $`r STAT.slider_History_vs_Preferred$coefficients[2,2]`$, T($`r STAT.slider_History_vs_Preferred$coefficients[2,3]`$) = $`r STAT.slider_History_vs_Preferred$coefficients[2,4]`$, p = $`r STAT.slider_History_vs_Preferred$coefficients[2,5]`$; 
+mice: $\beta$ = $`r M_STAT.slider_History_vs_Preferred$coefficients[2,1]`$ ± $`r M_STAT.slider_History_vs_Preferred$coefficients[2,2]`$, T($`r M_STAT.slider_History_vs_Preferred$coefficients[2,3]`$) = $`r M_STAT.slider_History_vs_Preferred$coefficients[2,4]`$, p = $`r M_STAT.slider_History_vs_Preferred$coefficients[2,5]`$). One may thus ask whether the autocorrelation of history-congruence could be entirely driven by general response biases. 
+
+Importantly, the our autocorrelation analyses account for general response biases by computing group-level autocorrelations (see Figure 2C) relative to randomly permuted data (i.e., by subtracting the autocorrelation of randomly permuted data from the raw autocorrelation curve). This precludes that general response biases contribute to the observed autocorrelation of history-congruence (see Supplemental Figure S5 for a visualization of the correction procedure for simulated data with general response biases ranging from 60 to 90%). 
+
+Second, it may be argued that fluctuations in perceptual performance may be solely driven by ongoing changes in the strength of general response biases. To assess the links between dynamic fluctuations in stimulus-congruence on the one hand and history-congruence as well as general response bias on the other hand, we computed all variables as dynamic probabilities in sliding windows of ± 5 trials (see Figure 1C). Linear mixed effects modeling indicated that fluctuations in history-congruent biases were larger in amplitude than the corresponding fluctuations in general response biases in humans ($\beta_0$ = $`r STAT.Variance_History_vs_Preferred$coefficients[1,1]`$ ± $`r STAT.Variance_History_vs_Preferred$coefficients[1,2]`$, T($`r STAT.Variance_History_vs_Preferred$coefficients[1,3]`$) = $`r STAT.Variance_History_vs_Preferred$coefficients[1,4]`$, p = $`r STAT.Variance_History_vs_Preferred$coefficients[1,5]`$), 
+but slightly smaller in mice ($\beta_0$ = $`r M_STAT.Variance_History_vs_Preferred$coefficients[1,1]`$ ± $`r M_STAT.Variance_History_vs_Preferred$coefficients[1,2]`$, T($`r M_STAT.Variance_History_vs_Preferred$coefficients[1,3]`$) = $`r M_STAT.Variance_History_vs_Preferred$coefficients[1,4]`$, p = $`r M_STAT.Variance_History_vs_Preferred$coefficients[1,5]`$).
+
+Crucially, ongoing fluctuations in history-congruence had a significant negative effect on stimulus-congruence (
+humans: $\beta_1$ = $`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[2,1]`$ ± $`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[2,2]`$, T($`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[2,3]`$) = $`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[2,4]`$, p = $`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[2,5]`$;
+mice: $\beta_1$ = $`r M_STAT.slider_History_Preferred_vs_Accuracy$coefficients[2,1]`$ ± $`r M_STAT.slider_History_Preferred_vs_Accuracy$coefficients[2,2]`$, T($`r M_STAT.slider_History_Preferred_vs_Accuracy$coefficients[2,3]`$) = $`r M_STAT.slider_History_Preferred_vs_Accuracy$coefficients[2,4]`$, p = $`r M_STAT.slider_History_Preferred_vs_Accuracy$coefficients[2,5]`$) 
+beyond the effect of ongoing changes in general response biases (
+humans: $\beta_2$ = $`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,1]`$ ± $`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,2]`$, T($`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,3]`$) = $`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,4]`$, p = $`r STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,5]`$;
+mice: $\beta_2$ = $`r M_STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,1]`$ ± $`r M_STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,2]`$, T($`r M_STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,3]`$) = $`r M_STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,4]`$, p = $`r M_STAT.slider_History_Preferred_vs_Accuracy$coefficients[3,5]`$). In sum, the above control analyses confirmed that, in both humans and mice, the observed influence of preceding choices on perceptual decision-making cannot be reduced to general response biases.
+
+## Internal mode is characterized by lower thresholds as well as by history-dependent changes in biases and lapses
+
+Random or stereotypical responses may provide an alternative explanation for the reduced sensitivity to external sensory information that we attribute to internal mode processing. To test this hypothesis, we asked whether history-independent changes in biases and lapses may provide an alternative explanation of the reduced sensitivity to external information that we attribute to internal mode processing. To this end, we estimated full and history-conditioned psychometric curves to investigate how internal and external mode relate to biases (i.e., the horizontal position of the psychometric curve), lapses (i.e, the asymptotes of the psychometric curve) and thresholds (i.e., 1/sensitivity, estimated from the slope of the psychometric curve). We used a maximum likelihood procedure to predict trial-wise choices $y$ ($y = 0$ and $y = 1$ for outcomes A and B respectively) from the choice probabilities $y_p$. $y_p$ was computed from difficulty-weighted inputs $s_w$ via a parametric error function defined by the parameters $\gamma$ (lower lapse), $\delta$ (upper lapse), $\mu$ (bias) and $t$ (threshold; see Methods for details):
+
+\begin{equation}
+y_p = \gamma + (1 - \gamma - \delta) *  (erf(\frac{s_w + \mu}{t}) + 1) / 2
+\end{equation}
+
+Under our main hypothesis that periodic reductions in sensitivity to external information are driven by increases in the impact of perceptual history, one would expect (i) a history-dependent increase in biases and lapses (effects of perceptual history), and (ii), a history-independent increase in threshold (reduced sensitivity to external information). Conversely, if what we identified as internal mode processing was in fact driven by random choices, one would expect (i), a history-independent increase in lapse (choice randomness), (ii), no change in bias (no effect of perceptual history), and (iii), reduced thresholds (reduced sensitivity to external information).
+
+### Humans
+```{r psychometric_function, cache = TRUE}
+if (!load_summary_data) {
+  Behav_PM <-
+    ddply(
+      PwData,
+      .(subject_id, study_id, round(Difficulty, digits = 0)),
+      summarise,
+      p_Accuracy = sum(Accuracy == 1, na.rm = TRUE) / length(Accuracy),
+      n_Accuracy = length(Accuracy)
+    )
+  
+  colnames(Behav_PM) <-
+    c("subject_id",
+      "study_id",
+      "Difficulty",
+      "p_Accuracy",
+      "n_Accuracy")
+  
+  Behav_PM <-
+    Behav_PM[Behav_PM$Difficulty >= -3 &
+               Behav_PM$Difficulty <= 3 &
+               !is.na(Behav_PM$Difficulty), ]
+  
+  PwData$rDifficulty <- round(PwData$Difficulty, digits = 0)
+  
+  P_Behav = Behav
+  P_Behav = P_Behav[P_Behav$subject_id %in% unique(PwData[!is.na(PwData$Difficulty),]$subject_id),]
+  
+  N_PM <- ddply(PwData,
+                .(rDifficulty),
+                summarise,
+                n_trials = length(rDifficulty))
+  
+  difficulty_levels = seq(-3, 3, 1)
+  
+  type_list = c(
+    "full_b",
+    "full_0",
+    "full_1",
+    "external_b",
+    "external_0",
+    "external_1",
+    "internal_b",
+    "internal_0",
+    "internal_1"
+  )
+  
+  P_Behav = cbind(P_Behav, matrix(NA, ncol = length(type_list) * 5, nrow = nrow(P_Behav)))
+  colnames(P_Behav) <-
+    c(
+      "subject_id",
+      "study_id",
+      "History",
+      "Min_History",
+      "Max_History",
+      "Accuracy",
+      "Min_Accuracy",
+      "Max_Accuracy",
+      "Stimulus_History",
+      "Stimulus_Bias",
+      "Response_Bias",
+      "Bias",
+      "null_History",
+      "full_b_lower_lapse",
+      "full_b_higher_lapse",
+      "full_b_av_lapse",
+      "full_b_bias",
+      "full_b_threshold",
+      "full_0_lower_lapse",
+      "full_0_higher_lapse",
+      "full_0_av_lapse",
+      "full_0_bias",
+      "full_0_threshold",
+      "full_1_lower_lapse",
+      "full_1_higher_lapse",
+      "full_1_av_lapse",
+      "full_1_bias",
+      "full_1_threshold",
+      "external_b_lower_lapse",
+      "external_b_higher_lapse",
+      "external_b_av_lapse",
+      "external_b_bias",
+      "external_b_threshold",
+      "external_0_lower_lapse",
+      "external_0_higher_lapse",
+      "external_0_av_lapse",
+      "external_0_bias",
+      "external_0_threshold",
+      "external_1_lower_lapse",
+      "external_1_higher_lapse",
+      "external_1_av_lapse",
+      "external_1_bias",
+      "external_1_threshold",
+      "internal_b_lower_lapse",
+      "internal_b_higher_lapse",
+      "internal_b_av_lapse",
+      "internal_b_bias",
+      "internal_b_threshold",
+      "internal_0_lower_lapse",
+      "internal_0_higher_lapse",
+      "internal_0_av_lapse",
+      "internal_0_bias",
+      "internal_0_threshold",
+      "internal_1_lower_lapse",
+      "internal_1_higher_lapse",
+      "internal_1_av_lapse",
+      "internal_1_bias",
+      "internal_1_threshold"
+    )
+  
+  
+  ##
+  ## FIT
+  ##
+  
+  for (subj_idx in unique(P_Behav$subject_id)) {
+    print(subj_idx)
+    
+    Input_Data = PwData[PwData$subject_id == subj_idx &
+                          PwData$rDifficulty %in% difficulty_levels, c(
+                            "Stimulus",
+                            "Response",
+                            "rDifficulty",
+                            "Response_minus_1",
+                            "scaled_directed_mode"
+                          )]
+    
+    max_env = which(Input_Data$Stimulus == max(Input_Data$Stimulus, na.rm = TRUE))
+    min_env = which(Input_Data$Stimulus == min(Input_Data$Stimulus, na.rm = TRUE))
+    Input_Data$Stimulus[max_env] = 1
+    Input_Data$Stimulus[min_env] = 0
+    
+    max_response = which(Input_Data$Response == max(Input_Data$Response, na.rm = TRUE))
+    min_response = which(Input_Data$Response == min(Input_Data$Response, na.rm = TRUE))
+    Input_Data$Response[max_response] = 1
+    Input_Data$Response[min_response] = 0
+    
+    max_response_minus_1 = which(Input_Data$Response_minus_1 == max(Input_Data$Response_minus_1, na.rm = TRUE))
+    min_response_minus_1 = which(Input_Data$Response_minus_1 == min(Input_Data$Response_minus_1, na.rm = TRUE))
+    Input_Data$Response_minus_1[max_response_minus_1] = 1
+    Input_Data$Response_minus_1[min_response_minus_1] = 0
+    
+    for (type_idx in type_list) {
+      if (type_idx == "full_b") {
+        trial_selector = rep(TRUE, nrow(Input_Data))
+      } else if (type_idx == "full_0") {
+        trial_selector =
+          Input_Data$Response_minus_1 == 0
+      } else if (type_idx == "full_1") {
+        trial_selector =
+          Input_Data$Response_minus_1 == 1
+      } else if (type_idx == "internal_b") {
+        trial_selector =
+          Input_Data$scaled_directed_mode < 0
+      } else if (type_idx == "internal_0") {
+        trial_selector =
+          Input_Data$Response_minus_1 == 0 &
+          Input_Data$scaled_directed_mode < 0
+      } else if (type_idx == "internal_1") {
+        trial_selector =
+          Input_Data$Response_minus_1 == 1 &
+          Input_Data$scaled_directed_mode < 0
+      } else if (type_idx == "external_b") {
+        trial_selector =
+          Input_Data$scaled_directed_mode > 0
+      } else if (type_idx == "external_0") {
+        trial_selector =
+          Input_Data$Response_minus_1 == 0 &
+          Input_Data$scaled_directed_mode > 0
+      } else if (type_idx == "external_1") {
+        trial_selector =
+          Input_Data$Response_minus_1 == 1 &
+          Input_Data$scaled_directed_mode > 0
+      }
+      
+      source("./Functions/fit_psychometric_function.R")
+      par = c(0.0, 0.0, 0, 5)
+      lower = c(0.0, 0.0,-5, 0.5)
+      upper = c(0.5, 0.5, 5, 25)
+      
+      
+      add_PM =  optimx(
+        par,
+        fit_psychometric_function,
+        Input_Data = Input_Data[trial_selector[!is.na(trial_selector)], ],
+        lower = lower,
+        upper = upper,
+        method = "L-BFGS-B"
+      )
+      
+      P_Behav[P_Behav$subject_id == subj_idx, grepl(type_idx, colnames(P_Behav))] <-
+        c(add_PM$p1, add_PM$p2, mean(c(add_PM$p1, add_PM$p2)), add_PM$p3, add_PM$p4)
+    }
+  }
+  
+  STAT.PM_History_lapse_bias_threshold <-
+    summary(lmer(
+      History ~ 1 + full_b_av_lapse + abs(full_b_bias) + full_b_threshold + (1 |
+                                                                               study_id),
+      data = P_Behav
+    ))
+  
+  STAT.PM_Accuracy_History_lapse <-
+    summary(lmer(Accuracy ~ 1 + History + full_b_av_lapse + (1 |
+                                                               study_id),
+                 data = P_Behav))
+  
+  P_Behav$threshold_diff = P_Behav$external_b_threshold - P_Behav$internal_b_threshold
+  P_Behav$bias_diff = abs(P_Behav$external_b_bias) - abs(P_Behav$internal_b_bias)
+  P_Behav$lapse_diff = P_Behav$external_b_av_lapse - P_Behav$internal_b_av_lapse
+  
+  STAT.PM_diff_bias <-
+    summary(lmer(bias_diff ~ 1 + lapse_diff + threshold_diff + (1 |
+                                                                  study_id),
+                 data = P_Behav))
+  
+  STAT.PM_diff_lapse <-
+    summary(lmer(lapse_diff ~ 1 + bias_diff + threshold_diff + (1 |
+                                                                  study_id),
+                 data = P_Behav))
+  
+  STAT.PM_diff_threshold <-
+    summary(lmer(threshold_diff ~ 1 + bias_diff + lapse_diff + (1 |
+                                                                  study_id),
+                 data = P_Behav))
+  
+    STAT.PM_zero_bias_b <-
+    summary(lmer(full_b_bias ~ 1 + (1 | study_id), data = P_Behav))
+    
+    STAT.PM_zero_bias_0 <-
+    summary(lmer(full_0_bias ~ 1 + (1 | study_id), data = P_Behav))
+    
+    STAT.PM_zero_bias_1 <-
+    summary(lmer(full_0_bias ~ 1 + (1 | study_id), data = P_Behav))
+    
+    
+  STAT.PM_diff_lapse_1_lower <- summary(lmer(external_1_lower_lapse - internal_1_lower_lapse ~ 1 + (1|study_id), data = P_Behav))
+  STAT.PM_diff_lapse_0_lower <- summary(lmer(external_0_lower_lapse - internal_0_lower_lapse ~ 1 + (1|study_id), data = P_Behav))
+  STAT.PM_diff_lapse_1_higher <- summary(lmer(external_1_higher_lapse - internal_1_higher_lapse ~ 1 + (1|study_id), data = P_Behav))
+  STAT.PM_diff_lapse_0_higher <- summary(lmer(external_0_higher_lapse - internal_0_higher_lapse ~ 1 + (1|study_id), data = P_Behav))
+  
+  STAT.PM_diff_threshold_0_1 <- summary(lmer(full_0_threshold - full_1_threshold ~ 1 + (1|study_id), data = P_Behav))
+  
+##
+## Generate parameter summary
+##
+gathercol = colnames(P_Behav[, seq(14, ncol(P_Behav) - 3)])
+P_Behav_long  <-
+  gather(P_Behav,
+         "Variable",
+         "Estimate",
+         gathercol,
+         factor_key = TRUE)
+
+P_Behav_long$Conditioned = NA
+P_Behav_long$Type = NA
+
+P_Behav_long[grepl("full", P_Behav_long$Variable), ]$Type = "full"
+P_Behav_long[grepl("internal", P_Behav_long$Variable), ]$Type = "internal"
+P_Behav_long[grepl("external", P_Behav_long$Variable), ]$Type = "external"
+P_Behav_long$Type <-
+  factor(P_Behav_long$Type, levels = c("full", "internal", "external"))
+
+P_Behav_long[grepl("_b", P_Behav_long$Variable), ]$Conditioned = "all"
+P_Behav_long[grepl("_0", P_Behav_long$Variable), ]$Conditioned = "y(t-1) = 0"
+P_Behav_long[grepl("_1", P_Behav_long$Variable), ]$Conditioned = "y(t-1) = 1"
+
+P_Behav_long$Variable_full = P_Behav_long$Variable
+P_Behav_long$Variable <- gsub(c("full_"), "", P_Behav_long$Variable)
+P_Behav_long$Variable <-
+  gsub("internal_", "", P_Behav_long$Variable)
+P_Behav_long$Variable <-
+  gsub("external_", "", P_Behav_long$Variable)
+P_Behav_long$Variable <- gsub("b_", "", P_Behav_long$Variable)
+P_Behav_long$Variable <- gsub("1_", "", P_Behav_long$Variable)
+P_Behav_long$Variable <- gsub("0_", "", P_Behav_long$Variable)
+
+##
+## simulate
+##
+Sim_PM = data.frame()
+stim_range = seq(-5,+5, 0.25)
+for (subj_idx in unique(P_Behav$subject_id)) {
+  print(subj_idx)
+  for (type_idx in type_list) {
+  par = P_Behav_long[P_Behav_long$subject_id == subj_idx & grepl(type_idx, P_Behav_long$Variable_full), ]$Estimate[c(1, 2, 4, 5)]
+  lower_lapse = par[1]
+  higher_lapse = par[2]
+  bias = par[3]
+  contrast_threshold = par[4]
+  
+  Sim_PM = rbind(
+    Sim_PM,
+    add_sim_PM = data.frame(
+      subject_id = subj_idx,
+      study_id = unique(P_Behav[P_Behav$subject_id == subj_idx,]$study_id),
+      Stimulus = stim_range,
+      y_prob = lower_lapse + (1 - lower_lapse - higher_lapse) *  (erf((stim_range - bias) / contrast_threshold) + 1) / 2,
+      Variable = type_idx
+    )
+)
+}
+}
+
+Sim_PM$Conditioned = NA
+Sim_PM$Type = NA
+
+Sim_PM[grepl("full", Sim_PM$Variable), ]$Type = "full"
+Sim_PM[grepl("internal", Sim_PM$Variable), ]$Type = "internal"
+Sim_PM[grepl("external", Sim_PM$Variable), ]$Type = "external"
+Sim_PM$Type <-
+  factor(Sim_PM$Type, levels = c("full", "internal", "external"))
+
+
+Sim_PM[grepl("_b", Sim_PM$Variable), ]$Conditioned = "all"
+Sim_PM[grepl("_0", Sim_PM$Variable), ]$Conditioned = "y(t-1) = 0"
+Sim_PM[grepl("_1", Sim_PM$Variable), ]$Conditioned = "y(t-1) = 1"
+
+Sim_PM$Conditioned <- as.factor(Sim_PM$Conditioned)
+Sim_PM$subject_id <- as.factor(Sim_PM$subject_id)
+
+Sim_PM_group <-
+    ddply(
+    Sim_PM,
+    .(Stimulus, Conditioned, Type),
+    summarise,
+    mean_y_prob = mean(y_prob, na.rm = TRUE),
+    error_y_prob = sd(y_prob, na.rm = TRUE)/sqrt(length(y_prob))
+  )
+
+Sim_PM_group$Type <-
+  factor(Sim_PM_group$Type, levels = c("full", "internal", "external"))
+  
+
+  if (save_summary_data) {
+    save(
+      P_Behav,
+      STAT.PM_History_lapse_bias_threshold,
+      STAT.PM_Accuracy_History_lapse,
+      STAT.PM_diff_threshold,
+      STAT.PM_diff_lapse,
+      STAT.PM_diff_bias,
+      STAT.PM_zero_bias_b,
+      STAT.PM_zero_bias_0,
+      STAT.PM_zero_bias_1,
+      STAT.PM_diff_lapse_1_lower,
+      STAT.PM_diff_lapse_0_lower,
+      STAT.PM_diff_lapse_1_higher,
+      STAT.PM_diff_lapse_0_higher,
+      STAT.PM_diff_threshold_0_1,
+      P_Behav_long,
+      Sim_PM,
+      Sim_PM_group,
+      file = "./Summary_Data/psychometric_data.Rdata"
+    )
+  }
+  
+} else {
+  load("./Summary_Data/psychometric_data.Rdata")
+}
+
+```
+
+Across the full dataset provided in the Confidence database[@Rahnev2020] (i.e., irrespective of the preceding perceptual choice $y_{t-1}$), biases $\mu$ were distributed around zero (`r mean(P_Behav$full_b_bias, na.rm = TRUE)` ± `r sd(P_Behav$full_b_bias, na.rm = TRUE)/sqrt(length(P_Behav$full_b_bias))`; $\beta_0$ = $`r STAT.PM_zero_bias_b$coefficients[1,1]`$ ± $`r STAT.PM_zero_bias_b$coefficients[1,2]`$, T($`r STAT.PM_zero_bias_b$coefficients[1,3]`$) = $`r STAT.PM_zero_bias_b$coefficients[1,4]`$, p = $`r STAT.PM_zero_bias_b$coefficients[1,5]`$; see Figure 3A and B, upper panel). 
+When conditioned on perceptual history, biases $\mu$ varied according to the preceding perceptual choice, with negative biases for $y_{t-1} = 0$ (`r -mean(P_Behav$full_0_bias, na.rm = TRUE)` ± `r sd(P_Behav$full_0_bias, na.rm = TRUE)/sqrt(length(P_Behav$full_0_bias))`; $\beta_0$ = $`r STAT.PM_zero_bias_0$coefficients[1,1]`$ ± $`r STAT.PM_zero_bias_0$coefficients[1,2]`$, T($`r STAT.PM_zero_bias_0$coefficients[1,3]`$) = $`r STAT.PM_zero_bias_0$coefficients[1,4]`$, p = $`r STAT.PM_zero_bias_0$coefficients[1,5]`$) 
+and positive biases for $y_{t-1} = 1$ (`r -mean(P_Behav$full_1_bias, na.rm = TRUE)` ± `r sd(P_Behav$full_1_bias, na.rm = TRUE)/sqrt(length(P_Behav$full_1_bias))`; $\beta_0$ = $`r STAT.PM_zero_bias_1$coefficients[1,1]`$ ± $`r STAT.PM_zero_bias_1$coefficients[1,2]`$, T($`r STAT.PM_zero_bias_1$coefficients[1,3]`$) = $`r STAT.PM_zero_bias_1$coefficients[1,4]`$, p = $`r STAT.PM_zero_bias_1$coefficients[1,5]`$).
+Absolute biases $|\mu|$ were larger in internal mode (`r mean(abs(P_Behav$internal_b_bias), na.rm = TRUE)` ± `r sd(abs(P_Behav$internal_b_bias), na.rm = TRUE)/sqrt(length(abs(P_Behav$internal_b_bias)))`) as compared to external mode (`r mean(abs(P_Behav$external_b_bias), na.rm = TRUE)` ± `r sd(abs(P_Behav$external_b_bias), na.rm = TRUE)/sqrt(length(abs(P_Behav$external_b_bias)))`; $\beta_0$ = $`r STAT.PM_diff_bias$coefficients[1,1]`$ ± $`r STAT.PM_diff_bias$coefficients[1,2]`$, T($`r STAT.PM_diff_bias$coefficients[1,3]`$) = $`r STAT.PM_diff_bias$coefficients[1,4]`$, p = $`r STAT.PM_diff_bias$coefficients[1,5]`$; controlling for differences in lapses and thresholds). 
+
+Lower and upper lapses amounted to $\gamma$ = `r mean(P_Behav$full_b_lower_lapse, na.rm = TRUE)` ± `r sd(P_Behav$full_b_lower_lapse, na.rm = TRUE)/sqrt(length(P_Behav$full_b_higher_lapse))` and $\delta$ = `r mean(P_Behav$full_b_higher_lapse, na.rm = TRUE)` ± `r sd(P_Behav$full_b_higher_lapse, na.rm = TRUE)/sqrt(length(P_Behav$full_b_higher_lapse))` (see Figure 3A, C and D). 
+Lapses were larger in internal mode ($\gamma$ = `r mean(P_Behav$internal_b_lower_lapse, na.rm = TRUE)` ± `r sd(P_Behav$internal_b_lower_lapse, na.rm = TRUE)/sqrt(length(P_Behav$internal_b_higher_lapse))`, $\delta$ = `r mean(P_Behav$internal_b_higher_lapse, na.rm = TRUE)` ± `r sd(P_Behav$internal_b_higher_lapse, na.rm = TRUE)/sqrt(length(P_Behav$internal_b_higher_lapse))`) as compared to external mode ($\gamma$ = `r mean(P_Behav$external_b_lower_lapse, na.rm = TRUE)` ± `r sd(P_Behav$external_b_lower_lapse, na.rm = TRUE)/sqrt(length(P_Behav$external_b_higher_lapse))`, $\delta$ = `r mean(P_Behav$external_b_higher_lapse, na.rm = TRUE)` ± `r sd(P_Behav$external_b_higher_lapse, na.rm = TRUE)/sqrt(length(P_Behav$external_b_higher_lapse))`; $\beta_0$ = $`r STAT.PM_diff_lapse$coefficients[1,1]`$ ± $`r STAT.PM_diff_lapse$coefficients[1,2]`$, T($`r STAT.PM_diff_lapse$coefficients[1,3]`$) = $`r STAT.PM_diff_lapse$coefficients[1,4]`$, p = $`r STAT.PM_diff_lapse$coefficients[1,5]`$; controlling for differences in biases and thresholds). 
+
+Conditioning on the previous perceptual choice revealed that the between-mode difference in lapse was not general, but depended on perceptual history: 
+For $y_{t-1} = 0$, only higher lapses $\delta$ differed between internal and external mode ($\beta_0$ = $`r STAT.PM_diff_lapse_0_higher$coefficients[1,1]`$ ± $`r STAT.PM_diff_lapse_0_higher$coefficients[1,2]`$, T($`r STAT.PM_diff_lapse_0_higher$coefficients[1,3]`$) = $`r STAT.PM_diff_lapse_0_higher$coefficients[1,4]`$, p = $`r STAT.PM_diff_lapse_0_higher$coefficients[1,5]`$), 
+whereas lower lapses $\gamma$ did not ($\beta_0$ = $`r STAT.PM_diff_lapse_0_lower$coefficients[1,1]`$ ± $`r STAT.PM_diff_lapse_0_lower$coefficients[1,2]`$, T($`r STAT.PM_diff_lapse_0_lower$coefficients[1,3]`$) = $`r STAT.PM_diff_lapse_0_lower$coefficients[1,4]`$, p = $`r STAT.PM_diff_lapse_0_lower$coefficients[1,5]`$). 
+Vice versa, 
+for $y_{t-1} = 1$, 
+lower lapses $\gamma$ differed between internal and external mode ($\beta_0$ = $`r STAT.PM_diff_lapse_1_lower$coefficients[1,1]`$ ± $`r STAT.PM_diff_lapse_1_lower$coefficients[1,2]`$, T($`r STAT.PM_diff_lapse_1_lower$coefficients[1,3]`$) = $`r STAT.PM_diff_lapse_1_lower$coefficients[1,4]`$, p = $`r STAT.PM_diff_lapse_1_lower$coefficients[1,5]`$), 
+whereas higher lapses $\delta$ did not ($\beta_0$ = $`r STAT.PM_diff_lapse_1_higher$coefficients[1,1]`$ ± $`r STAT.PM_diff_lapse_1_higher$coefficients[1,2]`$, T($`r STAT.PM_diff_lapse_1_higher$coefficients[1,3]`$) = $`r STAT.PM_diff_lapse_1_higher$coefficients[1,4]`$, p = $`r STAT.PM_diff_lapse_1_higher$coefficients[1,5]`$).
+
+Thresholds $t$ were estimated at `r mean(P_Behav$full_b_threshold, na.rm = TRUE)` ± `r sd(P_Behav$full_b_threshold, na.rm = TRUE)/sqrt(length(P_Behav$full_b_threshold))` (see Figure 3A and E). Thresholds $t$ were larger in internal mode (`r mean(P_Behav$internal_b_threshold, na.rm = TRUE)` ± `r sd(P_Behav$internal_b_threshold, na.rm = TRUE)/sqrt(length(P_Behav$internal_b_threshold))`) as compared to external mode (`r mean(P_Behav$external_b_threshold, na.rm = TRUE)` ± `r sd(P_Behav$external_b_threshold, na.rm = TRUE)/sqrt(length(P_Behav$external_b_bias))`; $\beta_0$ = $`r STAT.PM_diff_threshold$coefficients[1,1]`$ ± $`r STAT.PM_diff_threshold$coefficients[1,2]`$, T($`r STAT.PM_diff_threshold$coefficients[1,3]`$) = $`r STAT.PM_diff_threshold$coefficients[1,4]`$, p = $`r STAT.PM_diff_threshold$coefficients[1,5]`$; controlling for differences in biases and lapses). 
+In contrast to the bias $\mu$ and the lapse rates $\gamma$ and $\delta$, thresholds $t$ were not modulated by perceptual history ($\beta_0$ = $`r STAT.PM_diff_threshold_0_1$coefficients[1,1]`$ ± $`r STAT.PM_diff_threshold_0_1$coefficients[1,2]`$, T($`r   STAT.PM_diff_threshold_0_1$coefficients[1,3]`$) = $`r STAT.PM_diff_threshold_0_1$coefficients[1,4]`$, p = $`r STAT.PM_diff_threshold_0_1$coefficients[1,5]`$).
+
+### Mice
+```{r psychometric_function_mouse, cache = TRUE}
+if (!load_summary_data) {
+  
+   N_PM <- ddply(
+      MwData,
+      .(Difficulty),
+      summarise,
+      n_trials = length(Difficulty))
+  
+   difficulty_levels = N_PM$Difficulty[N_PM$n_trials > 100]
+   
+  P_M_Behav = M_Behav
+  
+  type_list = c(
+    "full_b",
+    "full_0",
+    "full_1",
+    "external_b",
+    "external_0",
+    "external_1",
+    "internal_b",
+    "internal_0",
+    "internal_1"
+  )
+  
+  P_M_Behav = cbind(P_M_Behav, matrix(NA, ncol = length(type_list) * 5, nrow = nrow(P_M_Behav)))
+  colnames(P_M_Behav) <-
+    c(
+      "subject_id",
+      "Stimulus_History",
+      "History",
+      "Accuracy",
+      "Bias",
+      "null_History",
+      "full_b_lower_lapse",
+      "full_b_higher_lapse",
+      "full_b_av_lapse",
+      "full_b_bias",
+      "full_b_threshold",
+      "full_0_lower_lapse",
+      "full_0_higher_lapse",
+      "full_0_av_lapse",
+      "full_0_bias",
+      "full_0_threshold",
+      "full_1_lower_lapse",
+      "full_1_higher_lapse",
+      "full_1_av_lapse",
+      "full_1_bias",
+      "full_1_threshold",
+      "external_b_lower_lapse",
+      "external_b_higher_lapse",
+      "external_b_av_lapse",
+      "external_b_bias",
+      "external_b_threshold",
+      "external_0_lower_lapse",
+      "external_0_higher_lapse",
+      "external_0_av_lapse",
+      "external_0_bias",
+      "external_0_threshold",
+      "external_1_lower_lapse",
+      "external_1_higher_lapse",
+      "external_1_av_lapse",
+      "external_1_bias",
+      "external_1_threshold",
+      "internal_b_lower_lapse",
+      "internal_b_higher_lapse",
+      "internal_b_av_lapse",
+      "internal_b_bias",
+      "internal_b_threshold",
+      "internal_0_lower_lapse",
+      "internal_0_higher_lapse",
+      "internal_0_av_lapse",
+      "internal_0_bias",
+      "internal_0_threshold",
+      "internal_1_lower_lapse",
+      "internal_1_higher_lapse",
+      "internal_1_av_lapse",
+      "internal_1_bias",
+      "internal_1_threshold"
+    )
+  
+  for (subj_idx in unique(P_M_Behav$subject_id)) {
+  print(subj_idx)
+    
+  for (type_idx in type_list){
+   
+   if (type_idx == "full_b") {
+     trial_selector =
+       MwData$subject_id == subj_idx &
+       MwData$Difficulty %in% difficulty_levels
+   } else if (type_idx == "full_0") {
+     trial_selector =
+       MwData$subject_id == subj_idx &
+       MwData$Difficulty %in% difficulty_levels &
+       MwData$Response_minus_1 == 0
+   } else if (type_idx == "full_1") {
+     trial_selector =
+       MwData$subject_id == subj_idx &
+       MwData$Difficulty %in% difficulty_levels &
+       MwData$Response_minus_1 == 1
+   } else if (type_idx == "internal_b") {
+     trial_selector =
+       MwData$subject_id == subj_idx &
+       MwData$Difficulty %in% difficulty_levels &
+       MwData$scaled_directed_mode < 0
+   } else if (type_idx == "internal_0") {
+     trial_selector =
+       MwData$subject_id == subj_idx &
+       MwData$Difficulty %in% difficulty_levels &
+       MwData$Response_minus_1 == 0 &
+       MwData$scaled_directed_mode < 0
+   } else if (type_idx == "internal_1") {
+     trial_selector =
+       MwData$subject_id == subj_idx &
+       MwData$Difficulty %in% difficulty_levels &
+       MwData$Response_minus_1 == 1 &
+       MwData$scaled_directed_mode < 0
+   } else if (type_idx == "external_b") {
+     trial_selector =
+       MwData$subject_id == subj_idx &
+       MwData$Difficulty %in% difficulty_levels &
+       MwData$scaled_directed_mode > 0
+   } else if (type_idx == "external_0") {
+     trial_selector =
+       MwData$subject_id == subj_idx &
+       MwData$Difficulty %in% difficulty_levels &
+       MwData$Response_minus_1 == 0 &
+       MwData$scaled_directed_mode > 0
+   } else if (type_idx == "external_1") {
+     trial_selector =
+       MwData$subject_id == subj_idx &
+       MwData$Difficulty %in% difficulty_levels &
+       MwData$Response_minus_1 == 1 &
+       MwData$scaled_directed_mode > 0 
+   }
+   
+    Input_Data <- data.frame (
+      Stimulus = MwData[trial_selector, ]$Stimulus,
+      Difficulty = MwData[trial_selector, ]$Difficulty,
+      Response = MwData[trial_selector, ]$Response,
+      Response_minus_1 = MwData[trial_selector, ]$Response_minus_1
+    )
+   
+    source("./Functions/fit_psychometric_function_mouse.R")
+    par = c(0.0, 0.0, 0, 0.05)
+    lower = c(0.0, 0.0,-0.5, 0.01)
+    upper = c(0.25, 0.25, 0.5, 1.5)
+    
+    add_PM =  optimx(
+      par,
+      fit_psychometric_function_mouse,
+      Input_Data = Input_Data,
+      lower = lower,
+      upper = upper,
+      method ="L-BFGS-B"
+    )
+    
+    P_M_Behav[P_M_Behav$subject_id == subj_idx,grepl(type_idx, colnames(P_M_Behav))] <- 
+      c(add_PM$p1, add_PM$p2, mean(c(add_PM$p1, add_PM$p2)), add_PM$p3, add_PM$p4)
+ }   
+}
+  
+  ##
+  ## STATS
+  ##
+  M_STAT.PM_History_lapse_bias_threshold <-
+    summary(lm(
+      History ~ 1 + full_b_av_lapse + abs(full_b_bias) + full_b_threshold,
+      data = P_M_Behav
+    ))
+  
+  M_STAT.PM_Accuracy_History_lapse <-
+    summary(lm(
+      Accuracy ~ 1 + History + full_b_av_lapse,
+      data = P_M_Behav
+    ))
+  
+    P_M_Behav$threshold_diff = P_M_Behav$external_b_threshold - P_M_Behav$internal_b_threshold
+    P_M_Behav$bias_diff = abs(P_M_Behav$external_b_bias) - abs(P_M_Behav$internal_b_bias)
+    P_M_Behav$lapse_diff = P_M_Behav$external_b_av_lapse - P_M_Behav$internal_b_av_lapse
+    
+  M_STAT.PM_diff_bias <-
+    summary(lm(
+      bias_diff ~ 1 + lapse_diff + threshold_diff,
+      data = P_M_Behav
+    ))
+  
+  M_STAT.PM_diff_lapse <-
+    summary(lm(
+      lapse_diff ~ 1 + bias_diff + threshold_diff,
+      data = P_M_Behav
+    ))
+  
+  M_STAT.PM_diff_threshold <-
+    summary(lm(
+      threshold_diff ~ 1 + bias_diff + lapse_diff,
+      data = P_M_Behav
+    ))
+  
+  M_STAT.PM_zero_bias_b = t.test(P_M_Behav$full_b_bias)
+M_STAT.PM_zero_bias_1 = t.test(P_M_Behav$full_1_bias)
+M_STAT.PM_zero_bias_0 = t.test(P_M_Behav$full_0_bias)
+
+
+M_STAT.PM_diff_lapse_1_higher = t.test(P_M_Behav$external_1_higher_lapse - P_M_Behav$internal_1_higher_lapse)
+M_STAT.PM_diff_lapse_0_higher = t.test(P_M_Behav$external_0_higher_lapse - P_M_Behav$internal_0_higher_lapse)
+M_STAT.PM_diff_lapse_1_lower = t.test(P_M_Behav$external_1_lower_lapse - P_M_Behav$internal_1_lower_lapse)
+M_STAT.PM_diff_lapse_0_lower = t.test(P_M_Behav$external_0_lower_lapse - P_M_Behav$internal_0_lower_lapse)
+
+M_STAT.PM_diff_lapse_1_higher_vs_lower = t.test((P_M_Behav$external_1_higher_lapse - P_M_Behav$internal_1_higher_lapse) - (P_M_Behav$external_1_lower_lapse - P_M_Behav$internal_1_lower_lapse))
+
+M_STAT.PM_diff_lapse_0_higher_vs_lower = t.test((P_M_Behav$external_0_higher_lapse - P_M_Behav$internal_0_higher_lapse) - (P_M_Behav$external_0_lower_lapse - P_M_Behav$internal_0_lower_lapse))
+
+M_STAT.PM_diff_threshold_0_1 <- t.test(P_M_Behav$full_0_threshold - P_M_Behav$full_1_threshold)
+  
+##
+## Generate parameter summary
+##
+gathercol = colnames(P_M_Behav[, seq(7, ncol(P_M_Behav) - 3)])
+P_M_Behav_long  <-
+  gather(P_M_Behav,
+         "Variable",
+         "Estimate",
+         gathercol,
+         factor_key = TRUE)
+
+P_M_Behav_long$Conditioned = NA
+P_M_Behav_long$Type = NA
+
+P_M_Behav_long[grepl("full", P_M_Behav_long$Variable), ]$Type = "full"
+P_M_Behav_long[grepl("internal", P_M_Behav_long$Variable), ]$Type = "internal"
+P_M_Behav_long[grepl("external", P_M_Behav_long$Variable), ]$Type = "external"
+P_M_Behav_long$Type <-
+  factor(P_M_Behav_long$Type, levels = c("full", "internal", "external"))
+
+
+P_M_Behav_long[grepl("_b", P_M_Behav_long$Variable), ]$Conditioned = "all"
+P_M_Behav_long[grepl("_0", P_M_Behav_long$Variable), ]$Conditioned = "y(t-1) = 0"
+P_M_Behav_long[grepl("_1", P_M_Behav_long$Variable), ]$Conditioned = "y(t-1) = 1"
+
+P_M_Behav_long$Variable_full = P_M_Behav_long$Variable
+P_M_Behav_long$Variable <- gsub(c("full_"), "", P_M_Behav_long$Variable)
+P_M_Behav_long$Variable <- gsub("internal_", "", P_M_Behav_long$Variable)
+P_M_Behav_long$Variable <- gsub("external_", "", P_M_Behav_long$Variable)
+P_M_Behav_long$Variable <- gsub("b_", "", P_M_Behav_long$Variable)
+P_M_Behav_long$Variable <- gsub("1_", "", P_M_Behav_long$Variable)
+P_M_Behav_long$Variable <- gsub("0_", "", P_M_Behav_long$Variable)
+
+##
+## simulate
+##
+Sim_PM_M = data.frame()
+stim_range = seq(-1,+1, 0.01)
+for (subj_idx in unique(P_M_Behav$subject_id)) {
+  print(subj_idx)
+  for (type_idx in type_list) {
+  par = P_M_Behav_long[P_M_Behav_long$subject_id == subj_idx & grepl(type_idx, P_M_Behav_long$Variable_full), ]$Estimate[c(1, 2, 4, 5)]
+  lower_lapse = par[1]
+  higher_lapse = par[2]
+  bias = par[3]
+  contrast_threshold = par[4]
+  
+  Sim_PM_M = rbind(
+    Sim_PM_M,
+    add_sim_PM = data.frame(
+      subject_id = subj_idx,
+      Stimulus = stim_range,
+      y_prob = lower_lapse + (1 - lower_lapse - higher_lapse) *  (erf((stim_range - bias) / contrast_threshold) + 1) / 2,
+      Variable = type_idx
+    )
+)
+}
+}
+
+Sim_PM_M$Conditioned = NA
+Sim_PM_M$Type = NA
+
+Sim_PM_M[grepl("full", Sim_PM_M$Variable), ]$Type = "full"
+Sim_PM_M[grepl("internal", Sim_PM_M$Variable), ]$Type = "internal"
+Sim_PM_M[grepl("external", Sim_PM_M$Variable), ]$Type = "external"
+Sim_PM_M$Type <-
+  factor(Sim_PM_M$Type, levels = c("full", "internal", "external"))
+
+
+Sim_PM_M[grepl("_b", Sim_PM_M$Variable), ]$Conditioned = "all"
+Sim_PM_M[grepl("_0", Sim_PM_M$Variable), ]$Conditioned = "y(t-1) = 0"
+Sim_PM_M[grepl("_1", Sim_PM_M$Variable), ]$Conditioned = "y(t-1) = 1"
+
+Sim_PM_M$Conditioned <- as.factor(Sim_PM_M$Conditioned)
+Sim_PM_M$subject_id <- as.factor(Sim_PM_M$subject_id)
+
+Sim_PM_M_group <-
+    ddply(
+    Sim_PM_M,
+    .(Stimulus, Conditioned, Type),
+    summarise,
+    mean_y_prob = mean(y_prob, na.rm = TRUE),
+    error_y_prob = sd(y_prob, na.rm = TRUE)/sqrt(length(y_prob))
+  )
+
+Sim_PM_M_group$Type <-
+  factor(Sim_PM_M_group$Type, levels = c("full", "internal", "external"))
+  
+  if (save_summary_data) {
+    save(
+      P_M_Behav,
+      M_STAT.PM_History_lapse_bias_threshold,
+      M_STAT.PM_Accuracy_History_lapse,
+      M_STAT.PM_diff_threshold,
+      M_STAT.PM_diff_lapse,
+      M_STAT.PM_diff_bias,
+      M_STAT.PM_zero_bias_b,
+      M_STAT.PM_zero_bias_1,
+      M_STAT.PM_zero_bias_0,
+      M_STAT.PM_diff_lapse_1_higher,
+      M_STAT.PM_diff_lapse_0_higher,
+      M_STAT.PM_diff_lapse_1_lower,
+      M_STAT.PM_diff_lapse_0_lower,
+      M_STAT.PM_diff_lapse_1_higher_vs_lower,
+      M_STAT.PM_diff_lapse_0_higher_vs_lower,
+      M_STAT.PM_diff_threshold_0_1,
+      P_M_Behav_long,
+      Sim_PM_M,
+      Sim_PM_M_group,
+      file = "./Summary_Data/psychometric_data_mouse.Rdata"
+    )
+  }
+  
+} else {
+  load("./Summary_Data/psychometric_data_mouse.Rdata")
+}
+```
+
+When estimated based on the full dataset provided in the IBL database[@Aguillon-Rodriguez2020] (i.e., irrespective of the preceding perceptual choice $y_{t-1}$), biases $\mu$ were distributed around zero (`r mean(P_M_Behav$full_b_bias, na.rm = TRUE)` ± `r sd(P_M_Behav$full_b_bias, na.rm = TRUE)/sqrt(length(P_M_Behav$full_b_bias))`; T(`r M_STAT.PM_zero_bias_b$parameter`) = `r M_STAT.PM_zero_bias_b$statistic`, p = $`r M_STAT.PM_zero_bias_b$p.value`$; Figure 5A and B, upper panel). 
+When conditioned on the preceding perceptual choice, biases were negative for $y_{t-1} = 0$ (`r -mean(P_M_Behav$full_0_bias, na.rm = TRUE)` ± `r sd(P_M_Behav$full_0_bias, na.rm = TRUE)/sqrt(length(P_M_Behav$full_0_bias))`; T(`r M_STAT.PM_zero_bias_0$parameter`) = `r -M_STAT.PM_zero_bias_0$statistic`, p = $`r M_STAT.PM_zero_bias_0$p.value`$; Figure 5A and B, middle panel) 
+and positive for $y_{t-1} = 1$ (`r -mean(P_M_Behav$full_1_bias, na.rm = TRUE)` ± `r sd(P_M_Behav$full_1_bias, na.rm = TRUE)/sqrt(length(P_M_Behav$full_1_bias))`; T(`r M_STAT.PM_zero_bias_1$parameter`) = `r -M_STAT.PM_zero_bias_1$statistic`, p = $`r M_STAT.PM_zero_bias_1$p.value`$; Figure 5A and B, lower panel). 
+As in humans, mice showed larger biases during internal mode (`r mean(abs(P_M_Behav$internal_b_bias), na.rm = TRUE)` ± `r sd(abs(P_M_Behav$internal_b_bias), na.rm = TRUE)/sqrt(length(abs(P_M_Behav$internal_b_bias)))`) as compared to external mode (`r mean(abs(P_M_Behav$external_b_bias), na.rm = TRUE)` ± `r sd(abs(P_M_Behav$external_b_bias), na.rm = TRUE)/sqrt(length(abs(P_M_Behav$external_b_bias)))`; $\beta_0$ = $`r M_STAT.PM_diff_bias$coefficients[1,1]`$ ± $`r M_STAT.PM_diff_bias$coefficients[1,2]`$, T = $`r M_STAT.PM_diff_bias$coefficients[1,3]`$, p = $`r M_STAT.PM_diff_bias$coefficients[1,4]`$; controlling for differences in lapses and thresholds). 
+
+Lower and upper lapses amounted to $\gamma$ = `r mean(P_M_Behav$full_b_lower_lapse, na.rm = TRUE)` ± `r sd(P_M_Behav$full_b_lower_lapse, na.rm = TRUE)/sqrt(length(P_M_Behav$full_b_higher_lapse))` and $\delta$ = `r mean(P_M_Behav$full_b_higher_lapse, na.rm = TRUE)` ± `r sd(P_M_Behav$full_b_higher_lapse, na.rm = TRUE)/sqrt(length(P_M_Behav$full_b_higher_lapse))` (see Figure 5A, C and D). 
+Lapse rates were higher in internal mode ($\gamma$ = `r mean(P_M_Behav$internal_b_lower_lapse, na.rm = TRUE)` ± `r sd(P_M_Behav$internal_b_lower_lapse, na.rm = TRUE)/sqrt(length(P_M_Behav$internal_b_higher_lapse))`, $\delta$ = `r mean(P_M_Behav$internal_b_higher_lapse, na.rm = TRUE)` ± `r sd(P_M_Behav$internal_b_higher_lapse, na.rm = TRUE)/sqrt(length(P_M_Behav$internal_b_higher_lapse))`) as compared to external mode ($\gamma$ = `r mean(P_M_Behav$external_b_lower_lapse, na.rm = TRUE)` ± `r sd(P_M_Behav$external_b_lower_lapse, na.rm = TRUE)/sqrt(length(P_M_Behav$external_b_higher_lapse))`, $\delta$ = `r mean(P_M_Behav$external_b_higher_lapse, na.rm = TRUE)` ± `r sd(P_M_Behav$external_b_higher_lapse, na.rm = TRUE)/sqrt(length(P_M_Behav$external_b_higher_lapse))`; $\beta_0$ = $`r M_STAT.PM_diff_lapse$coefficients[1,1]`$ ± $`r M_STAT.PM_diff_lapse$coefficients[1,2]`$, T = $`r M_STAT.PM_diff_lapse$coefficients[1,3]`$, p = $`r M_STAT.PM_diff_lapse$coefficients[1,4]`$; controlling for differences in biases and thresholds). 
+
+For $y_{t-1} = 0$, the difference between internal and external mode was more pronounced for higher lapses $\delta$ (T(`r M_STAT.PM_diff_lapse_1_higher_vs_lower$parameter`) = `r M_STAT.PM_diff_lapse_1_higher_vs_lower$statistic`, p = $`r M_STAT.PM_diff_lapse_1_higher_vs_lower$p.value`$). 
+Conversely, for $y_{t-1} = 1$, the difference between internal and external mode was more pronounced for lower lapses $\gamma$ (T(`r M_STAT.PM_diff_lapse_0_higher_vs_lower$parameter`) = `r M_STAT.PM_diff_lapse_0_higher_vs_lower$statistic`, p = $`r M_STAT.PM_diff_lapse_0_higher_vs_lower$p.value`$). 
+In contrast to the human data, higher lapses $\delta$ and lower lapses $\gamma$ were significantly elevated during internal mode irrespective of the preceding perceptual choice 
+(higher lapses $\delta$ for $y_{t-1} = 1$: T(`r M_STAT.PM_diff_lapse_1_higher$parameter`) = `r M_STAT.PM_diff_lapse_1_higher$statistic`, p = $`r M_STAT.PM_diff_lapse_1_higher$p.value`$;
+higher lapses $\delta$ for $y_{t-1} = 0$: T(`r M_STAT.PM_diff_lapse_0_higher$parameter`) = `r M_STAT.PM_diff_lapse_0_higher$statistic`, p = $`r M_STAT.PM_diff_lapse_0_higher$p.value`$;
+lower lapses $\gamma$ for $y_{t-1} = 1$: T(`r M_STAT.PM_diff_lapse_1_lower$parameter`) = `r M_STAT.PM_diff_lapse_1_lower$statistic`, p = $`r M_STAT.PM_diff_lapse_1_lower$p.value`$;
+lower lapses $\gamma$ for $y_{t-1} = 0$: T(`r M_STAT.PM_diff_lapse_0_lower$parameter`) = `r M_STAT.PM_diff_lapse_0_lower$statistic`, p = $`r M_STAT.PM_diff_lapse_0_lower$p.value`$).
+
+In mice, thresholds $t$ amounted to `r mean(P_M_Behav$full_b_threshold, na.rm = TRUE)` ± `r sd(P_M_Behav$full_b_threshold, na.rm = TRUE)/sqrt(length(P_M_Behav$full_b_threshold))` (see Figure 5A and E) and were higher in internal mode (`r mean(P_M_Behav$internal_b_threshold, na.rm = TRUE)` ± `r sd(P_M_Behav$internal_b_threshold, na.rm = TRUE)/sqrt(length(P_M_Behav$internal_b_threshold))`) as compared to external mode (`r mean(P_M_Behav$external_b_threshold, na.rm = TRUE)` ± `r sd(P_M_Behav$external_b_threshold, na.rm = TRUE)/sqrt(length(P_M_Behav$external_b_threshold))`; $\beta_0$ = $`r M_STAT.PM_diff_threshold$coefficients[1,1]`$ ± $`r M_STAT.PM_diff_threshold$coefficients[1,2]`$, T = $`r M_STAT.PM_diff_threshold$coefficients[1,3]`$, p = $`r M_STAT.PM_diff_threshold$coefficients[1,4]`$; controlling for differences in biases and lapses).
+Thresholds $t$ were not modulated by perceptual history (T(`r M_STAT.PM_diff_threshold_0_1$parameter`) = `r M_STAT.PM_diff_threshold_0_1$statistic`, p = $`r M_STAT.PM_diff_threshold_0_1$p.value`$).
+
+In sum, the above analyses showed that, in both humans and mice, internal and external mode differ with respect to biases, lapses and thresholds. Internally-biased processing was characterized by higher thresholds, indicating a reduced sensitivity to sensory information, as well as by larger biases and lapses. Importantly, between-mode differences in biases and lapses strongly depended on perceptual history. This confirmed that internal mode processing cannot be explained solely on the ground of a general (i.e., history-independent) increase in lapses or bias indicative of random of stereotypical responses.   
+
+
+## Internal mode processing can not be reduced to insufficient task familiarity
+
+It may be assumed that participants tend to repeat preceding choices when they are not yet familiar with the experimental task, leading to history-congruent choices that are caused by insufficient training. HTo assess this alternative explanation, we contrasted the correlates of bimodal inference with training effects in humans and mice.
+
+### Humans
+```{r human_training, cache = TRUE}
+if (!load_summary_data) {
+  
+training_RT <- lmer(clear_RT ~ Trial + (1 |study_id/subject_id), data = PwData)
+STAT.training_RT <- summary(training_RT)
+
+if (compute_training_history){
+training_History <- glmer(History ~ Trial + (1|study_id/subject_id),
+        data = PwData,
+        family = binomial)
+} else {
+ training_History <- readRDS(paste(root, "training_history.rds", sep = "")) 
+}
+STAT.training_History <- summary(training_History)  
+  
+  if (save_summary_data) {
+    save(STAT.training_RT, STAT.training_History,  file = "./Summary_Data/training_human.Rdata")
+  }
+  
+} else {
+  load("./Summary_Data/training_human.Rdata")
+}
+
+```
+
+In the Confidence database[@Rahnev2020], training effects were visible from RTs that were shortened by increasing exposure to the task ($\beta$ = $`r STAT.training_RT$coefficients[2,1]`$ ± $`r STAT.training_RT$coefficients[2,2]`$, T($`r STAT.training_RT$coefficients[2,3]`$) = $`r STAT.training_RT$coefficients[2,4]`$, p = $`r STAT.training_RT$coefficients[2,5]`$). 
+Intriguingly, however, history-congruent choices became more frequent with increased exposure to the task ($\beta$ = $`r STAT.training_History$coefficients[2,1]`$ ± $`r STAT.training_History$coefficients[2,2]`$, z = $`r STAT.training_History$coefficients[2,3]`$, p = $`r STAT.training_History$coefficients[2,4]`$), speaking against the proposition that insufficient training induces seriality in response behavior.
+
+### Mice
+
+```{r mouse_behavior_during_training, cache = TRUE}
+
+if (!load_summary_data) {
+  
+  if (compute_pretraining_data_mouse){
+fully_trained <- unique(MwData$subject_id)
+Global_MwData <- read.csv(paste(root, "/Mouse/MwData_new_preproc_filter_slider.csv", sep = ""))
+
+Global_MwData$clear_RT = Global_MwData$RT
+Global_MwData$clear_RT[Global_MwData$clear_RT > median(Global_MwData$clear_RT, na.rm = TRUE) + 3*median(Global_MwData$clear_RT, na.rm =TRUE)] = NA
+Global_MwData$clear_RT <- Global_MwData$clear_RT*1000
+
+Global_MwData <- Global_MwData[which(Global_MwData$subject_id %in% fully_trained),]
+
+M_Behav_training <-
+  ddply(
+    Global_MwData,
+    .(subject_id, session_id),
+    summarise,
+    Stimulus_History = mean(Stimulus_History, na.rm = TRUE)*100,
+    History = mean(History, na.rm = TRUE)*100,
+    Accuracy = mean(Accuracy, na.rm = TRUE)*100,
+    Imbalance = mean(abs(0.5-prob_left), na.rm = TRUE)*100 + 50,
+    RT = mean(clear_RT, na.rm = TRUE)
+  )
+} else {
+  M_Behav_training <- read.csv("./Results/Mouse_Behav_training.csv")
+}
+
+gathercol = colnames(M_Behav_training[, c(4,5,7)])
+M_Behav_training_long   <-
+gather(M_Behav_training[M_Behav_training$Imbalance < 60,c(1,2,4,5,7)],
+"Variable",
+"Frequency",
+gathercol,
+factor_key = TRUE)
+
+M_Behav_training_long$Variable <-
+gsub("Accuracy", "Stimulus", M_Behav_training_long$Variable)
+
+Summary_M_Behav_training_long <-   ddply(
+    M_Behav_training_long ,
+    .(session_id, Variable),
+    summarise,
+    Mean = mean(Frequency, na.rm = TRUE),
+    Error = sd(Frequency, na.rm = TRUE)/sqrt(length(Frequency))
+  )
+
+M_lmer_History_training <- lmer(History ~ session_id + (1|subject_id), data = M_Behav_training)
+M_STAT.lmer_History_training <- summary(M_lmer_History_training)
+
+M_lmer_Stimulus_training <- lmer(Accuracy ~ session_id + (1|subject_id), data = M_Behav_training)
+M_STAT.lmer_Stimulus_training <- summary(M_lmer_Stimulus_training)
+
+M_lmer_RT_training <- lmer(RT ~ session_id + (1|subject_id), data = M_Behav_training)
+M_STAT.lmer_RT_training <- summary(M_lmer_RT_training)
+
+M_training_RT <- lmer(clear_RT ~ Trial + (1|subject_id/session_id), data = MwData)
+M_STAT.training_RT <- summary(M_training_RT)
+
+if (compute_training_history){
+M_training_History <- glmer(History ~ Trial + (1|subject_id/session_id),
+        data = MwData,
+        family = binomial)
+} else {
+ M_training_History <- readRDS(paste(root, "training_history.rds", sep = "")) 
+}
+M_STAT.training_History <- summary(M_training_History)
+  
+  if (save_summary_data) {
+    save(M_Behav_training, 
+         M_Behav_training_long,
+         Summary_M_Behav_training_long,
+         M_STAT.lmer_History_training,
+         M_STAT.lmer_Stimulus_training,
+         M_STAT.lmer_RT_training,
+         M_STAT.training_RT,
+         M_STAT.training_History,
+         file = "./Summary_Data/mouse_behavior_training.Rdata")
+  }
+  
+} else {
+  load("./Summary_Data/mouse_behavior_training.Rdata")
+}
+```
+
+As in humans, it is an important caveat to consider whether the observed serial dependencies in murine perception reflect a phenomenon of perceptual inference, or, alternatively, an unspecific strategy that occurs at the level of reporting behavior. We reasoned that, if mice indeed tended to repeat previous choices as a general response pattern, history effects should decrease during training of the perceptual task. We therefore analyzed how stimulus- and history-congruent perceptual choices evolved across sessions in mice that, by the end of training, achieved proficiency (i.e., stimulus-congruence $\geq$ 80%) in the *basic* task of the IBL dataset[@Aguillon-Rodriguez2020].
+
+As expected, we found that stimulus-congruent perceptual choices became more frequent ($\beta$ = $`r M_STAT.lmer_Stimulus_training$coefficients[2,1]`$ ± $`r M_STAT.lmer_Stimulus_training$coefficients[2,2]`$, T($`r M_STAT.lmer_Stimulus_training$coefficients[2,3]`$) = $`r M_STAT.lmer_Stimulus_training$coefficients[2,4]`$, p = $`r M_STAT.lmer_Stimulus_training$coefficients[2,5]`$; Supplemental Figure S6) and TDs were progressively shortened ($\beta$ = $`r M_STAT.lmer_RT_training$coefficients[2,1]`$ ± $`r M_STAT.lmer_RT_training$coefficients[2,2]`$, T($`r M_STAT.lmer_RT_training$coefficients[2,3]`$) = $`r M_STAT.lmer_RT_training$coefficients[2,4]`$, p = $`r M_STAT.lmer_Stimulus_training$coefficients[2,5]`$) across sessions.
+Crucially, the frequency of history-congruent perceptual choices also increased during training ($\beta$ = $`r M_STAT.lmer_History_training$coefficients[2,1]`$ ± $`r M_STAT.lmer_History_training$coefficients[2,2]`$, T($`r M_STAT.lmer_History_training$coefficients[2,3]`$) = $`r M_STAT.lmer_History_training$coefficients[2,4]`$, p = $`r M_STAT.lmer_History_training$coefficients[2,5]`$; Supplemental Figure S6). 
+
+As in humans, longer within-session task exposure was associated with an increase in history-congruence ($\beta$ = $`r M_STAT.training_History$coefficients[2,1]`$ ± $`r M_STAT.training_History$coefficients[2,2]`$, z = $`r M_STAT.training_History$coefficients[2,3]`$, p = $`r M_STAT.training_History$coefficients[2,4]`$) and a decrease in TDs ($\beta$ = $`r M_STAT.training_RT$coefficients[2,1]`$ ± $`r M_STAT.training_RT$coefficients[2,2]`$, T($`r M_STAT.training_RT$coefficients[2,3]`$) = $`r M_STAT.training_RT$coefficients[2,4]`$, p = $`r M_STAT.training_RT$coefficients[2,5]`$). In sum, these findings strongly argue against the proposition that mice show biases toward perceptual history due to an unspecific response strategy.
