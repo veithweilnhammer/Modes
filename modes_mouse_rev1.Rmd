@@ -4067,7 +4067,8 @@ type_list = c(
 
 block_size = 10
 Optim_eval = data.frame()
-for (id in unique(PwData$subject_id)) {
+#for (id in unique(PwData$subject_id)) {
+for (id in unique(PwData$subject_id[PwData$subject_id > max(PwData$subject_id)/2])) {
   print(paste("human:", id, sep = " "))
   
     Input_Data = PwData[PwData$subject_id == id, c("Stimulus", "Response", "clear_RT", "clear_Confidence")]
@@ -4164,7 +4165,7 @@ for (id in unique(PwData$subject_id)) {
     }
     }
     
-    write.csv(Optim_eval, "./Results/Optim_eval_human_interim.csv", row.names = FALSE)
+    write.csv(Optim_eval, "./Results/Optim_eval_human_interim_min_4021.csv", row.names = FALSE)
     Sum <-   ddply(Optim_eval,
                    .(type),
                    summarise,
@@ -4205,7 +4206,8 @@ source("./Functions/fit_glaze_osc_zeta_v1_random_walk_mouse.R",
 
 block_size = 10
 Optim_eval = data.frame()
-for (id in unique(MwData$subject_id)) {
+#for (id in unique(MwData$subject_id)) {
+for (id in unique(MwData$subject_id[MwData$subject_id > max(MwData$subject_id)/2])) {
   print(paste("mouse:", id, sep = " "))
   for (session_id in unique(MwData[MwData$subject_id == id, ]$session_id)) {
     print(paste("session:", session_id, sep = " "))
@@ -4310,7 +4312,7 @@ for (id in unique(MwData$subject_id)) {
   }
   
           write.csv(Optim_eval,
-              "./Results/Optim_eval_mouse_interim.csv",
+              "./Results/Optim_eval_mouse_interim_min_100.csv",
               row.names = FALSE)
           
           # Sum <- ddply(Optim_eval,
