@@ -8571,9 +8571,9 @@ We thank this reviewer for pointing this out. The term *false alarm* was mention
 
 *TEXT*
 
-Regarding the rational for collapsing across the studies in the Confidence database: Having found strong evidence of apparent between-mode fluctuations in a study on intermittent bistable perception[@Weilnhammer2021b], our goal was to test whether between-mode fluctuations were a general phenomenon in perceptual decision-making. We thus had a lenient threshold for including studies from the Confidence database, i.e., all that addressed the domain of perception in 2AFC tasks. His has the advantage of looking at perceptual 2AFC decisions in general, and indicated that history effects and bimodal inference may be present in a wide variety of tasks. At the same time, collapsing across a set of diverse studies means that the stimuli, the timing and the way responses were collected likely differed between them. To account for this variability between studies, we included individual studies as a random factor in linear mixed modeling. We also made sure that perceptual performance is comparable across studies. While extending our analysis to the IBL database was mainly motivated by investigating bimodal inference across species, this analysis allowed us to replicate our results in a well-controlled task that was collected across many individual subjects[@Aguillon-Rodriguez2020]. We have added the rational for collapsing across studies with its advantages and disadvantages to the *Open questions and limitations* subsection of the discussion:
+Regarding the rational for collapsing across the studies in the Confidence database: Having found strong evidence of apparent between-mode fluctuations in a study on intermittent bistable perception[@Weilnhammer2021b], our goal was to test whether between-mode fluctuations were a general phenomenon in perceptual decision-making. We thus had a lenient threshold for including studies from the Confidence database, i.e., all that addressed the domain of perception in 2AFC tasks. His has the advantage of looking at perceptual 2AFC decisions in general, and indicated that history effects and bimodal inference may be present in a wide variety of tasks. At the same time, collapsing across a set of diverse studies means that the stimuli, the timing and the way responses were collected likely differed between them. To account for this variability between studies, we included individual studies as a random factor in linear mixed modeling. We also made sure that perceptual performance is comparable across studies (see Supplemnetal Figure SX). While extending our analysis to the IBL database was mainly motivated by investigating bimodal inference across species, this analysis allowed us to replicate our results in a well-controlled task that was collected across many individual subjects[@Aguillon-Rodriguez2020]. We have added the rational for collapsing across studies with its advantages and disadvantages to the *Open questions and limitations* subsection of the discussion:
 
-*TEXT*
+**In this work, we tested whether the phenomenon of bimodal inference, which we initially observed in bistable perception[@Weilnhamer2021b], would generalize to a diverse set of two-alternative-forced-choice (2AFC) tasks in the domain of perception. In our analysis of the Confidence database[@Rahnev2020], we collapsed across all perceptual 2AFC experiments, which we considered as random effects in linear mixed effects modeling. Individual experiments differed with respect to the stimuli, the manipulation of difficulty, the timing of trials, and the way responses were collected (see Method section X.X), but were comparable with respect to perceptual performance and history effects (Supplemental Figure SX). The variability across experiments may thus be considered as a strength of our approach, pointing to bimodal inference as a general phenomenon in 2AFC perceptual decision-making. The IBL database allowed us to not only extend our analyses across species, but also to replicate our findings in a highly standardized task that was collected across many individual subjects[@Aguillon-Rodriguez2020]. It will be an important task for future research to replicate our results on bimodal inference in a standardized dataset of comparable volume in humans, which is, to our knowledge, not yet available.**
 
 ```{r Dataset_Information, cache = TRUE}
 if (!load_summary_data) {
@@ -8584,13 +8584,18 @@ Sum_RT <-  ddply(
 PwData,
 .(study_id),
 summarise,
-RT_available = mean(RT, na.rm = TRUE)
+RT_available = mean(RT, na.rm = TRUE),
+Difficulty_available = mean(Difficulty, na.rm = TRUE)
 )
+
 Exp_rep$RT_available = 0
 Exp_rep$RT_available[Sum_RT$RT_available != "NaN"] = 1
 Exp_rep$RT_type = "?"
-Exp_rep$Difficulty_Manipulation = ?
-  
+
+Exp_rep$Difficulty_available = 0
+Exp_rep$Difficulty_available[Sum_RT$Difficulty_available != "NaN"] = 1
+Exp_rep$Difficulty_type = "?"
+ 
   if (save_summary_data) {
     save(Exp_rep,  file = "./Summary_Data/Experiment_information.Rdata")
   }
@@ -8599,14 +8604,280 @@ Exp_rep$Difficulty_Manipulation = ?
   load("./Summary_Data/Experiment_information.Rdata")
 }
 
+# inaccessible: 
 
 ##
 ## Collect information
 ##
-Exp_rep$Stimuli
+Exp_rep[1,]$Difficulty_type = "noise pixels added to gabor"
+Exp_rep[1,]$RT_type = "none"
+Exp_rep[1,]$task_type = "two-interval 2AFC"
+
+Exp_rep[2,]$Difficulty_type = "dot coherence"
+Exp_rep[2,]$RT_type = "cued"
+Exp_rep[2,]$task_type = "one-interval 2AFC"
+
+Exp_rep[3,]$Difficulty_type = "dot coherence"
+Exp_rep[3,]$RT_type = "free and cued"
+Exp_rep[3,]$task_type = "one-interval 2AFC"
+
+Exp_rep[4,]$Difficulty_type = "amount of vestibular self-motion"
+Exp_rep[4,]$RT_type = "none"
+Exp_rep[4,]$task_type = "one-interval 2AFC"
+
+Exp_rep[5,]$Difficulty_type = "amount of vestibular self-motion"
+Exp_rep[5,]$RT_type = "none"
+Exp_rep[5,]$task_type = "one-interval 2AFC"
+
+Exp_rep[6,]$Difficulty_type = "stimulus contrast left vs right"
+Exp_rep[6,]$RT_type = "cued"
+Exp_rep[6,]$task_type = "one- and two-interval 2AFC"
+
+Exp_rep[7,]$Difficulty_type = "temporal difference between tones"
+Exp_rep[7,]$RT_type = "cued"
+Exp_rep[7,]$task_type = "one-interval 2AFC"
+
+Exp_rep[8,]$Difficulty_type = "contrast"
+Exp_rep[8,]$RT_type = "cued"
+Exp_rep[8,]$task_type = "one-interval 2AFC"
+
+Exp_rep[9,]$Difficulty_type = "contrast"
+Exp_rep[9,]$RT_type = "free"
+Exp_rep[9,]$task_type = "one-interval 2AFC"
+
+Exp_rep[10,]$Difficulty_type = "coherence"
+Exp_rep[10,]$RT_type = "free"
+Exp_rep[10,]$task_type = "one-interval 2AFC"
+
+Exp_rep[11,]$Difficulty_type = "relative number of dots/colors"
+Exp_rep[11,]$RT_type = "cued"
+Exp_rep[11,]$task_type = "one-interval 2AFC"
+
+Exp_rep[12,]$Difficulty_type = "relative number of dots/colors"
+Exp_rep[12,]$RT_type = "cued"
+Exp_rep[12,]$task_type = "one-interval 2AFC"
+
+Exp_rep[13,]$Difficulty_type = "relative number of dots"
+Exp_rep[13,]$RT_type = "cued"
+Exp_rep[13,]$task_type = "one-interval 2AFC"
+
+Exp_rep[14,]$Difficulty_type = "dot number"
+Exp_rep[14,]$RT_type = "cued"
+Exp_rep[14,]$task_type = "one-interval 2AFC"
+
+Exp_rep[15,]$Difficulty_type = "luminance of gabors"
+Exp_rep[15,]$RT_type = "cued"
+Exp_rep[15,]$task_type = "one-interval 2AFC"
+
+Exp_rep[16,]$Difficulty_type = "luminance of gabors"
+Exp_rep[16,]$RT_type = "cued"
+Exp_rep[16,]$task_type = "one-interval 2AFC"
+
+Exp_rep[17,]$Difficulty_type = "luminance of gabors"
+Exp_rep[17,]$RT_type = "cued"
+Exp_rep[17,]$task_type = "one-interval 2AFC"
+
+Exp_rep[18,]$Difficulty_type = "dot number"
+Exp_rep[18,]$RT_type = "cued"
+Exp_rep[18,]$task_type = "one-interval 2AFC"
+
+Exp_rep[19,]$Difficulty_type = "motion coherence"
+Exp_rep[19,]$RT_type = "cued"
+Exp_rep[19,]$task_type = "one-interval 2AFC"
+
+Exp_rep[20,]$Difficulty_type = "motion coherence"
+Exp_rep[20,]$RT_type = "cued"
+Exp_rep[20,]$task_type = "one-interval 2AFC"
+
+Exp_rep[21,]$Difficulty_type = "difference in dots of two colors"
+Exp_rep[21,]$RT_type = "free"
+Exp_rep[21,]$task_type = "one-interval 2AFC"
+
+Exp_rep[22,]$Difficulty_type = "motion coherence"
+Exp_rep[22,]$RT_type = "cued"
+Exp_rep[22,]$task_type = "one-interval 2AFC"
+
+Exp_rep[23,]$Difficulty_type = "contrast of gabors"
+Exp_rep[23,]$RT_type = "free"
+Exp_rep[23,]$task_type = "one-interval 2AFC"
+
+Exp_rep[24,]$Difficulty_type = "number of clicks per ear"
+Exp_rep[24,]$RT_type = "cued"
+Exp_rep[24,]$task_type = "one-interval 2AFC"
+
+Exp_rep[25,]$Difficulty_type = "probability of gabor"
+Exp_rep[25,]$RT_type = "cued"
+Exp_rep[25,]$task_type = "one-interval 2AFC"
+
+Exp_rep[26,]$Difficulty_type = "noise on grating"
+Exp_rep[26,]$RT_type = "cued"
+Exp_rep[26,]$task_type = "one-interval 2AFC"
+
+Exp_rep[27,]$Difficulty_type = "noise on grating"
+Exp_rep[27,]$RT_type = "cued"
+Exp_rep[27,]$task_type = "one-interval 2AFC"
+
+Exp_rep[28,]$Difficulty_type = "noise on grating"
+Exp_rep[28,]$RT_type = "cued"
+Exp_rep[28,]$task_type = "one-interval 2AFC"
+
+Exp_rep[29,]$Difficulty_type = "noise on grating"
+Exp_rep[29,]$RT_type = "cued"
+Exp_rep[29,]$task_type = "one-interval 2AFC"
+
+Exp_rep[30,]$Difficulty_type = "metacontrast masking timing difference"
+Exp_rep[30,]$RT_type = "cued"
+Exp_rep[30,]$task_type = "one-interval 2AFC"
+
+Exp_rep[31,]$Difficulty_type = "dot number"
+Exp_rep[31,]$RT_type = "cued"
+Exp_rep[31,]$task_type = "one-interval 2AFC"
+
+Exp_rep[32,]$Difficulty_type = "dot number"
+Exp_rep[32,]$RT_type = "cued"
+Exp_rep[32,]$task_type = "one-interval 2AFC"
+
+Exp_rep[33,]$Difficulty_type = "grating in noise"
+Exp_rep[33,]$RT_type = "cued"
+Exp_rep[33,]$task_type = "one-interval 2AFC"
+
+Exp_rep[34,]$Difficulty_type = "grating in noise (constant)"
+Exp_rep[34,]$RT_type = "none"
+Exp_rep[34,]$task_type = "one-interval 2AFC"
+
+Exp_rep[35,]$Difficulty_type = "grating in noise (constant)"
+Exp_rep[35,]$RT_type = "none"
+Exp_rep[35,]$task_type = "one-interval 2AFC"
+
+Exp_rep[36,]$Difficulty_type = "motion coherence"
+Exp_rep[36,]$RT_type = "free"
+Exp_rep[36,]$task_type = "one-interval 2AFC"
+
+Exp_rep[37,]$Difficulty_type = "motion coherence"
+Exp_rep[37,]$RT_type = "free"
+Exp_rep[37,]$task_type = "one-interval 2AFC"
+
+Exp_rep[38,]$Difficulty_type = "motion coherence"
+Exp_rep[38,]$RT_type = "free"
+Exp_rep[38,]$task_type = "one-interval 2AFC"
+
+Exp_rep[39,]$Difficulty_type = "luminance difference"
+Exp_rep[39,]$RT_type = "cued"
+Exp_rep[39,]$task_type = "two-interval 2AFC"
+
+Exp_rep[40,]$Difficulty_type = "dot number (fixed)"
+Exp_rep[40,]$RT_type = "free"
+Exp_rep[40,]$task_type = "one-interval 2AFC"
+
+Exp_rep[41,]$Difficulty_type = "contrast"
+Exp_rep[41,]$RT_type = "free"
+Exp_rep[41,]$task_type = "one-interval 2AFC"
+
+Exp_rep[42,]$Difficulty_type = "contrast"
+Exp_rep[42,]$RT_type = "cued"
+Exp_rep[42,]$task_type = "one-interval 2AFC"
+
+Exp_rep[43,]$Difficulty_type = "contrast"
+Exp_rep[43,]$RT_type = "free"
+Exp_rep[43,]$task_type = "one-interval 2AFC"
+
+Exp_rep[44,]$Difficulty_type = "contrast"
+Exp_rep[44,]$RT_type = "free"
+Exp_rep[44,]$task_type = "one-interval 2AFC"
+
+Exp_rep[45,]$Difficulty_type = "contrast"
+Exp_rep[45,]$RT_type = "free"
+Exp_rep[45,]$task_type = "one-interval 2AFC"
+
+Exp_rep[46,]$Difficulty_type = "contrast"
+Exp_rep[46,]$RT_type = "cued"
+Exp_rep[46,]$task_type = "one-interval 2AFC"
+
+Exp_rep[47,]$Difficulty_type = "cue validit"
+Exp_rep[47,]$RT_type = "cued"
+Exp_rep[47,]$task_type = "one-interval 2AFC"
+
+Exp_rep[48,]$Difficulty_type = "contrast"
+Exp_rep[48,]$RT_type = "cued"
+Exp_rep[48,]$task_type = "two-interval 2AFC"
+
+Exp_rep[49,]$Difficulty_type = "contrast"
+Exp_rep[49,]$RT_type = "cued"
+Exp_rep[49,]$task_type = "two-interval 2AFC"
+
+Exp_rep[50,]$Difficulty_type = "dot number"
+Exp_rep[50,]$RT_type = "cued"
+Exp_rep[50,]$task_type = "one-interval 2AFC"
+
+Exp_rep[51,]$Difficulty_type = "dot number"
+Exp_rep[51,]$RT_type = "cued"
+Exp_rep[51,]$task_type = "one-interval 2AFC"
+
+Exp_rep[52,]$Difficulty_type = "dot number"
+Exp_rep[52,]$RT_type = "cued"
+Exp_rep[52,]$task_type = "one-interval 2AFC"
+
+Exp_rep[53,]$Difficulty_type = "contrast"
+Exp_rep[53,]$RT_type = "cued"
+Exp_rep[53,]$task_type = "two-interval 2AFC"
+
+Exp_rep[54,]$Difficulty_type = "contrast"
+Exp_rep[54,]$RT_type = "cued"
+Exp_rep[54,]$task_type = "two-interval 2AFC"
+
+Exp_rep[55,]$Difficulty_type = "contrast"
+Exp_rep[55,]$RT_type = "free"
+Exp_rep[55,]$task_type = "one-interval 2AFC"
+
+Exp_rep[56,]$Difficulty_type = "contrast"
+Exp_rep[56,]$RT_type = "cued"
+Exp_rep[56,]$task_type = "one-interval 2AFC"
+
+Exp_rep[57,]$Difficulty_type = "attention & stimulus probability"
+Exp_rep[57,]$RT_type = "cued"
+Exp_rep[57,]$task_type = "one-interval 2AFC"
+
+Exp_rep[58,]$Difficulty_type = "attention & stimulus probability"
+Exp_rep[58,]$RT_type = "cued"
+Exp_rep[58,]$task_type = "one-interval 2AFC"
+
+Exp_rep[59,]$Difficulty_type = "positive vs. negative evidence"
+Exp_rep[59,]$RT_type = "cued"
+Exp_rep[59,]$task_type = "one-interval 2AFC"
+
+Exp_rep[60,]$Difficulty_type = "positive vs. negative evidence"
+Exp_rep[60,]$RT_type = "cued"
+Exp_rep[60,]$task_type = "one-interval 2AFC"
+
+Exp_rep[61,]$Difficulty_type = "contrast (fixed)"
+Exp_rep[61,]$RT_type = "cued"
+Exp_rep[61,]$task_type = "one-interval 2AFC"
+
+Exp_rep[62,]$Difficulty_type = "contrast (fixed)"
+Exp_rep[62,]$RT_type = "cued"
+Exp_rep[62,]$task_type = "two-interval 2AFC"
+
+Exp_rep[63,]$Difficulty_type = "direction distribution"
+Exp_rep[63,]$RT_type = "cued"
+Exp_rep[63,]$task_type = "one-interval 2AFC"
+
+Exp_rep[64,]$Difficulty_type = "direction distribution"
+Exp_rep[64,]$RT_type = "cued"
+Exp_rep[64,]$task_type = "one-interval 2AFC"
+
+Exp_rep[65,]$Difficulty_type = "presentation time"
+Exp_rep[65,]$RT_type = "cued"
+Exp_rep[65,]$task_type = "one-interval 2AFC"
+
+Exp_rep[66,]$Difficulty_type = "presentation time"
+Exp_rep[66,]$RT_type = "free"
+Exp_rep[66,]$task_type = "one-interval 2AFC"
 ```
 
-RTs were available for `r sum(Exp_rep$RT_available)` out of the `r nrow(Exp_rep)` experiments investigated here. Within the  `r sum(Exp_rep$RT_available)` experiments
+RTs were available for `r sum(Exp_rep$RT_available)` out of the `r nrow(Exp_rep)` experiments investigated here.
+
+
+Within the  `r sum(Exp_rep$RT_available)` experiments
 
 - go through all the papers that we investigated in the confidence database and check for these points (what paradigm etc.): type of 2AFC task, response mapping, response time, feedback.
 
