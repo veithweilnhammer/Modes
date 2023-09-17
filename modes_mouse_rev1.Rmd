@@ -8567,6 +8567,13 @@ That being said, behavioral analyses alone are insufficient to rule out the cont
 
 **The authors collapse across various datasets in which different tasks were employed. However, some details on the nature of these different tasks and a discussion on the rationale of collapsing behavioural metrics across them is missing. The authors mention that all tasks involved binary perceptual decisions. In some parts of the manuscript the term "false alarms" is mentioned, indicating a detection protocol. Other terms in the methods section (e.g., "set size") might need further clarification. Importantly, it is not clear how reaction times were calculated in the various tasks and whether some experiments involved free response paradigms while others interrogation/ cued paradigms (in which case RTs can be defined as the latency between the response cue and the response).**
 
+We thank this reviewer for pointing this out. The term *false alarm* was mentioned in the discussion of arousal and attention effects in the previous version of our manuscript, which we have re-written following the comments X.X by Reviewer 1 and comment x.x by Reviewer 3. IN the method section, we had mentioned the variable names that we extracted the difficulty variable from (i.e., the column in the individual *.txt* files provided for every experiment in Confidence database). We have rewritten the method section of our manuscript and now provide more detail on the experiments of the confidence database:
+
+*TEXT*
+
+Regarding the rational for collapsing across the studies in the Confidence database: Having found strong evidence of apparent between-mode fluctuations in a study on intermittent bistable perception[@Weilnhammer2021b], our goal was to test whether between-mode fluctuations were a general phenomenon in perceptual decision-making. We thus had a lenient threshold for including studies from the Confidence database, i.e., all that addressed the domain of perception in 2AFC tasks. His has the advantage of looking at perceptual 2AFC decisions in general, and indicated that history effects and bimodal inference may be present in a wide variety of tasks. At the same time, collapsing across a set of diverse studies means that the stimuli, the timing and the way responses were collected likely differed between them. To account for this variability between studies, we included individual studies as a random factor in linear mixed modeling. We also made sure that perceptual performance is comparable across studies. While extending our analysis to the IBL database was mainly motivated by investigating bimodal inference across species, this analysis allowed us to replicate our results in a well-controlled task that was collected across many individual subjects[@Aguillon-Rodriguez2020]. We have added the rational for collapsing across studies with its advantages and disadvantages to the *Open questions and limitations* subsection of the discussion:
+
+*TEXT*
 
 ```{r Dataset_Information, cache = TRUE}
 if (!load_summary_data) {
@@ -8593,11 +8600,10 @@ Exp_rep$Difficulty_Manipulation = ?
 }
 
 
-
 ##
 ## Collect information
 ##
-Exp_rep[]  
+Exp_rep$Stimuli
 ```
 
 RTs were available for `r sum(Exp_rep$RT_available)` out of the `r nrow(Exp_rep)` experiments investigated here. Within the  `r sum(Exp_rep$RT_available)` experiments
