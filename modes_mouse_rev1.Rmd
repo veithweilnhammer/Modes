@@ -104,7 +104,10 @@ extract_mouse_additional_Slider_Data = FALSE
 ## Optimization
 ##
 run_optim_human = FALSE
+evaluate_human = TRUE
+
 run_optim_mouse = TRUE
+evaluate_mouse = TRUE
 
 ## generate output from fitted data
 generate_output_human = FALSE
@@ -116,7 +119,6 @@ run_mouse_logreg_mu_minus_1 = FALSE
 ##
 ## Simulation
 ##
-
 # visualize bias 
 run_visualize_bias_sim = FALSE
 run_visualize_alt_sim = FALSE
@@ -4036,7 +4038,7 @@ Sim_STAT.Confidence_vs_mode <- summary(Sim_Confidence_vs_mode)
 
 
 ```{r evaluate_human, cache = TRUE}
-
+if (evaluate_human){
 type_list = c(
   "fit_glaze_osc_zeta_v1",
   "fit_glaze_osc_zeta_v1_one_amp",
@@ -4171,9 +4173,11 @@ for (id in unique(PwData$subject_id[PwData$subject_id >= n_start])) {
                    error = mean(value, na.rm = TRUE))
     print(Sum)
 }
+}
 ```
 
 ```{r evaluate_mouse, cache = TRUE}
+if (evaluate_mouse){
 type_list = c(
   "fit_glaze_osc_zeta_v1_mouse",
   "fit_glaze_osc_zeta_v1_one_amp_mouse",
@@ -4321,6 +4325,7 @@ for (id in unique(MwData$subject_id[MwData$subject_id > n_start])) {
           #          summarise,
           #          error = mean(abs(value), na.rm = TRUE))
           # print(Sum)
+}
 }
 ```
 
@@ -8877,15 +8882,45 @@ Exp_rep[Exp_rep$Stimuli == "vestibular self-motion",]$domain = "Vestibular self-
 Exp_rep[Exp_rep$Stimuli == "tones",]$domain = "Auditory"
 Exp_rep[Exp_rep$Stimuli == "gabors/tones/vibrotactile",]$domain = "Multimodal"
 
+
+Exp_rep[Exp_rep$Decision_type == "?",]
+Exp_rep["36",]$Decision_type = "Discrimination"
+Exp_rep["37",]$Decision_type = "Discrimination"
+Exp_rep["47",]$Decision_type = "Detection"
+Exp_rep["48",]$Decision_type = "Detection"
+Exp_rep["49",]$Decision_type = "Detection"
+Exp_rep["67",]$Decision_type = "Discrimination"
+Exp_rep["71",]$Decision_type = "Discrimination"
+Exp_rep["72",]$Decision_type = "Discrimination"
+Exp_rep["73",]$Decision_type = "Discrimination"
+Exp_rep["74",]$Decision_type = "Discrimination"
+Exp_rep["75",]$Decision_type = "Discrimination"
+Exp_rep["84",]$Decision_type = "Discrimination & Detection"
+Exp_rep["85",]$Decision_type = "Discrimination"
+Exp_rep["86",]$Decision_type = "Discrimination"
+Exp_rep["97",]$Decision_type = "Discrimination"
+Exp_rep["98",]$Decision_type = "Discrimination"
+Exp_rep["100",]$Decision_type = "Discrimination"
+Exp_rep["101",]$Decision_type = "Discrimination"
+Exp_rep["102",]$Decision_type = "Discrimination"
+Exp_rep["103",]$Decision_type = "Discrimination"
+Exp_rep["104",]$Decision_type = "Discrimination"
+Exp_rep["120",]$Decision_type = "Discrimination"
+Exp_rep["121",]$Decision_type = "Discrimination"
+Exp_rep["122",]$Decision_type = "Detection"
+Exp_rep["123",]$Decision_type = "Detection"
+Exp_rep["124",]$Decision_type = "Detection"
+Exp_rep["128",]$Decision_type = "Discrimination"
+Exp_rep["145",]$Decision_type = "Discrimination"
 ```
 
 We thank this reviewer for pointing this out. Regarding the rational for collapsing across the studies in the Confidence database: Having found strong evidence of apparent between-mode fluctuations in a study on intermittent bistable perception[@Weilnhammer2021b], our goal was to test whether between-mode fluctuations were a general phenomenon in perceptual decision-making. We thus had a lenient threshold for including studies from the Confidence database, i.e., all that addressed the domain of perception in 2AFC tasks. His has the advantage of looking at perceptual 2AFC decisions in general, and indicated that history effects and bimodal inference may be present in a wide variety of tasks. At the same time, collapsing across a set of diverse studies means that the stimuli, the timing and the way responses were collected likely differed between them. To account for this variability between studies, we included individual studies as a random factor in linear mixed modeling. We also made sure that perceptual performance is comparable across studies (see Supplemnetal Figure SX). While extending our analysis to the IBL database was mainly motivated by investigating bimodal inference across species, this analysis allowed us to replicate our results in a well-controlled task that was collected across many individual subjects[@Aguillon-Rodriguez2020]. We have added the rational for collapsing across studies with its advantages and disadvantages to the *Open questions and limitations* subsection of the discussion:
 
-**In this work, we tested whether the phenomenon of bimodal inference, which we initially observed in bistable perception[@Weilnhamer2021b], would generalize to a diverse set of two-alternative-forced-choice (2AFC) tasks in the domain of perception. In our analysis of the Confidence database[@Rahnev2020], we collapsed across all perceptual 2AFC experiments, which we considered as random effects in linear mixed effects modeling. Individual experiments differed with respect to the stimuli, the manipulation of difficulty, the timing of trials, and the way responses were collected (see Method section X.X), but were comparable with respect to perceptual performance and history effects (Supplemental Figure SX). The variability across experiments may thus be considered as a strength of our approach, pointing to bimodal inference as a general phenomenon in 2AFC perceptual decision-making. The IBL database allowed us to not only extend our analyses across species, but also to replicate our findings in a highly standardized task that was collected across many individual subjects[@Aguillon-Rodriguez2020]. It will be an important task for future research to replicate our results on bimodal inference in a standardized dataset of comparable volume in humans, which is, to our knowledge, not yet available.**
+**In this work, we tested whether the phenomenon of bimodal inference, which we initially observed in bistable perception[@Weilnhamer2021b], generalizes to a diverse set of two-alternative-forced-choice (2AFC) tasks in the domain of perception. In our analysis of the Confidence database[@Rahnev2020], we collapsed across all perceptual 2AFC experiments, which we considered as random effects in linear mixed effects modeling. Individual experiments differed with respect to the stimuli, the manipulation of difficulty, the timing of trials, and the way responses were collected (see Method section X.X), but were comparable with respect to perceptual performance and history effects (Supplemental Figure SX). The variability across experiments may thus be considered as a strength of our approach, pointing to bimodal inference as a general phenomenon in 2AFC perceptual decision-making. The IBL database allowed us to not only extend our analyses across species, but also to replicate our findings in a highly standardized task that was collected across many individual subjects[@Aguillon-Rodriguez2020]. It will be an important task for future research to replicate our results on bimodal inference in a standardized dataset of comparable volume in humans, which is, to our knowledge, not yet available.**
 
 We apologize for the lack of clarity regarding the way we queried the Confidence database. To select a broad variety of experiments on 2AFC perceptual decision-making, we Confidence database for studies from the *perception* category (excluding studies from the categories *cognitive*, *motor*, *memory* and *mixed*) and selected studies with 2AFC responses. Our previous version of the manuscript had mentioned the variable names given to the difficulty variable in the individual experiments (i.e., the name of the column in the individual *.txt* files provided for every experiment in Confidence database). The term *false alarm* turned up in the discussion of lapses of attention and arousal, which we have re-written in response to the comment X.X by Reviewer 1. We now provide more information on the experiments and variables selected in the Method section:
 
-- **We downloaded the human data from the Confidence database[@Rahnev2020] on 21/10/2020, limiting our analyses to the database category *perception*. Within this category, we selected studies in which participants made binary perceptual decision between two alternative outcomes. We excluded two experiments in which the average perceptual accuracy fell below 50%. After excluding these studies, our sample consisted of $`r n_trials_human/100000`$ million trials obtained from `r n_participants_human` human participants and `r n_studies_human` individual experiments (see Supplemental Table 1). Out of the `r n_studies_human` included experiments, `r sum(Exp_rep$domain == "Vision")` investigated visual, `r sum(Exp_rep$domain == "Auditory"), `r sum(Exp_rep$domain == "Vestibular self-motion")` prorioceptive, and `r sum(Exp_rep$domain == "Multimodal")` 2AFC decisions. `r sum(Exp_rep$Decision_type == "Discrimination")` experiments were discrimination and `r sum(Exp_rep$Decision_type == "?")` detection paradigms. Out of the `r sum(Exp_rep$RT_available == 1)` experiments that provide information on RTs, `r sum(Exp_rep$RT_type == "cued")` cued the respond by the onset of a response screen or an addition response cue, whereas `r sum(Exp_rep$RT_type == "free")` allowed participants to response at any time after stimulus onset.** 
+- **We downloaded the human data from the Confidence database[@Rahnev2020] on 21/10/2020, limiting our analyses to the database category *perception*. Within this category, we selected studies in which participants made binary perceptual decision between two alternative outcomes. We excluded two experiments in which the average perceptual accuracy fell below 50%. After excluding these studies, our sample consisted of $`r n_trials_human/100000`$ million trials obtained from `r n_participants_human` human participants and `r n_studies_human` individual experiments (see Supplemental Table 1). Out of the `r n_studies_human` included experiments, `r sum(Exp_rep$domain == "Vision")` investigated visual, `r sum(Exp_rep$domain == "Auditory"), `r sum(Exp_rep$domain == "Vestibular self-motion")` prorioceptive, and `r sum(Exp_rep$domain == "Multimodal")` 2AFC decisions. `r sum(Exp_rep$Decision_type == "Discrimination")` experiments were based on discrimination and `r sum(Exp_rep$Decision_type == "Detection")` detection paradigms, with one investigating both discrimination and detection. Out of the `r sum(Exp_rep$RT_available == 1)` experiments that provide information on RTs, `r sum(Exp_rep$RT_type == "cued")` cued the response by the onset of a response screen or an additional response cue, whereas `r sum(Exp_rep$RT_type == "free")` allowed participants to response at any time after stimulus onset.** 
 
 - **`r sum(Exp_rep$Difficulty_available == 0)` of the `r nrow(Exp_rep)` experiments considered used fixed difficulty levels, whereas `r sum(Exp_rep$Difficulty_available == 1)` varied difficulty levels within participants. Difficulty was modulated via noise masks, contrast, luminance, presentation time, or stimulus probability for gabors, dot coherence for random dot kinematograms, difference in elements and set size for comparisons of numerosity, difference in clicks for auditory discrimination, temporal distance for meta-contrast masking, and amount of self-motion for proprioception.**
 
