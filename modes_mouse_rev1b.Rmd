@@ -3607,11 +3607,22 @@ for (id in unique(MwData$subject_id[MwData$subject_id > n_start])) {
 ```
 
 ```{r model_comp, cache = TRUE}
-Optim_eval = read.csv("./Results/Optim_eval_human_interim.csv")
+Optim_eval = data.frame()
+human_files = list.files(path='./Results', pattern='Optim_eval_human_')
+for (load_idx in human_files){
+Optim_eval = rbind(Optim_eval, read.csv(paste("./Results/", load_idx, sep = "")))
+}
+#Optim_eval = read.csv("./Results/Optim_eval_human_interim.csv")
 Optim_eval$species = "humans"
 Optim_eval$unique_id = as.character(Optim_eval$subject_id * rand(1))
 
-Optim_eval_mice = read.csv("./Results/Optim_eval_mouse_interim.csv")
+
+Optim_eval_mice = data.frame()
+mice_files = list.files(path='./Results', pattern='Optim_eval_mouse_')
+for (load_idx in mice_files){
+Optim_eval_mice = rbind(Optim_eval_mice, read.csv(paste("./Results/", load_idx, sep = "")))
+}
+#Optim_eval_mice = read.csv("./Results/Optim_eval_mouse_interim.csv")
 Optim_eval_mice$species = "mice"
 Optim_eval_mice$unique_id = as.character(Optim_eval_mice$subject_id * Optim_eval_mice$session_id * rand(1))
 
@@ -7314,7 +7325,7 @@ p_distribution_Sum_Model_AIC <-
          )) +
   geom_col(alpha = 0.5, width = 0.1) +
   theme_classic(base_size = 6) + 
-  scale_y_discrete(labels=c("M 1", "M 2", "M 3", "M 4", "M 5"))+
+  scale_y_discrete(labels=c(" M1", " M2", " M3", " M4", " M5"))+
   labs(x = "AIC (group-level)", y = "Model", color = "Model", fill = "Model", subtitle = "A") +
   scale_color_brewer(palette = "Dark2", direction = +1) + scale_fill_brewer(palette = "Dark2", direction = +1) +
   theme(legend.position = "top") + facet_wrap( ~ species, ncol = 2)
@@ -7327,8 +7338,7 @@ layout_matrix = lay,
 heights = c(0.75,1),
 widths = c(1))
 ```
-
-**Supplemental Figure SX. Comparison of the bimodal inference model against reduced control models.** **A. Group-level AIC.** The bimodal inference model (Model 1) achieved the lowest AIC across the full model space ($AIC_1$ = 'r Sum_AIC_Models[Sum_AIC_Models$species == "humans" & Sum_AIC_Models$type == "1: Bimodal inference",]$AIC' and 'r Sum_AIC_Models[Sum_AIC_Models$species == "mice" & Sum_AIC_Models$type == "1: Bimodal inference",]$AIC' in mice). Model 2 ($AIC_2$ = 'r Sum_AIC_Models[Sum_AIC_Models$species == "humans" & Sum_AIC_Models$type == "2: likelihood-oscillation-only model",]$AIC' and 'r Sum_AIC_Models[Sum_AIC_Models$species == "mice" & Sum_AIC_Models$type == "2: likelihood-oscillation-only model",]$AIC' in mice) and Model 3 ($AIC_3$ = 'r Sum_AIC_Models[Sum_AIC_Models$species == "humans" & Sum_AIC_Models$type == "3: prior-oscillation-only model",]$AIC' and 'r Sum_AIC_Models[Sum_AIC_Models$species == "mice" & Sum_AIC_Models$type == "3: prior-oscillation-only model",]$AIC' in mice) incorporated only oscillations of either likelihood or prior precision. Model 4 ($AIC_4$ = 'r Sum_AIC_Models[Sum_AIC_Models$species == "humans" & Sum_AIC_Models$type == "4: normative-evidence-accumulation",]$AIC' and 'r Sum_AIC_Models[Sum_AIC_Models$species == "mice" & Sum_AIC_Models$type == "4: normative-evidence-accumulation",]$AIC' in mice) lacked any oscillations of likelihood and prior precision and corresponded to the normative model proposed by Glaze et al.[@Glaze2015]. In model 5 ($AIC_4$ = 'r Sum_AIC_Models[Sum_AIC_Models$species == "humans" & Sum_AIC_Models$type == "5: no-evidence-accumulation",]$AIC' and 'r Sum_AIC_Models[Sum_AIC_Models$species == "mice" & Sum_AIC_Models$type == "5: no-evidence-accumulation",]$AIC' in mice), we furthermore removed the integration of information across trials, such that perception depended only in incoming sensory information. **B. Subject-level AIC.** Here, we show the distribution of AIC values at the subject-level. AICs for the bimodal inference model tended to be smaller than AICs for the comparator models.
+**Supplemental Figure SX. Comparison of the bimodal inference model against reduced control models.** **A. Group-level AIC.** The bimodal inference model (M1) achieved the lowest AIC across the full model space ($AIC_1$ = 'r Sum_AIC_Models[Sum_AIC_Models$species == "humans" & Sum_AIC_Models$type == "1: Bimodal inference",]$AIC' and 'r Sum_AIC_Models[Sum_AIC_Models$species == "mice" & Sum_AIC_Models$type == "1: Bimodal inference",]$AIC' in mice). Model M2 ($AIC_2$ = 'r Sum_AIC_Models[Sum_AIC_Models$species == "humans" & Sum_AIC_Models$type == "2: likelihood-oscillation-only model",]$AIC' and 'r Sum_AIC_Models[Sum_AIC_Models$species == "mice" & Sum_AIC_Models$type == "2: likelihood-oscillation-only model",]$AIC' in mice) and Model M3 ($AIC_3$ = 'r Sum_AIC_Models[Sum_AIC_Models$species == "humans" & Sum_AIC_Models$type == "3: prior-oscillation-only model",]$AIC' and 'r Sum_AIC_Models[Sum_AIC_Models$species == "mice" & Sum_AIC_Models$type == "3: prior-oscillation-only model",]$AIC' in mice) incorporated only oscillations of either likelihood or prior precision. Model M4 ($AIC_4$ = 'r Sum_AIC_Models[Sum_AIC_Models$species == "humans" & Sum_AIC_Models$type == "4: normative-evidence-accumulation",]$AIC' and 'r Sum_AIC_Models[Sum_AIC_Models$species == "mice" & Sum_AIC_Models$type == "4: normative-evidence-accumulation",]$AIC' in mice) lacked any oscillations of likelihood and prior precision and corresponded to the normative model proposed by Glaze et al.[@Glaze2015]. In model M5 ($AIC_4$ = 'r Sum_AIC_Models[Sum_AIC_Models$species == "humans" & Sum_AIC_Models$type == "5: no-evidence-accumulation",]$AIC' and 'r Sum_AIC_Models[Sum_AIC_Models$species == "mice" & Sum_AIC_Models$type == "5: no-evidence-accumulation",]$AIC' in mice), we furthermore removed the integration of information across trials, such that perception depended only in incoming sensory information. **B. Subject-level AIC.** Here, we show the distribution of AIC values at the subject-level. AICs for the bimodal inference model tended to be smaller than AICs for the comparator models.
 
 \newpage
 ## Supplemental Figure S7
