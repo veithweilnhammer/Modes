@@ -8,25 +8,356 @@ date: "2023-09-18"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+## Bimodal inference improves learning and perceptual metacognition in the absence of feedback
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+```{r Simulation_adaptive_feedback, cache = TRUE} 
 
-```{r cars}
-summary(cars)
+if (!load_summary_data) {
+  
+source("./Functions/simulation_glaze_osc_human_zeta_v1_adaptive.R", local = knitr::knit_global())
+
+##
+## generate environment Settings
+##
+n_participants_adaptive = 5000
+
+n_blocks = 20
+block_length  <- runif(min = 100, max = 100, n_blocks)
+
+
+var_prec = 0
+zeta = 1
+
+outcomes = c(0,1)
+
+# learning rates
+alpha_switch = sample(seq(0.05,0.25,0.05),n_participants_adaptive, replace = TRUE)
+alpha_stay = alpha_switch
+alpha_percept = sample(seq(0.05,0.25,0.05),n_participants_adaptive, replace = TRUE)
+
+# specifics of bimodal inference
+frequency = sample(seq(0.05,0.15,0.025),n_participants_adaptive, replace = TRUE)
+amp = sample(seq(1,1,1),n_participants_adaptive, replace = TRUE)
+
+# starting values for H and P
+H_logit = sample(seq(-0.25,0,0.01),n_participants_adaptive, replace = TRUE)
+P_logit = sample(seq(0.25,2,0.25),n_participants_adaptive, replace = TRUE)
+if (run_adaptive_simulation){
+  Summary_Sim_adaptive = data.frame()
+for (feedback_level in seq(from = 0.6, to = 1, by = 0.1)){
+
+#Sim <- data.frame()
+
+for (subj_idx in c(1:n_participants_adaptive)){
+  {print(subj_idx)}
+  
+# hazard rate and encoding precision of environment  
+block_probs <- sample(seq(0.1,1,0.2),n_blocks, replace = TRUE)
+block_precs <- sample(seq(2,8,1),n_blocks, replace = TRUE)
+
+  for (amp_on_idx in c(0,1)){
+    Sim_add <-
+      simulation_glaze_osc_human_zeta_v1_adaptive(
+      n_blocks,
+      block_length,
+      block_probs,
+      block_precs,
+      var_prec,
+      H_logit[subj_idx],
+      P_logit[subj_idx],
+      outcomes,
+      alpha_switch[subj_idx],
+      alpha_stay[subj_idx],
+      alpha_percept[subj_idx],
+      amp[subj_idx],
+      amp_on_idx,
+      frequency[subj_idx],
+      zeta,
+      sliding_window,
+      n_permutations,
+      feedback_level
+      ) 
+  
+  Sim_add$diff_acf_Stimulus <- exclude_3SD(Sim_add$acf_Stimulus - Sim_add$random_acf_Stimulus) 
+  Sim_add$diff_acf_History <- exclude_3SD(Sim_add$acf_History - Sim_add$random_acf_History) 
+  Sim_add$subject_id = subj_idx
+  Sim_add$amp = amp[subj_idx]
+  Sim_add$amp_on = amp_on_idx
+  Sim_add$alpha_switch = alpha_switch[subj_idx]
+  Sim_add$alpha_stay = alpha_stay[subj_idx]
+  Sim_add$alpha_percept = alpha_percept[subj_idx]
+  Sim_add$frequency = frequency[subj_idx]
+  Sim_add$zeta =  zeta
+  Sim_add$feedback_level = feedback_level
+  
+  
+gathercol = colnames(Sim_add[,c(25,33,34, 41,42)])
+Sim_long  <-
+gather(Sim_add[,c(25,33,34,41,42,43,44,45,51)],
+"Variable",
+"Value",
+gathercol,
+factor_key = TRUE)
+
+Sim_long$Variable <- gsub("error_", "", Sim_long$Variable)
+
+
+add_Summary_Sim_adaptive <-
+  ddply(
+    Sim_long[(Sim_long$Variable == "Accuracy" | Sim_long$Variable == "H" | Sim_long$Variable == "P"),],
+    .(amp_on, amp, feedback_level, Variable, subject_id),
+    summarise,
+    Mean = mean(abs(Value), na.rm = TRUE),
+    Error = sd(abs(Value), na.rm = TRUE)/sqrt(length(abs(Value))))
+
+Summary_Sim_adaptive = rbind(Summary_Sim_adaptive, add_Summary_Sim_adaptive)  
+  }
+}
+
+write.csv(Summary_Sim_adaptive, paste(root, "Sim_adaptive_v1_feedback_level_", as.character(feedback_level), "n_", as.character(n_participants_adaptive) ,".csv", sep = ""), row.names = FALSE)
+}
+} else {
+
+Summary_Sim_adaptive <- read.csv( "./Results/Summary_Sim_adaptive_v1.csv")  
+}
+Summary_Sim_adaptive[Summary_Sim_adaptive$Variable == "Accuracy",]$Mean = Summary_Sim_adaptive[Summary_Sim_adaptive$Variable == "Accuracy",]$Mean*100 
+
+
+Summary_Sim_adaptive$amp <- as.factor(Summary_Sim_adaptive$amp)
+Summary_Sim_adaptive$amp_on <- as.factor(Summary_Sim_adaptive$amp_on)
+Summary_Sim_adaptive$feedback_level <- as.factor(Summary_Sim_adaptive$feedback_level*100)
+Summary_Sim_adaptive$Variable <- as.factor(Summary_Sim_adaptive$Variable)
+
+Summary_Sim_adaptive_diff <-
+  ddply(
+    Summary_Sim_adaptive,
+    .(Variable, amp, feedback_level, subject_id),
+    summarise,
+    diff = Mean[amp_on == 1] - Mean[amp_on == 0])
+
+Group_Summary_Sim_adaptive_diff <-
+  ddply(
+    Summary_Sim_adaptive_diff,
+    .(Variable, amp, feedback_level),
+    summarise,
+   mean = mean(diff, na.rm = TRUE),
+   error = sd(diff, na.rm = TRUE)/sqrt(length(diff)))
+
+## STATS Adaptive Stimulation ## 
+Sim_STAT.diff_Mode_H = t.test(Summary_Sim_adaptive_diff[Summary_Sim_adaptive_diff == "H" & Summary_Sim_adaptive_diff$feedback_level == 0,]$diff)
+Sim_STAT.diff_Mode_P = t.test(Summary_Sim_adaptive_diff[Summary_Sim_adaptive_diff == "P" & Summary_Sim_adaptive_diff$feedback_level == 0,]$diff)
+Sim_STAT.diff_Mode_Accuracy = t.test(Summary_Sim_adaptive_diff[Summary_Sim_adaptive_diff == "Accuracy" & Summary_Sim_adaptive_diff$feedback_level == 0,]$diff)
+
+Sim_H_vs_feedback <- lmer(diff ~ as.numeric(feedback_level) + (1|subject_id), data = Summary_Sim_adaptive_diff[Summary_Sim_adaptive_diff == "H",])
+Sim_STAT.H_vs_feedback <- summary(Sim_H_vs_feedback)
+Sim_P_vs_feedback <- lmer(diff ~ as.numeric(feedback_level) + (1|subject_id), data = Summary_Sim_adaptive_diff[Summary_Sim_adaptive_diff == "P",])
+Sim_STAT.P_vs_feedback <- summary(Sim_P_vs_feedback)
+Sim_Accuracy_vs_feedback <- lmer(diff ~ as.numeric(feedback_level) + (1|subject_id), data = Summary_Sim_adaptive_diff[Summary_Sim_adaptive_diff == "Accuracy",])
+Sim_STAT.Accuracy_vs_feedback <- summary(Sim_Accuracy_vs_feedback)  
+  
+  if (save_summary_data) {
+    save(n_participants_adaptive, n_blocks, block_length, H_logit, P_logit,
+         Summary_Sim_adaptive,Summary_Sim_adaptive_diff,
+         Group_Summary_Sim_adaptive_diff,
+         Sim_STAT.diff_Mode_H, Sim_STAT.diff_Mode_P, Sim_STAT.diff_Mode_Accuracy,
+         Sim_STAT.H_vs_feedback, Sim_STAT.P_vs_feedback, Sim_STAT.Accuracy_vs_feedback,
+         file = "./Summary_Data/Simulation_adaptive_feedback.Rdata")
+  }
+  
+} else {
+  load("./Summary_Data/Simulation_adaptive_feedback.Rdata")
+}
 ```
 
-## Including Plots
+Is there a computational benefit to be gained from temporarily down-regulating biases toward preceding choices (Figure 2-3 B and C), instead of combining them with external sensory information at a constant weight (Supplemental Figure S7)? In their adaptive function for perceptual decision-making, internal predictions critically depend on error-driven learning to remain aligned with the current state of the world[@Rao1999]. Yet when the same network processes external and internal information in parallel, inferences may become circular and maladaptive[@Jardri2017]: Ongoing decision-related activity may be distorted by noise in external sensory signals that are fed forward from the periphery or, alternatively, by aberrant internal predictions about the environment that are fed back form higher cortical levels[@Jardri2017; @Honey2017]. 
 
-You can also embed plots, for example:
+Purely parallel processing therefore creates at least two challenges for perception: First, due to the sequential integration of inputs over time, internal predictions may progressively override sensory information[@Wexler2015], leading to false inferences about the presented stimuli[@Weilnhammer2021a]. As a consequence, purely parallel processing may also lead to false inferences about the statistical regularities of volatile environments, where the underlying hazard rate $\hat{H} = P(s_t \neq s_{t-1})$ (i.e., the probability of a change in the state of the environment between two trials) may change over time. In the absence of feedback, agents have to update the estimate about $\hat{H}$ solely on the grounds of their experience, which is determined by the posterior log ratio $L_t$. Yet $L_t$ depends not only on external information from the environment (the log likelihood ratio $LLR_t$), but also on internal predictions, i.e., the log prior ratio $L_{t-1}$ and the assumed hazard rate $H_t$. This circularity may impair the ability to learn about changes in $H$ that occur in volatile environments (Figure 7A).  
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
+Second, purely parallel processing may also reduce the capacity to calibrate metacognitive beliefs about ongoing changes in the precision at which sensory signals are encoded. In the absence of feedback, agents depend on internal confidence signals[@Guggenmos2016] (i.e., the absolute of the posterior log ratio $|L_t|$) to update beliefs $M_t$ about the precision of sensory encoding $\hat{M} = 1 - |s_t-u_t|$. While $\hat{M}$ depends only on the likelihood $LLR_t$, the estimate $M_t$ is informed by the posterior $L_t$, which, in turn, is additionally modulated by the prior $L_{t-1}$ and $H_t$. Relying on internal predictions may thus distort metacognitive beliefs about the precision of sensory encoding (Figure 7B). This problem becomes particularly relevant when agents do not have full insight into the strength at which external and internal sources of information contribute to perceptual inference (i.e., when confidence is high during both internally- and externally-biased processing; Figure 2I-J; Figure 6G-H).
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Here, we propose that bimodal inference may provide potential solutions to these problems of circular inference. By intermittently decoupling the decision variable $L_t$ from internal predictions, between-mode fluctuations may create unambiguous error signals that adaptively update estimates about the hazard rate $\hat{H}$ and the precision of sensory encoding $\hat{M}$. 
+
+To illustrate this hypothesis, we simulated data for a total of $`r (length(unique(Summary_Sim_adaptive$subject_id)))`$
+participants who performed binary perceptual decisions for a total of $`r n_blocks`$ blocks of $`r mean(block_length)`$ trials each. Each block differed with respect to the true hazard rate $\hat{H}$ (either 0.1, 0.3, 0.5, 0.7 or 0.9) and the sensitivity parameter $\alpha$ (either 2, 3, 4, 5 or 6, determining $\hat{M}$ via the absolute of the log likelihood ratio $|LLR_t|$, Figure 7A-B, upper panel). Importantly, the synthetic participants did not receive feedback on whether their perceptual decisions were correct. 
+
+We initialized each participant at a random value of $H'_t$ (ranging from $`r min(H_logit)`$ to $`r max(H_logit)`$) and $M'_t$ (ranging from $`r min(P_logit)`$ to $`r max(P_logit)`$), which were transformed into the unit interval to yield trial-wise estimates for $H_t$ and $M_t$:
+
+\begin{equation}
+H_t = \frac{1}{1+exp(-(H'_t))}
+\end{equation}
+
+\begin{equation}
+M_t = \frac{1}{1+exp(-(M'_t))}
+\end{equation}
+
+For each block, we generated stimuli $s_t$ using the true hazard rate $\hat{H}$. Detected inputs $u_t$ were computed according to the block-wise sensitivity parameter $\alpha$. Perceptual decisions $y_t$ were generated using the bimodal inference model with ($a_{\psi}$ = $a_{LLR}$ = 1, $\zeta$ = 1 and $f$ between 0.05 and 0.15) and a unimodal control model ($a_{\psi}$ = $a_{LLR}$ = 0, $\zeta$ = 1).
+
+Leaning about $H$ was driven by the error-term $\epsilon_H$ (Figure 7A, lower panel), reflecting the difference between $H_t$ and presence of a perceived change in the environment $|y_t - y_{t-1}|$:
+
+\begin{equation}
+\epsilon_H = |y_t - y_{t-1}| - H_t
+\end{equation}
+
+Trial-wise updates to $H$ were provided by a Resorla-Wagner-rule with learning rate $\beta_H$ (ranging from 0.05 to 0.25). Since $y_t$ is more likely to accurately reflect the state of the environment during external mode, updates to $H$ were additionally modulated by $\omega_{LLR}$:
+
+\begin{equation}
+H'_t = H'_{t-1} + \beta_H *\omega_{LLR} * \epsilon_H
+\end{equation}  
+    
+Learning about $\hat{M}$ was driven by error-term $\epsilon_M$ (Figure 7B, lower panel), reflecting the difference between $M_t$ and the posterior decision-certainty $(1-|y_t - P(y_t = 1)|)$: 
+
+\begin{equation}
+\epsilon_M = (1-|y_t - P(y_t = 1)|) - M_t
+\end{equation} 
+
+In analogy to $H$, we modeled trial-wise updates to $M$ using a Rescorla-Wagner-rule with learning rate $\beta_M$ (ranging from 0.05 to 0.25). Since $y_t$ reflects the log likelihood ratio $LLR_t$ (and therefore the precision of sensory encoding) more closely during external mode, updates to $P$ were additionally modulated by $\omega_{LLR}$:
+
+\begin{equation}
+M'_t = M'_{t-1} + \beta_M *\omega_{LLR} * \epsilon_M
+\end{equation}  
+
+For each participant, we simulated data using both the bimodal inference model described above and a unimodal control model, in which the between-mode fluctuations were removed by setting the amplitude parameter $a$ to zero ($a_{\psi}$ = $a_{LLR}$ = 0). We compared the bimodal model of perceptual inference to the unimodal control model in terms of three dependent variables: the probability of stimulus-congruent perceptual choices, the error in the estimate about $H$ (i.e., $|H - \hat{H}|$) and the error in the estimate about $M$ (i.e., $|M - \hat{M}|$, with $\hat{M} = 1- (|s_t-u_t|)$). 
+
+We found that the bimodal inference model achieved lower stimulus-congruence in comparison to the unimodal control model ($\beta_1$ = $`r Sim_STAT.Accuracy_vs_feedback$coefficients[1,1]`$ ± $`r Sim_STAT.Accuracy_vs_feedback$coefficients[1,2]`$, T($`r Sim_STAT.Accuracy_vs_feedback$coefficients[1,3]`$) = $`r Sim_STAT.Accuracy_vs_feedback$coefficients[1,4]`$, p = $`r Sim_STAT.Accuracy_vs_feedback$coefficients[1,5]`$, Figure 7C). 
+At the same time, the bimodal inference model yielded lower errors in the estimated hazard rate $H$ ($\beta_1$ = $`r Sim_STAT.H_vs_feedback$coefficients[1,1]`$ ± $`r Sim_STAT.H_vs_feedback$coefficients[1,2]`$, T($`r Sim_STAT.H_vs_feedback$coefficients[1,3]`$) = $`r Sim_STAT.H_vs_feedback$coefficients[1,4]`$, p = $`r Sim_STAT.H_vs_feedback$coefficients[1,5]`$) 
+and probability of stimulus-congruent choices $P$ ($\beta_1$ = $`r Sim_STAT.P_vs_feedback$coefficients[1,1]`$ ± $`r Sim_STAT.P_vs_feedback$coefficients[1,2]`$, T($`r Sim_STAT.P_vs_feedback$coefficients[1,3]`$) = $`r Sim_STAT.P_vs_feedback$coefficients[1,4]`$, p = $`r Sim_STAT.P_vs_feedback$coefficients[1,5]`$, Figure 7E). This suggests that between-mode fluctuations may play an adaptive role for learning and perceptual metacognition by supporting robust inferences about the statistical regularities of volatile environments and ongoing changes in the precision of sensory encoding.
+
+Finally, we asked whether differences between the bimodal inference model the unimodal control model depend on the presence of external feedback. We predicted that the benefits of the bimodal inference model over the unimodal control model should be lost when feedback is provided: With feedback, the error terms that induce updates in $H$ and $P$ can be informed by the true state of the environment $s_t$ instead of posterior stimulus probabilities that are distorted by circular inferences: 
+
+\begin{equation}
+\epsilon_H = |s_t - s_{t-1}| - H_t
+\end{equation}
+
+\begin{equation}
+\epsilon_M = (1- (|y_t - s_t|)) - M_t
+\end{equation} 
+
+We repeated the above simulation for each participant while providing feedback on a subset of trials (10%, 20%, 30%, 40%, 50%, 60%, 70%, 80%, 90% and 100%). With increasing availability of external feedback, the bimodal inference model lost its advantage over the unimodal control model in terms of, (i), the estimated hazard rate $H$ ($\beta_2$ = $`r Sim_STAT.H_vs_feedback$coefficients[2,1]`$ ± $`r Sim_STAT.H_vs_feedback$coefficients[2,2]`$, T($`r Sim_STAT.H_vs_feedback$coefficients[2,3]`$) = $`r Sim_STAT.H_vs_feedback$coefficients[2,4]`$, p = $`r Sim_STAT.H_vs_feedback$coefficients[2,5]`$) 
+and, (ii), the estimated probability of stimulus-congruent choices $M$ ($\beta_2$ = $`r Sim_STAT.P_vs_feedback$coefficients[2,1]`$ ± $`r Sim_STAT.P_vs_feedback$coefficients[2,2]`$, T($`r Sim_STAT.P_vs_feedback$coefficients[2,3]`$) = $`r Sim_STAT.P_vs_feedback$coefficients[2,4]`$, p = $`r Sim_STAT.P_vs_feedback$coefficients[2,5]`$, Figure 7F). 
+This indicates that the benefits of bimodal inference are limited to situations in which external feedback is sparse. 
+
+\newpage
+
+## general response bias 
+
+Finally, we fitted full and history-conditioned psychometric curves to the data from the IBL database. When estimated based on the full dataset (i.e., irrespective of the preceding perceptual choice $y_{t-1}$), biases $\mu$ were distributed around zero (`r mean(P_M_Behav$full_b_bias, na.rm = TRUE)` ± `r sd(P_M_Behav$full_b_bias, na.rm = TRUE)/sqrt(length(P_M_Behav$full_b_bias))`; T(`r M_STAT.PM_zero_bias_b$parameter`) = `r M_STAT.PM_zero_bias_b$statistic`, p = $`r M_STAT.PM_zero_bias_b$p.value`$; Figure 5A and B, upper panel). 
+When conditioned on the preceding perceptual choice, biases were negative for $y_{t-1} = 0$ (`r -mean(P_M_Behav$full_0_bias, na.rm = TRUE)` ± `r sd(P_M_Behav$full_0_bias, na.rm = TRUE)/sqrt(length(P_M_Behav$full_0_bias))`; T(`r M_STAT.PM_zero_bias_0$parameter`) = `r -M_STAT.PM_zero_bias_0$statistic`, p = $`r M_STAT.PM_zero_bias_0$p.value`$; Figure 5A and B, middle panel) 
+and positive for $y_{t-1} = 1$ (`r -mean(P_M_Behav$full_1_bias, na.rm = TRUE)` ± `r sd(P_M_Behav$full_1_bias, na.rm = TRUE)/sqrt(length(P_M_Behav$full_1_bias))`; T(`r M_STAT.PM_zero_bias_1$parameter`) = `r -M_STAT.PM_zero_bias_1$statistic`, p = $`r M_STAT.PM_zero_bias_1$p.value`$; Figure 5A and B, lower panel). 
+As in humans, mice showed larger biases during internal mode (`r mean(abs(P_M_Behav$internal_b_bias), na.rm = TRUE)` ± `r sd(abs(P_M_Behav$internal_b_bias), na.rm = TRUE)/sqrt(length(abs(P_M_Behav$internal_b_bias)))`) as compared to external mode (`r mean(abs(P_M_Behav$external_b_bias), na.rm = TRUE)` ± `r sd(abs(P_M_Behav$external_b_bias), na.rm = TRUE)/sqrt(length(abs(P_M_Behav$external_b_bias)))`; $\beta_0$ = $`r M_STAT.PM_diff_bias$coefficients[1,1]`$ ± $`r M_STAT.PM_diff_bias$coefficients[1,2]`$, T = $`r M_STAT.PM_diff_bias$coefficients[1,3]`$, p = $`r M_STAT.PM_diff_bias$coefficients[1,4]`$; controlling for differences in lapses and thresholds). 
+
+Lower and upper lapses amounted to $\gamma$ = `r mean(P_M_Behav$full_b_lower_lapse, na.rm = TRUE)` ± `r sd(P_M_Behav$full_b_lower_lapse, na.rm = TRUE)/sqrt(length(P_M_Behav$full_b_higher_lapse))` and $\delta$ = `r mean(P_M_Behav$full_b_higher_lapse, na.rm = TRUE)` ± `r sd(P_M_Behav$full_b_higher_lapse, na.rm = TRUE)/sqrt(length(P_M_Behav$full_b_higher_lapse))` (see Figure 5A, C and D). 
+Lapse rates were higher in internal mode ($\gamma$ = `r mean(P_M_Behav$internal_b_lower_lapse, na.rm = TRUE)` ± `r sd(P_M_Behav$internal_b_lower_lapse, na.rm = TRUE)/sqrt(length(P_M_Behav$internal_b_higher_lapse))`, $\delta$ = `r mean(P_M_Behav$internal_b_higher_lapse, na.rm = TRUE)` ± `r sd(P_M_Behav$internal_b_higher_lapse, na.rm = TRUE)/sqrt(length(P_M_Behav$internal_b_higher_lapse))`) as compared to external mode ($\gamma$ = `r mean(P_M_Behav$external_b_lower_lapse, na.rm = TRUE)` ± `r sd(P_M_Behav$external_b_lower_lapse, na.rm = TRUE)/sqrt(length(P_M_Behav$external_b_higher_lapse))`, $\delta$ = `r mean(P_M_Behav$external_b_higher_lapse, na.rm = TRUE)` ± `r sd(P_M_Behav$external_b_higher_lapse, na.rm = TRUE)/sqrt(length(P_M_Behav$external_b_higher_lapse))`; $\beta_0$ = $`r M_STAT.PM_diff_lapse$coefficients[1,1]`$ ± $`r M_STAT.PM_diff_lapse$coefficients[1,2]`$, T = $`r M_STAT.PM_diff_lapse$coefficients[1,3]`$, p = $`r M_STAT.PM_diff_lapse$coefficients[1,4]`$; controlling for differences in biases and thresholds). 
+
+For $y_{t-1} = 0$, the difference between internal and external mode was more pronounced for higher lapses $\delta$ (T(`r M_STAT.PM_diff_lapse_1_higher_vs_lower$parameter`) = `r M_STAT.PM_diff_lapse_1_higher_vs_lower$statistic`, p = $`r M_STAT.PM_diff_lapse_1_higher_vs_lower$p.value`$). 
+Conversely, for $y_{t-1} = 1$, the difference between internal and external mode was more pronounced for lower lapses $\gamma$ (T(`r M_STAT.PM_diff_lapse_0_higher_vs_lower$parameter`) = `r M_STAT.PM_diff_lapse_0_higher_vs_lower$statistic`, p = $`r M_STAT.PM_diff_lapse_0_higher_vs_lower$p.value`$). 
+In contrast to the human data, higher lapses $\delta$ and lower lapses $\gamma$ were significantly elevated during internal mode irrespective of the preceding perceptual choice 
+(higher lapses $\delta$ for $y_{t-1} = 1$: T(`r M_STAT.PM_diff_lapse_1_higher$parameter`) = `r M_STAT.PM_diff_lapse_1_higher$statistic`, p = $`r M_STAT.PM_diff_lapse_1_higher$p.value`$;
+higher lapses $\delta$ for $y_{t-1} = 0$: T(`r M_STAT.PM_diff_lapse_0_higher$parameter`) = `r M_STAT.PM_diff_lapse_0_higher$statistic`, p = $`r M_STAT.PM_diff_lapse_0_higher$p.value`$;
+lower lapses $\gamma$ for $y_{t-1} = 1$: T(`r M_STAT.PM_diff_lapse_1_lower$parameter`) = `r M_STAT.PM_diff_lapse_1_lower$statistic`, p = $`r M_STAT.PM_diff_lapse_1_lower$p.value`$;
+lower lapses $\gamma$ for $y_{t-1} = 0$: T(`r M_STAT.PM_diff_lapse_0_lower$parameter`) = `r M_STAT.PM_diff_lapse_0_lower$statistic`, p = $`r M_STAT.PM_diff_lapse_0_lower$p.value`$).
+
+In mice, thresholds $t$ amounted to `r mean(P_M_Behav$full_b_threshold, na.rm = TRUE)` ± `r sd(P_M_Behav$full_b_threshold, na.rm = TRUE)/sqrt(length(P_M_Behav$full_b_threshold))` (see Figure 5A and E) and were higher in internal mode (`r mean(P_M_Behav$internal_b_threshold, na.rm = TRUE)` ± `r sd(P_M_Behav$internal_b_threshold, na.rm = TRUE)/sqrt(length(P_M_Behav$internal_b_threshold))`) as compared to external mode (`r mean(P_M_Behav$external_b_threshold, na.rm = TRUE)` ± `r sd(P_M_Behav$external_b_threshold, na.rm = TRUE)/sqrt(length(P_M_Behav$external_b_threshold))`; $\beta_0$ = $`r M_STAT.PM_diff_threshold$coefficients[1,1]`$ ± $`r M_STAT.PM_diff_threshold$coefficients[1,2]`$, T = $`r M_STAT.PM_diff_threshold$coefficients[1,3]`$, p = $`r M_STAT.PM_diff_threshold$coefficients[1,4]`$; controlling for differences in biases and lapses).
+Thresholds $t$ were not modulated by perceptual history (T(`r M_STAT.PM_diff_threshold_0_1$parameter`) = `r M_STAT.PM_diff_threshold_0_1$statistic`, p = $`r M_STAT.PM_diff_threshold_0_1$p.value`$).
+
+In sum, the above analyses of the psychometric function in mice corroborated our findings in humans. Higher thresholds indicated a reduced sensitivity to external information during internal mode. Additionally, internally-biased processing was characterized by a history-dependent modulation of biases and lapses. 
+
+## PM in humans
+
+## PM mice
+
+Finally, we fitted full and history-conditioned psychometric curves to the data from the IBL database. When estimated based on the full dataset (i.e., irrespective of the preceding perceptual choice $y_{t-1}$), biases $\mu$ were distributed around zero (`r mean(P_M_Behav$full_b_bias, na.rm = TRUE)` ± `r sd(P_M_Behav$full_b_bias, na.rm = TRUE)/sqrt(length(P_M_Behav$full_b_bias))`; T(`r M_STAT.PM_zero_bias_b$parameter`) = `r M_STAT.PM_zero_bias_b$statistic`, p = $`r M_STAT.PM_zero_bias_b$p.value`$; Figure 5A and B, upper panel). 
+When conditioned on the preceding perceptual choice, biases were negative for $y_{t-1} = 0$ (`r -mean(P_M_Behav$full_0_bias, na.rm = TRUE)` ± `r sd(P_M_Behav$full_0_bias, na.rm = TRUE)/sqrt(length(P_M_Behav$full_0_bias))`; T(`r M_STAT.PM_zero_bias_0$parameter`) = `r -M_STAT.PM_zero_bias_0$statistic`, p = $`r M_STAT.PM_zero_bias_0$p.value`$; Figure 5A and B, middle panel) 
+and positive for $y_{t-1} = 1$ (`r -mean(P_M_Behav$full_1_bias, na.rm = TRUE)` ± `r sd(P_M_Behav$full_1_bias, na.rm = TRUE)/sqrt(length(P_M_Behav$full_1_bias))`; T(`r M_STAT.PM_zero_bias_1$parameter`) = `r -M_STAT.PM_zero_bias_1$statistic`, p = $`r M_STAT.PM_zero_bias_1$p.value`$; Figure 5A and B, lower panel). 
+As in humans, mice showed larger biases during internal mode (`r mean(abs(P_M_Behav$internal_b_bias), na.rm = TRUE)` ± `r sd(abs(P_M_Behav$internal_b_bias), na.rm = TRUE)/sqrt(length(abs(P_M_Behav$internal_b_bias)))`) as compared to external mode (`r mean(abs(P_M_Behav$external_b_bias), na.rm = TRUE)` ± `r sd(abs(P_M_Behav$external_b_bias), na.rm = TRUE)/sqrt(length(abs(P_M_Behav$external_b_bias)))`; $\beta_0$ = $`r M_STAT.PM_diff_bias$coefficients[1,1]`$ ± $`r M_STAT.PM_diff_bias$coefficients[1,2]`$, T = $`r M_STAT.PM_diff_bias$coefficients[1,3]`$, p = $`r M_STAT.PM_diff_bias$coefficients[1,4]`$; controlling for differences in lapses and thresholds). 
+
+Lower and upper lapses amounted to $\gamma$ = `r mean(P_M_Behav$full_b_lower_lapse, na.rm = TRUE)` ± `r sd(P_M_Behav$full_b_lower_lapse, na.rm = TRUE)/sqrt(length(P_M_Behav$full_b_higher_lapse))` and $\delta$ = `r mean(P_M_Behav$full_b_higher_lapse, na.rm = TRUE)` ± `r sd(P_M_Behav$full_b_higher_lapse, na.rm = TRUE)/sqrt(length(P_M_Behav$full_b_higher_lapse))` (see Figure 5A, C and D). 
+Lapse rates were higher in internal mode ($\gamma$ = `r mean(P_M_Behav$internal_b_lower_lapse, na.rm = TRUE)` ± `r sd(P_M_Behav$internal_b_lower_lapse, na.rm = TRUE)/sqrt(length(P_M_Behav$internal_b_higher_lapse))`, $\delta$ = `r mean(P_M_Behav$internal_b_higher_lapse, na.rm = TRUE)` ± `r sd(P_M_Behav$internal_b_higher_lapse, na.rm = TRUE)/sqrt(length(P_M_Behav$internal_b_higher_lapse))`) as compared to external mode ($\gamma$ = `r mean(P_M_Behav$external_b_lower_lapse, na.rm = TRUE)` ± `r sd(P_M_Behav$external_b_lower_lapse, na.rm = TRUE)/sqrt(length(P_M_Behav$external_b_higher_lapse))`, $\delta$ = `r mean(P_M_Behav$external_b_higher_lapse, na.rm = TRUE)` ± `r sd(P_M_Behav$external_b_higher_lapse, na.rm = TRUE)/sqrt(length(P_M_Behav$external_b_higher_lapse))`; $\beta_0$ = $`r M_STAT.PM_diff_lapse$coefficients[1,1]`$ ± $`r M_STAT.PM_diff_lapse$coefficients[1,2]`$, T = $`r M_STAT.PM_diff_lapse$coefficients[1,3]`$, p = $`r M_STAT.PM_diff_lapse$coefficients[1,4]`$; controlling for differences in biases and thresholds). 
+
+For $y_{t-1} = 0$, the difference between internal and external mode was more pronounced for higher lapses $\delta$ (T(`r M_STAT.PM_diff_lapse_1_higher_vs_lower$parameter`) = `r M_STAT.PM_diff_lapse_1_higher_vs_lower$statistic`, p = $`r M_STAT.PM_diff_lapse_1_higher_vs_lower$p.value`$). 
+Conversely, for $y_{t-1} = 1$, the difference between internal and external mode was more pronounced for lower lapses $\gamma$ (T(`r M_STAT.PM_diff_lapse_0_higher_vs_lower$parameter`) = `r M_STAT.PM_diff_lapse_0_higher_vs_lower$statistic`, p = $`r M_STAT.PM_diff_lapse_0_higher_vs_lower$p.value`$). 
+In contrast to the human data, higher lapses $\delta$ and lower lapses $\gamma$ were significantly elevated during internal mode irrespective of the preceding perceptual choice 
+(higher lapses $\delta$ for $y_{t-1} = 1$: T(`r M_STAT.PM_diff_lapse_1_higher$parameter`) = `r M_STAT.PM_diff_lapse_1_higher$statistic`, p = $`r M_STAT.PM_diff_lapse_1_higher$p.value`$;
+higher lapses $\delta$ for $y_{t-1} = 0$: T(`r M_STAT.PM_diff_lapse_0_higher$parameter`) = `r M_STAT.PM_diff_lapse_0_higher$statistic`, p = $`r M_STAT.PM_diff_lapse_0_higher$p.value`$;
+lower lapses $\gamma$ for $y_{t-1} = 1$: T(`r M_STAT.PM_diff_lapse_1_lower$parameter`) = `r M_STAT.PM_diff_lapse_1_lower$statistic`, p = $`r M_STAT.PM_diff_lapse_1_lower$p.value`$;
+lower lapses $\gamma$ for $y_{t-1} = 0$: T(`r M_STAT.PM_diff_lapse_0_lower$parameter`) = `r M_STAT.PM_diff_lapse_0_lower$statistic`, p = $`r M_STAT.PM_diff_lapse_0_lower$p.value`$).
+
+In mice, thresholds $t$ amounted to `r mean(P_M_Behav$full_b_threshold, na.rm = TRUE)` ± `r sd(P_M_Behav$full_b_threshold, na.rm = TRUE)/sqrt(length(P_M_Behav$full_b_threshold))` (see Figure 5A and E) and were higher in internal mode (`r mean(P_M_Behav$internal_b_threshold, na.rm = TRUE)` ± `r sd(P_M_Behav$internal_b_threshold, na.rm = TRUE)/sqrt(length(P_M_Behav$internal_b_threshold))`) as compared to external mode (`r mean(P_M_Behav$external_b_threshold, na.rm = TRUE)` ± `r sd(P_M_Behav$external_b_threshold, na.rm = TRUE)/sqrt(length(P_M_Behav$external_b_threshold))`; $\beta_0$ = $`r M_STAT.PM_diff_threshold$coefficients[1,1]`$ ± $`r M_STAT.PM_diff_threshold$coefficients[1,2]`$, T = $`r M_STAT.PM_diff_threshold$coefficients[1,3]`$, p = $`r M_STAT.PM_diff_threshold$coefficients[1,4]`$; controlling for differences in biases and lapses).
+Thresholds $t$ were not modulated by perceptual history (T(`r M_STAT.PM_diff_threshold_0_1$parameter`) = `r M_STAT.PM_diff_threshold_0_1$statistic`, p = $`r M_STAT.PM_diff_threshold_0_1$p.value`$).
+
+In sum, the above analyses of the psychometric function in mice corroborated our findings in humans. Higher thresholds indicated a reduced sensitivity to external information during internal mode. Additionally, internally-biased processing was characterized by a history-dependent modulation of biases and lapses. 
+
+## DIsucssion computation
+
+These functional explanations for external and internal modes share the idea that, in order to form stable internal predictions about the statistical properties of the world (e.g., tracking the hazard rate of the environment) or metacognitive beliefs about processes occurring within the agent (e.g., monitoring ongoing changes in the reliability of feedback and feedforward processing), perception needs to temporarily disengage from internal predictions. By the same token, they presuppose that fluctuations in mode occur at the level of perceptual processing[@St.John-Saaltink2016; @Cicchini2017; @Braun2018; @Cicchini2021], and are not a passive phenomenon that is primarily driven by factors situated up- or downstream of sensory analysis. 
+
+First, it may be argued that agents stereotypically repeat preceding choices when less alert. Our analyses address this alternative driver of serial dependencies by building on the association between RTs and arousal[@Rosenberg2013; @Prado2011]. We found that RTs do not map linearly onto the mode of sensory processing, but become shorter for stronger biases toward both externally- and internally-oriented mode (Figure 2G-H; Figure 4I). These observations argue against the view that biases toward internal mode can be explained solely on the ground of ongoing changes in tonic arousal or fatigue[@McGinley2015b]. 
+
+However, internal modes of sensory processing may also be attributed to attentional lapses[@Andrillon2021], which are caused by mind-wandering or mind-blanking and show a more complex relation to RTs[@Andrillon2021]: While episodes of mind-blanking are characterized by an absence of subjective mental activity, more frequent misses, a relative increase in slow waves over posterior EEG electrodes and increased RTs, episodes of mind-wandering come along which rich inner experiences, more frequent false alarms, a relative increase of slow-wave amplitudes over frontal electrodes and decreased RTs[@Andrillon2021]. 
+
+Yet in contrast to gradual between-mode fluctuations, engaging in mind-wandering as opposed to on-task attention seems to be an all-or-nothing phenomenon[@Andrillon2021]. In addition, internally-biased processing did not increase either false alarms or misses, but induced choice errors through an enhanced impact of perceptual history (Figure 2 and 4A) that unfolded in alternating *streaks*[@Gilden1995; @Gilden2001] of elevated stimulus- and history-congruence. Finally, the increase in lapse rates during internal mode was not general, but history-dependent (Figures 3 and 5). While these observations clearly distinguishes between-mode fluctuations from unspecific effects of lapses on decision-making, it remains an intriguing question for future research how mind-wandering and -blanking can be differentiated from internally-oriented modes of sensory processing in terms of their phenomenology, behavioral characteristics, neural signatures and noise profiles[@Gilden1995a; @Andrillon2021].
+
+Second, it may be proposed that humans and mice apply a metacognitive response strategy that repeats preceding choices when less confident about their responses or when insufficiently trained on the task. In humans, however, confidence increased for stronger biases toward both external and internal mode (Figure 2I-J). For humans and mice, history-effects grew stronger with increasing exposure to (and expertise in) the task (Supplemental Figure S6). In addition, the existence of external and internal modes in murine perceptual decision-making (Figure 4) implies that between-mode fluctuations do not depend exclusively on the rich cognitive functions associated with human prefrontal cortex[@Passingham].
+
+Third, our computational modeling results provide further evidence against both of the above caveats: Simulations based on estimated model parameters closely matched the empirical data (Figure 6), reproduced aspects of behavior it was not fitted to (such as trial-wise confidence reports and RTs/TD for human and mice, respectively), and predicted that history-congruent choices occur more frequently after high-confidence trials[@Braun2018; @Bergen2019]. These findings suggest that perceptual choices and post-perceptual processes such as response behavior or metacognition are jointly driven by a dynamic decision variable[@Kepecs2008] that encodes uncertainty[@Cicchini2014; @Urai2017; @Cicchini2018; @Braun2018, @Bergen2019] and is affected by ongoing changes in the integration of external versus internal information.
+
+Of note, a recent computational study[@Ashwood2021] has used a Hidden Markov Model (HMM) to investigate perceptual decision-making in the IBL database[@Aguillon-Rodriguez2020]. In analogy to our findings, the authors observed that mice switch between temporally extended *strategies* that last for more than 100 trials: During *engaged* states, perception was highly sensitive to external sensory information. During *disengaged* states, in turn, choice behavior was prone to errors due to enhanced biases toward one of the two perceptual outcomes[@Ashwood2021]. Despite the conceptual differences to our approach (discrete states in a HMM that correspond to switches between distinct decision-making strategies[@Ashwood2021] vs. gradual changes in mode that emerge from sequential Bayesian inference and ongoing fluctuations in the impact of external relative to internal information), it is tempting to speculate that engaged/disengaged states and between-mode fluctuations might tap into the same underlying phenomenon. 
+
+## COmputational modeling section
 
 
+To validate our model, we correlated individual posterior parameter estimates with the respective conventional variables. We assumed that, (i), the estimated hazard rate $H$ should correlate negatively with the frequency of history-congruent choices and that, (ii), the estimated $\alpha$ should correlate positively with the frequency of stimulus-congruent choices. In addition, we tested whether the posterior decision certainty (i..e. the absolute of the posterior log ratio) correlated negatively with RTs and positively with subjective confidence. This allowed us to assess whether our model could explain aspects of the data it was not fitted to (i.e., RTs and confidence). Finally, we used simulations (see below) to show that all model components, including the anti-phase oscillations governed by $a_{\psi}$, $a_{LLR}$, $f$ and $p$, were necessary for our model to reproduce the empirical data observed for the Confidence database[@Rahnev2020] and IBL database[@Aguillon-Rodriguez2020]. 
 
+**Model simulation 1: Data recovery**: We used the posterior model parameters observed for humans ($H$, $\alpha$, $a_{\psi}$, $a_{LLR}$ and $f$) to define individual parameters for simulation in `r nrow(Optim_Behav)` simulated participants (i.e., equivalent to the number of human participants). For each participant, the number of simulated choices was drawn from a uniform distribution ranging from 300 to 700 trials. Inputs $s$ were drawn at random for each trial, such that the sequence of inputs to the simulation did not contain any systematic seriality. Noisy observations $u$ were generated by applying the posterior parameter $\alpha$ to inputs $s$, thus generating stimulus-congruent choices in `r mean(Sim_Behav$Accuracy, na.rm = TRUE)` ± `r sd(Sim_Behav$Accuracy, na.rm = TRUE)/nrow(Sim_Behav)`% of trials. Choices were simulated based on the trial-wise choice probabilities $y_{p}$. Simulated data were analyzed in analogy to the human and murine data. As a substitute of subjective confidence, we computed the absolute of the trial-wise posterior log ratio $|L|$ (i.e., the posterior decision certainty).
+
+**Model simulation 2: Testing the adaptive benefits of bimodal inference**: In contrast to the model applied to the behavioral data, our second set of simulations considered a situation in which agents learn about the properties of the environment from experience. We modeled dynamic updates in the trial-wise estimates $H_t$ about the true hazard rate $\hat{H} = P(s_t \neq s_{t-1})$ and trial-wise estimates $M_t$ about the precision of sensory encoding $\hat{M} = 1 - (|s_t-u_t|)$.
+
+In the absence of feedback, leaning about $\hat{H}$ was driven by the error-term $\epsilon_H$, which reflected the difference between the currently assumed hazard rate $H_t$ and the presence of a *perceived* change in the environment $|y_t - y_{t-1}|$: 
+
+\begin{equation}
+\epsilon_H = |y_t - y_{t-1}| - H_t
+\end{equation}
+
+In the presence of feedback, $\epsilon_H$ reflected the difference between the currently assumed hazard rate $H_t$ and an presence of a *true* change in the environment $|s_t - s_{t-1}|$:
+
+\begin{equation}
+\epsilon_H = |s_t - s_{t-1}| - H_t
+\end{equation}
+
+In the absence of feedback, learning about $\hat{M}$ was driven by the error-term $\epsilon_M$, reflecting the difference between $M_t$ and the posterior decision-certainty $(1-|y_t - P(y_t = 1)|)$: 
+
+\begin{equation}
+\epsilon_M = (1-|y_t - P(y_t = 1)|) - M_t
+\end{equation} 
+
+In the presence of feedback, $\epsilon_M$ reflected the difference between $M_t$ and the stimulus-congruence of the current response $(1- (|y_t - s_t|))$:
+
+\begin{equation}
+\epsilon_M = (1- (|y_t - s_t|)) - M_t
+\end{equation} 
+
+Updates to $H$ and $M$ were computed in logit-space using a Rescorla-Wagner-rule with learning rates defined by the product of $\beta_{H/M}$ and $\omega_{LLR}$. $H_t$ and $M_t$ are computed by transforming $H'_t$ and $M'_t$ into the unit interval using a sigmoid function:
+
+\begin{equation}
+H'_t = H'_{t-1} + \beta_H *\omega_{LLR} * \epsilon_H
+\end{equation}  
+
+\begin{equation}
+H_t = \frac{1}{1+exp(-(H'_t))}
+\end{equation}
+
+\begin{equation}
+M'_t = M'_{t-1} + \beta_M *\omega_{LLR} * \epsilon_M
+\end{equation}  
+
+\begin{equation}
+M_t = \frac{1}{1+exp(-(M'_t))}
+\end{equation}
+
+We simulated data for a total of $`r (length(unique(Summary_Sim_adaptive$subject_id)))`$ participants for a total of $`r n_blocks`$ blocks of $`r mean(block_length)`$ trials each. 
+Each block differed with respect to the true hazard rate $\hat{H}$ (either 0.1, 0.3, 0.5, 0.7 or 0.9) and the sensitivity parameter $\alpha$ (either 2, 3, 4, 5 or 6, corresponding to values of $\hat{M}$ of 0.73, 0.82, 0.88, 0.92 or 0.95).
+Across participants, model parameters were set as follows: $H'_1$ initialized at random in a unit interval between $`r min(H_logit)`$ to $`r max(H_logit)`$; $P'_1$ initialized at random in a unit interval between $`r min(P_logit)`$ to $`r max(P_logit)`$; $a$ = 1; $f$ between 0.05 and 0.15 1/$N_{trials}$; $\zeta$ = 1; $\beta_H$ and $\beta_M$ between 0.05 and 0.25. For each participant, we ran separate simulations with external feedback provided in 0%, 10%, 20%, 30%, 40%, 50%, 60%, 70%, 80%, 90% and 100% of trials.
+
+## Dopamine-dependent changes in E-I-balance as a neural mechanism of between-mode fluctuations 
+
+The link to self-organized criticality suggests that balanced cortical excitation and inhibition[@Deneve2016] (E-I), which may enable efficient coding[@Deneve2016] by maintaining neural networks in critical states[@Beggs2003], could provide a potential neural mechanism of between-mode fluctuations. Previous work has proposed that the balance between glutamatergic excitation and GABA-ergic inhibition is regulated by activity-dependent feedback through NMDA receptors[@Wang1999]. Such NMDA-mediated feedback has been related to the integration of external inputs over time[@Deneve2016] (model component (i), Figure 1E), thereby generating serial dependencies in decision-making[@Wang2001; @Wang2013; @Bliss2017; @Stein2020]. Intriguingly, slow neuromodulation by dopamine enhances NMDA-dependent signaling[@Durstewitz2000; @Wang2001; @Seamans2001] and fluctuates at slow frequencies[@Kobayashi2017; @Chew2019] that match the temporal dynamics of between-mode fluctuations observed in humans (Figure 2) and mice (Figure 4). Ongoing fluctuations in the impact of external versus internal information (model component (ii)) may thus by caused by phasic changes in E-I-balance that are induced by dopaminergic neuromodulation.
