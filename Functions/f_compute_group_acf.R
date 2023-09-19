@@ -24,8 +24,8 @@ f_compute_group_acf <- function(PwData, acf_to_test, max_trial) {
       # },
       # error = function(e){MEM <- summary(lmer(Y ~ 1 + (1|study_id) , data = PwTest))}
       # )
-      #MEM <- summary(lmer(Y ~ 1 + (1|study_id/diff_acf_External) , data = PwTest))
-      MEM <- summary(lmer(Y ~ 1 + (1|study_id) , data = PwTest))
+      MEM <- summary(lmer(Y ~ 1 + (1|study_id/diff_acf_External) + (1|study_id/diff_acf_Difficulty) , data = PwTest))
+      #MEM <- summary(lmer(Y ~ 1 + (1|study_id) , data = PwTest))
       # browser()
       # MEM <- summary(lmer(Y ~ 1 + diff_acf_Difficulty + (1|study_id) , data = PwTest))
       

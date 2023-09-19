@@ -1,0 +1,28 @@
+---
+title: "Untitled"
+author: "Veith Weilnhammer"
+date: "2023-09-19"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+Abstract: **We propose that between-mode fluctuations may generate unambiguous error signals that enable optimal inference and learning in volatile environments.**
+
+Introduction: **When less sensitive to external stimulus information, humans and mice did not behave more randomly, but showed stronger serial dependencies in their perceptual choices[@fischer_serial_2014; @Liberman2014; @Abrahamyan2016; @Cicchini2014; @Cicchini2017; @Fritsche2020; @Urai2017; @Akrami2018; @Braun2018; @Bergen2019; @Urai2019; @Hsu2020].** These serial dependencies may be understood as driven by internal predictions that reflect the auto-correlation of natural environments[@Dong1995] and bias perception toward preceding experiences[@Burr2014; @Braun2018; @Bergen2019]. Computational modeling indicated that ongoing changes in perceptual performance may be driven by systematic fluctuations between externally- and internally-oriented modes of sensory analysis. **We discuss that such bimodal inference help to build up stable internal representations of the sensory environment despite an ongoing stream of sensory information**.
+
+Removal and corrected and uncorrected stats:
+- group-level autocorrelation curves are now reported with all corrections (autocorrelation in difficulty and sequence of sensory stimulation) in the main manuscript; Supplement shows autocorrelation for difficulty and the associated statistics. 
+
+We have furthermore moved more peripheral statistical results to the figure legends and the method section to further streamline our manuscript. The following changes have been made (highlights in the manuscript): 
+
+- we have moved the statistics on exponential decay in the autocorrelation to the figure legends of Figure XB and XB
+- we have shortened the description of logistic regression models that predict the stimulus- and history-congruence at the index trial from the stimulus- and history-congruence at the preceding trials
+
+
+Results: 
+at the group level, stimulus-congruent perceptual choices were significantly autocorrelated for up to `r min(which(Summary_acf[Summary_acf$Variable == "diff_acf_Stimulus",]$p == "> 0.05")) - 1` trials. Autocorrelation coefficients decayed exponentially over time (rate $\gamma$ = $`r STAT.lmer_acf_Stimulus$coefficients[2,1]`$ ± $`r STAT.lmer_acf_Stimulus$coefficients[2,2]`$, T($`r STAT.lmer_acf_Stimulus$coefficients[2,3]`$) = $`r STAT.lmer_acf_Stimulus$coefficients[2,4]`$, p = $`r STAT.lmer_acf_Stimulus$coefficients[2,5]`$; Figure 2B). Importantly, the autocorrelation of stimulus-congruent perception was not a trivial consequence of the experimental design, but remained significant when controlling for the trial-wise autocorrelation of task difficulty (Supplemental Figure S2A) or the sequence of presented stimuli (Supplemental Figure S2B).
