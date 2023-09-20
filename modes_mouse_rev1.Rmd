@@ -44,9 +44,9 @@ options(scipen = -1, digits = 2)
 ##
 ## ROOT
 ##
-root = "/home/veithweilnhammer/Desktop/Modes Data/"
+#root = "/home/veithweilnhammer/Desktop/Modes Data/"
 #root = "E:/Modes Data/"
-#root = "C:/Users/Veith Weilnhammer/Downloads/"
+root = "C:/Users/Veith Weilnhammer/Downloads/"
 
 ##
 ## Load/save fully preprocessed data

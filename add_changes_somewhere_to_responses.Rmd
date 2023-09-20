@@ -40,3 +40,8 @@ Null hypothesis testing in mice:
 
 **In sum, these analyses confirmed that the observed fluctuations in sensitivity to external sensory information are driven by dynamic changes in impact of perceptual history, and cannot be reduced to general response bias and random choice behavior.**
 
+**F. The bimodal inference model (M1) explains fluctuations between externally- and externally-biased modes (left panel) by two interacting factors: a normative accumulation of evidence according to parameters $H$ (middle panel), and anti-phase oscillations in the precision $\omega_{LLR}$ and $\omega_{\psi}$ (right panel).** 
+
+**G. The control models (M2-M5) were constructed by successively removed the anti-phase oscillations and the integration of information across trials from the bimodal inference model. Please note that the normative-evidence-accumulation-model (M4) corresponds to the model proposed by Glaze et al.[@Glaze2015]. In the no-evidence-accumulation model (M5), perceptual decisions depend only on likelihood information (flat priors).** 
+
+

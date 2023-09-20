@@ -3246,7 +3246,7 @@ type_list = c(
 
 block_size = 10
 Optim_eval = data.frame()
-n_start = 4149
+n_start = 7000
 #for (id in unique(PwData$subject_id)) {
 #for (id in unique(PwData$subject_id[PwData$subject_id > max(PwData$subject_id)/2])) {
 for (id in unique(PwData$subject_id[PwData$subject_id >= n_start])) {
