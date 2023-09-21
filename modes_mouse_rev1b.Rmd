@@ -8037,7 +8037,7 @@ p_Sum_Rep_Alt_Sim
 \newpage
 # Response to Reviewers
 
-## Reviewer 1:
+## Reviewer 1
 
 **This was an interesting and thought-provoking submission. I note that it is a revision: I am therefore supposing that the authors have already responded to one round of reviewer comments and that you are potentially interested in publishing this work. In brief, I think there are many elements of this report that warrant publication; however, there are some parts that are less compelling and could be deferred to a subsequent paper. The paper is far too long and would benefit greatly from being streamlined. Furthermore, some of the modeling is overengineered and is difficult to follow. I have tried to suggest how the authors might improve the presentation of their work in my comments to authors.**
 
