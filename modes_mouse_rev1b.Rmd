@@ -411,7 +411,7 @@ if (load_data){
 <br/><br/>
 **Authors**: 
 
-Veith Weilnhammer$^{1,2}$, Heiner Stuke$^{1,2}$, Kai Standvoss$^{1,3,5}$,  Philipp Sterzer$^{1,3,4,5}$\
+Veith Weilnhammer$^{1,2}$, Heiner Stuke$^{1,2}$, Kai Standvoss$^{1,3,5}$,  Philipp Sterzer$^{6}$\
 \
 <br/><br/>
 **Affiliations**: 
@@ -421,6 +421,7 @@ $^{2}$ Berlin Institute of Health, Charité-Universitätsmedizin Berlin and Max 
 $^{3}$ Bernstein Center for Computational Neuroscience, Charité-Universitätsmedizin Berlin, 10117 Berlin, Germany\
 $^{4}$ Berlin School of Mind and Brain, Humboldt-Universität zu Berlin, 10099 Berlin, Germany\
 $^{5}$ Einstein Center for Neurosciences Berlin, 10117 Berlin, Germany\
+$^{6}$ Department of Psychiatry (UPK), University of Basel, Switzerland\
 \
 <br/><br/>
 
@@ -1336,7 +1337,7 @@ delta_AIC_log_reg_mice = compute_AIC(
 
 **To confirm that changes in the sensitivity to external information are indicative of internal mode processing, we estimated full and history-dependent psychometric curves during internal, external, and across modes[@IBL2021]. If, as we hypothesized, internal mode processing reflects an enhanced impact of perceptual history, one would expect a history-dependent increase in biases and lapses as well as a history-independent increase in threshold. Conversely, if internal mode processing were driven by random choices, one would expect a history-independent increase in lapses and threshold, and no change in bias. In line with our prediction, we found that internal mode processing was associated with a history-dependent increase in bias and lapse as well as a history-independent increase in threshold (Supplemental Section 9.3.1 and Supplemental Figure S6). This confirmed that internal mode processing is indeed driven by an enhanced impact of perceptual history.**   
 
-**In line with this, the quadratic relationship between mode and confidence (Figure 2J) suggested that biases toward internal information do not reflect a post-perceptual strategy of repeating preceding choices when the subjective confidence in the perceptual decision is low. Moreover, while responses became faster with increased exposure to the experiments of the Confidence database, the frequency of history-congruent choices increased over time, speaking against the proposition that participants stereotypically repeat preceding choices when not yet familiar with the experimental task (Supplemental Section 9.4.1).** 
+**In line with this, the quadratic relationship between mode and confidence (Figure 2J) suggested that biases toward internal information do not reflect a post-perceptual strategy of repeating preceding choices when the subjective confidence in the perceptual decision is low. Moreover, while responses became faster with longer exposure to the experiments of the Confidence database, the frequency of history-congruent choices increased over time, speaking against the proposition that participants stereotypically repeat preceding choices when not yet familiar with the experimental task (Supplemental Section 9.4.1).** 
 
 **Taken together, our results thus argue against recurring intervals of low task engagement, which may be signaled by stereotypical or random responses, as an alternative explanation for the phenomenon that we identify as bimodal inference.**
 
@@ -2341,49 +2342,6 @@ if (run_optim_human) {
   row.names = FALSE)
   
 } else {
- 
-## Load Modelspace 
-Compare_Optim <- data.frame()
-for (load_idx in c(1:length(type_list))){
-load_Optim <- read.csv(paste("./Results/", type_list[load_idx], ".csv", sep = ""))
-Compare_Optim = rbind(Compare_Optim, load_Optim[,c(1,seq(ncol(load_Optim)-13,ncol(load_Optim)))])
-}
-Compare_Optim = Compare_Optim[Compare_Optim$convcode == 0,]
-Compare_Optim$AIC = exclude_3SD(Compare_Optim$AIC)
-colMeans(Wide_Compare_Optim, na.rm = TRUE)
-Wide_Compare_Optim = reshape(Compare_Optim[,c("AIC", "type","subject_id")], idvar = "subject_id", timevar = "type", direction = "wide")
-Wide_Compare_Optim$min_AIC <- apply(Wide_Compare_Optim[,2:ncol(Wide_Compare_Optim)], 1, FUN = max, na.rm = TRUE)
-Wide_Compare_Optim[,2:(ncol(Wide_Compare_Optim)-1)] = Wide_Compare_Optim[,2:(ncol(Wide_Compare_Optim)-1)] - Wide_Compare_Optim$min_AIC
-
-colMeans(Wide_Compare_Optim[,2:(ncol(Wide_Compare_Optim)-1)], na.rm = TRUE)
-
-Lbits = data.frame()
-for (load_idx in c(1:length(type_list))) {
-add_Lbits = data.frame(Lbits = ((-Compare_Optim[Compare_Optim$type == type_list[load_idx], ]$value)  - (-Compare_Optim[Compare_Optim$type == type_list[length(type_list)], ]$value)) /
-((Compare_Optim[Compare_Optim$type == type_list[load_idx], ]$trial_n) *
-log(2)),
-model = type_list[load_idx],
-subject_id = Compare_Optim[Compare_Optim$type == type_list[load_idx], ]$subject_id)
-Lbits = rbind(Lbits, add_Lbits)
-}
-
-model_AIC = data.frame()
-for (load_idx in c(1:length(type_list))) {
-add_model_AIC = data.frame(model_AIC = ((Compare_Optim[Compare_Optim$type == type_list[load_idx], ]$AIC)  - (Compare_Optim[Compare_Optim$type == type_list[length(type_list)], ]$AIC)),
-model = type_list[load_idx],
-subject_id = Compare_Optim[Compare_Optim$type == type_list[load_idx], ]$subject_id)
-model_AIC = rbind(model_AIC, add_model_AIC)
-}
-
-Summary_Compare_Optim_Lbits <-
-  ddply(
-    Lbits,
-    .(model),
-    summarise,
-    mean_Lbits = mean(Lbits, na.rm = TRUE),
-    error_Lbits = sd(Lbits, na.rm = TRUE) / sqrt(length(Lbits)))
-Summary_Compare_Optim_Lbits
-
 Optim <- read.csv("./Results/Optim_human_free_phase_zeta.csv")
 }
 
@@ -2675,61 +2633,6 @@ if (!load_summary_data) {
   paste("./Results/", type_list[type_idx], ".csv", sep = ""),
   row.names = FALSE)
  } else {
-
-## Load Modelspace 
-M_Compare_Optim <- data.frame()
-for (load_idx in c(1:length(type_list))){
-load_Optim <- read.csv(paste("./Results/", type_list[load_idx], ".csv", sep = ""))
-
-M_Compare_Optim = rbind(M_Compare_Optim, load_Optim[,c(1,seq(ncol(load_Optim)-14,ncol(load_Optim)))])
-}
-
-M_Compare_Optim_Subj <-  ddply(
-    M_Compare_Optim[M_Compare_Optim$convcode == 0,], 
-    .(subject_id, type),
-    summarise,
-    sum_value = sum(value, na.rm = TRUE),
-    sum_trial_n = sum(trial_n, na.rm = TRUE),
-    AIC = sum(AIC,na.rm = TRUE),
-    Log = sum(-value, na.rm = TRUE)
-    )
-
-M_Compare_Optim_Sum <- ddply(
-    M_Compare_Optim_Subj, 
-    .(type),
-    summarise,
-    mean_AIC = mean(AIC,na.rm = TRUE),
-    sd_AIC = sd(AIC, na.rm = TRUE)/sqrt(length(AIC)),
-    Log = mean(Log, na.rm = TRUE)
-    )
-
-M_Wide_Compare_Optim = reshape(M_Compare_Optim_Subj[,c("sum_value", "type","subject_id")], idvar = "subject_id", timevar = "type", direction = "wide")
-
-M_Lbits = data.frame()
-for (load_idx in c(1:length(type_list))) {
-add_M_Lbits = data.frame(M_Lbits = ((-M_Compare_Optim_Subj[M_Compare_Optim_Subj$type == type_list[load_idx], ]$sum_value)),
-model = type_list[load_idx],
-subject_id = M_Compare_Optim_Subj[M_Compare_Optim_Subj$type == type_list[load_idx], ]$subject_id)
-M_Lbits = rbind(M_Lbits, add_M_Lbits)
-}
-
-M_model_AIC = data.frame()
-for (load_idx in c(1:length(type_list))) {
-add_model_AIC = data.frame(model_AIC = ((M_Compare_Optim_Subj[M_Compare_Optim_Subj$type == type_list[load_idx], ]$AIC)),
-model = type_list[load_idx],
-subject_id = M_Compare_Optim_Subj[M_Compare_Optim_Subj$type == type_list[load_idx], ]$subject_id)
-M_model_AIC = rbind(M_model_AIC, add_model_AIC)
-}
-
-Summary_M_Compare_Optim_Subj_AIC <-
-  ddply(
-    M_model_AIC,
-    .(model),
-    summarise,
-    mean_AIC = mean(model_AIC, na.rm = TRUE),
-    error_AIC = sd(model_AIC, na.rm = TRUE) / sqrt(length(model_AIC)))
-Summary_M_Compare_Optim_Subj_AIC
-
 M_Optim <- read.csv("./Results/Optim_mouse_free_phase_zeta.csv") 
 }
 
@@ -2892,10 +2795,8 @@ if (run_simulation) {
   
 type_list = c(
               "fit_glaze_osc_zeta_v1"
-              #"fit_glaze_osc_zeta_v1_LLR_amp"
               ) 
 source("./Functions/simulation_glaze_osc_human_zeta.R", local = knitr::knit_global())
-source("./Functions/simulation_glaze_osc_human_zeta_LLR_amp.R", local = knitr::knit_global())
 
 Sim <- data.frame()
 for (type_idx in c(1:length(type_list))){
@@ -2968,8 +2869,7 @@ for (subj_idx in c(1:n_participants)){
 }
 
 } else {
-  #Sim <- read.csv(paste(root, "Sim_posterior_param_variable_n_human_zeta.csv", sep = ""))
-  Sim <- read.csv(paste(root, "Sim_LLR_tryout.csv", sep = ""))
+  Sim <- read.csv(paste(root, "Sim_posterior_param_variable_n_human_zeta.csv", sep = ""))
   type_list = unique(Sim$type)
 }
 
@@ -3250,12 +3150,10 @@ Sim_STAT.Confidence_vs_mode <- summary(Sim_Confidence_vs_mode)
 if (evaluate_human){
 type_list = c(
   "fit_glaze_osc_zeta_v1",
-  "fit_glaze_osc_zeta_v1_one_amp",
   "fit_glaze_osc_zeta_v1_LLR_amp",
   "fit_glaze_osc_zeta_v1_Prior_amp",
   "fit_glaze_osc_zeta_v1_no_amp",
   "fit_glaze_osc_zeta_v1_no_integration"
-  #"fit_glaze_osc_zeta_v1_random_walk_mouse"
   )
 
 
@@ -3276,7 +3174,7 @@ type_list = c(
 
 block_size = 10
 Optim_eval = data.frame()
-n_start = 7000
+n_start = 4120
 #for (id in unique(PwData$subject_id)) {
 #for (id in unique(PwData$subject_id[PwData$subject_id > max(PwData$subject_id)/2])) {
 for (id in unique(PwData$subject_id[PwData$subject_id >= n_start])) {
@@ -3389,12 +3287,10 @@ for (id in unique(PwData$subject_id[PwData$subject_id >= n_start])) {
 if (evaluate_mouse){
 type_list = c(
   "fit_glaze_osc_zeta_v1_mouse",
-  "fit_glaze_osc_zeta_v1_one_amp_mouse",
   "fit_glaze_osc_zeta_v1_LLR_amp_mouse",
   "fit_glaze_osc_zeta_v1_Prior_amp_mouse",
   "fit_glaze_osc_zeta_v1_no_amp_mouse",
   "fit_glaze_osc_zeta_v1_no_integration_mouse"
-  #"fit_glaze_osc_zeta_v1_random_walk_mouse"
   )
 
 
@@ -3543,11 +3439,12 @@ for (id in unique(MwData$subject_id[MwData$subject_id > n_start])) {
 if (!load_summary_data) {
   
 ## load human data
-Optim_eval = data.frame()
-human_files = list.files(path='./Results', pattern='Optim_eval_human_')
-for (load_idx in human_files){
-Optim_eval = rbind(Optim_eval, read.csv(paste("./Results/", load_idx, sep = "")))
-}
+# Optim_eval = data.frame()
+# human_files = list.files(path='./Results', pattern='Optim_eval_human_')
+# for (load_idx in human_files){
+# Optim_eval = rbind(Optim_eval, read.csv(paste("./Results/", load_idx, sep = "")))
+# }
+Optim_eval = read.csv("./Results/Optim_eval_human_complete.csv")  
 Optim_eval$species = "humans"
 Optim_eval$unique_id = as.character(Optim_eval$subject_id * rand(1))
 Optim_eval$study_id = NA
@@ -3556,11 +3453,12 @@ Optim_eval[Optim_eval$subject_id == idx,]$study_id =  Behav[Behav$subject_id == 
 }
 
 ## load mouse data
-Optim_eval_mice = data.frame()
-mice_files = list.files(path='./Results', pattern='Optim_eval_mouse_')
-for (load_idx in mice_files){
-Optim_eval_mice = rbind(Optim_eval_mice, read.csv(paste("./Results/", load_idx, sep = "")))
-}
+# Optim_eval_mice = data.frame()
+# mice_files = list.files(path='./Results', pattern='Optim_eval_mouse_')
+# for (load_idx in mice_files){
+# Optim_eval_mice = rbind(Optim_eval_mice, read.csv(paste("./Results/", load_idx, sep = "")))
+# }
+Optim_eval_mice = read.csv("./Results/Optim_eval_mouse_complete.csv")
 Optim_eval_mice$species = "mice"
 Optim_eval_mice$unique_id = as.character(Optim_eval_mice$subject_id * Optim_eval_mice$session_id * rand(1))
 Optim_eval_mice$study_id = NA
@@ -3572,7 +3470,6 @@ Optim_eval$type = gsub("fit_glaze_osc_zeta_v1_no_integration", "5: no-evidence-a
 Optim_eval$type = gsub("fit_glaze_osc_zeta_v1_no_amp", "4: normative-evidence-accumulation", Optim_eval$type)
 Optim_eval$type = gsub("fit_glaze_osc_zeta_v1_Prior_amp", "3: prior-oscillation-only model", Optim_eval$type)
 Optim_eval$type = gsub("fit_glaze_osc_zeta_v1_LLR_amp", "2: likelihood-oscillation-only model", Optim_eval$type)
-Optim_eval$type = gsub("fit_glaze_osc_zeta_v1_one_amp", "Model X: Only one amplitude", Optim_eval$type)
 Optim_eval$type = gsub("fit_glaze_osc_zeta_v1" , "1: Bimodal inference", Optim_eval$type)
 
 ## summarize
@@ -3612,7 +3509,6 @@ M_STAT.M1_M2 = t.test(Sum_Subj_Model_AIC[Sum_Subj_Model_AIC$type == "1: Bimodal 
 } else {
   load("./Summary_Data/model_comparison.Rdata")
 }
-
 #print(Sum_AIC_Models)
 ```
 
@@ -3652,7 +3548,7 @@ In computational terms, serial dependencies may leverage the temporal autocorrel
 
 Yet relying too strongly on serial dependencies may come at a cost: When accumulating over time, internal predictions may eventually override external information, leading to circular and false inferences about the state of the environment[@Jardri2017]. Akin to the wake-sleep-algorithm in machine learning[@Bengio2015], bimodal inference may help to determine whether errors result from external input or from internally-stored predictions: During internal mode, sensory processing is more strongly constrained by predictive processes that auto-encode the agent's environment. Conversely, during external mode, the network is driven predominantly by sensory inputs[@Honey2017]. Between-mode fluctuations may thus generate an unambiguous error signal that aligns internal predictions with the current state of the environment in iterative test-update-cycles[@Bengio2015]. On a broader scale, between-mode fluctuations may thus regulate the balance between feedforward versus feedback contributions to perception and thereby play a adaptive role in metacognition and reality monitoring[@Dijkstra2021].
 
-**From the perspective of the Bayesian brain hypothesis, we hypothesized that observers have certain hyperpriors that are apt for accommodating fluctuations in the predictability of their environment, i.e., people believe that their world is inherently volatile. To be Bayes optimal, it is therefore necessary to periodically re-evaluate posterior beliefs about the parameters that define an internal generative model of the external sensory environment. One way to do this is to periodically suspend the precision of prior beliefs and increase the precision afforded to sensory evidence, thus updating Bayesian beliefs about model parameters.**
+**we hypothesized that observers have certain hyperpriors that are apt for accommodating fluctuations in the predictability of their environment, i.e., people believe that their world is inherently volatile. To be Bayes optimal, it is therefore necessary to periodically re-evaluate posterior beliefs about the parameters that define an internal generative model of the external sensory environment. One way to do this is to periodically suspend the precision of prior beliefs and increase the precision afforded to sensory evidence, thus updating Bayesian beliefs about model parameters.**
 
 **The empirical evidence above suggests that the timescale of this periodic scheduling of evidence accumulation may be scale-invariant. This means that there may exist a timescale of periodic fluctuations in precision over every window or length of perceptual decision-making. Bimodal inference predicts perceptual decisions under a generative model (based upon a hazard function to model serial dependencies between subsequent trials) with periodic fluctuations in the precision of sensory evidence relative to prior beliefs at a particular timescale. Remarkably, a systematic model comparison based on AIC indicated that a model with fluctuating precisions has much greater evidence, relative to a model in the absence of fluctuating precisions. This ad-hoc addition of oscillations to a normative Bayesian model of evidence accumulation[@Glaze2015] allowed us to quantify the dominant timescale of periodic fluctuations mode at approximately 0.11 1/$N_{trials}$ in humans and mice that is appropriate for these kinds of paradigms.**
 
@@ -3682,17 +3578,17 @@ As a functional explanation for bimodal inference, we propose that perception te
 
 ## Limitations and open questions
 
-**Our results suggest bimodal inference as a pervasive aspect in perceptual decision-making in humans and mice. However, a number of limitations and open questions have to be considered:** 
+**Our results suggest bimodal inference as a pervasive aspect of perceptual decision-making in humans and mice. However, a number of limitations and open questions have to be considered:** 
 
-**First, this work sought to understand whether fluctuations between internal and external mode, which we initially observed in an experiment on bistable perception in humans[@Weilnhammer2021a], are general phenomenon that occurs across a diverse set of perceptual decision-making tasks. Our analysis of the Confidence database[@Rahnev2020] therefore collapsed across all available experiments on binary perceptual decision-making. Individual experiments differed with respect to the stimuli, the manipulation of difficulty, the timing of trials, and the way responses were collected, but were highly comparable with respect to the central variables of stimulus- and history-congruence (Supplemental Figure S1A-B).** 
+**First, this work sought to understand whether fluctuations between internal and external mode, which we initially observed in an experiment on bistable perception in humans[@Weilnhammer2021a], represent a general phenomenon that occurs across a diverse set of perceptual decision-making tasks. Our analysis of the Confidence database[@Rahnev2020] therefore collapsed across all available experiments on binary perceptual decision-making. Individual experiments differed with respect to the stimuli, the manipulation of difficulty, the timing of trials, and the way responses were collected, but were highly comparable with respect to the central variables of stimulus- and history-congruence (Supplemental Figure S1A-B).** 
 
 **The variability across experiments, which we considered as random effects in all statistical analyses, enabled us to assess whether bimodal inference represents a general phenomenon in perceptual decision-making, but limited the precision at which we were able to investigate the relation of mode to behavioral variables such as timing, task difficulty, RT or confidence. This issue is partially resolved by our analyses of the IBL database, which replicated our findings in an experiment that was highly standardized with respect to timing, task difficulty, and behavioral read-out[@IBL2021]. It will be an important task for future research to validate our results on bimodal inference in a standardized dataset of comparable volume in humans, which is, to our knowledge, not yet available.**
 
-**Second, our results point to an attraction of perception toward preceding choices. Previous work has shown that perceptual decision-making is concurrently affected by both attractive and repulsive serial biases that operate on distinct time-scales and serve complementary functions for sensory processing[@Fritsche2017; @Gekas2019; @Fritsche2020]: Short-term attraction may serve the decoding of noisy sensory inputs and increase the stability of perception, whereas long-term repulsion may enable efficient encoding and sensitivity to change[@Fritsche2020]. In the data analyzed here, history biases tended to be repetitive (Figure 2A, Figure 3A, Supplemental Figure S6 and S7), as only `r sum(Study_Behav$p < 0.05 & Study_Behav$estimate < 0, na.rm = TRUE)` of the `r nrow(Study_Behav)` experiments of the Confidence database[@Rahnev2020] showed significant alternating biases (Supplemental Figure S1). However, as we show in Supplemental Figure S14, fluctuations in both alternating and repeating history biases generate overlapping autocorrelation curves. Our analysis of between-mode fluctuations is therefore not tied exclusively to repeating biases, but accommodates alternating biases as well, such that both may lead to internally-biased processing and reduced sensitivity to external sensory information. Future work could apply our approach to paradigms that boost alternating as opposed to repeating biases, as this would help to better understand how repetition and alternation are linked in terms of their computational function and neural implementation[@Fritsche2020].**
+**Second, our results point to an attraction of perception toward preceding choices. Previous work has shown that perceptual decision-making is concurrently affected by both attractive and repulsive serial biases that operate on distinct time-scales and serve complementary functions for sensory processing[@Fritsche2017; @Gekas2019; @Fritsche2020]: Short-term attraction may serve the decoding of noisy sensory inputs and increase the stability of perception, whereas long-term repulsion may enable efficient encoding and sensitivity to change[@Fritsche2020]. In the data analyzed here, history biases tended to be repetitive (Figure 2A, Figure 3A, Supplemental Figure S6 and S7), and only `r sum(Study_Behav$p < 0.05 & Study_Behav$estimate < 0, na.rm = TRUE)` of the `r nrow(Study_Behav)` experiments of the Confidence database[@Rahnev2020] showed significant alternating biases (Supplemental Figure S1). However, as we show in Supplemental Figure S14, fluctuations in both alternating and repeating history biases generate overlapping autocorrelation curves. Our analysis of between-mode fluctuations is therefore not tied exclusively to repeating biases, but accommodates alternating biases as well, such that both may lead to internally-biased processing and reduced sensitivity to external sensory information. Future work could apply our approach to paradigms that boost alternating as opposed to repeating biases, as this would help to better understand how repetition and alternation are linked in terms of their computational function and neural implementation[@Fritsche2020].**
 
-**A third open question concerns the computational underpinnings of bimodal inference. The addition of slow anti-phase oscillations to the integration of prior and likelihood represents an ad-hoc modification of a normative Bayesian model of evidence accumulation[@Glaze2015]. While the bimodal inference model is supported by formal model comparison, the successful prediction of out-of-training variables and the qualitative reproduction of our empirical data in simulations from posterior model parameters, it is an important task for future research to test whether between-mode fluctuations can emerge spontaneously in hierarchical models of Bayesian inference, whether modes are continuous[@Weilnhammer2021a] or discrete[@Ashwood2021], and whether bimodal inference can be causally manipulated by experimental variables. We speculate that between-mode fluctuations may separate the perceptual contribution of internal predictions and external sensory data in time, creating unambiguous learning signals that benefit inference about the precision of prior and likelihood, respectively. This proposition should be tested empirically by relating the phenomenon of bimodal inference to performance in, e.g., reversal learning, probabilistic reasoning, or metacognition.** 
+**A third open question concerns the computational underpinnings of bimodal inference. The addition of slow anti-phase oscillations to the integration of prior and likelihood represents an ad-hoc modification of a normative Bayesian model of evidence accumulation[@Glaze2015]. While the bimodal inference model is supported by formal model comparison, the successful prediction of out-of-training variables and the qualitative reproduction of our empirical data in simulations from posterior model parameters, it is an important task for future research to test (i), whether between-mode fluctuations can emerge spontaneously in hierarchical models of Bayesian inference, (ii), whether modes are continuous[@Weilnhammer2021a] or discrete[@Ashwood2021], and (iii), whether bimodal inference can be causally manipulated by experimental variables. We speculate that between-mode fluctuations may separate the perceptual contribution of internal predictions and external sensory data in time, creating unambiguous learning signals that benefit inference about the precision of prior and likelihood, respectively. This proposition should be tested empirically by relating the phenomenon of bimodal inference to performance in, e.g., reversal learning, probabilistic reasoning, or metacognition.** 
 
-**A final important avenue for further research on bimodal inference is identifying the neurobiological underpinnings of bimodal inference.** Since between-mode fluctuations were found in humans and mice, future studies can apply non-invasive and invasive neuro-imaging and electrophysiology to better understand the neural mechanisms that generate ongoing changes in mode in terms of their neuro-anatomy, -chemistry and -circuitry. 
+**A final important avenue for further research on bimodal inference is to elucidate its neurobiological underpinnings.** Since between-mode fluctuations were found in humans and mice, future studies can apply non-invasive and invasive neuro-imaging and electrophysiology to better understand the neural mechanisms that generate ongoing changes in mode in terms of their neuro-anatomy, -chemistry and -circuitry. 
 
 Establishing the neural correlates of externally- an internally-biased modes will enable exiting opportunities to investigate their role for adaptive perception and decision-making: Causal interventions via pharmacological challenges, optogenetic manipulations or (non-)invasive brain stimulation will help to understand whether between-mode fluctuations are implicated in resolving credit-assignment problems[@Honey2017; @Weilnhammer2020] or in calibrating metacognition and reality monitoring[@Dijkstra2021]. Answers to these questions may provide new insights into the pathophysiology of hallucinations and delusions, which have been characterized by an imbalance in the impact of external versus internal information[@Fletcher2009; @Sterzer2018; @Corlett2019a] and are typically associated with metacognitive failures and a departure from consensual reality[@Corlett2019a]. 
 
@@ -4299,6 +4195,7 @@ and history-congruence ($\beta$ = $`r STAT.lmer_Confidence_Accuracy_History$coef
 
 J. In analogy to RTs, we found a quadratic relationship between the mode of perceptual processing and confidence, which increased when both externally- and internally-biased modes grew stronger ($\beta_2$ = $`r STAT.Confidence_vs_mode$coefficients[3,1]`$ ± $`r STAT.Confidence_vs_mode$coefficients[3,2]`$, T($`r STAT.Confidence_vs_mode$coefficients[3,3]`$) = $`r STAT.Confidence_vs_mode$coefficients[3,4]`$, p = $`r STAT.Confidence_vs_mode$coefficients[3,5]`$). The horizontal and vertical dotted lines indicate minimum confidence and the associated mode, respectively.
 
+\newpage
 ## Figure 3
 
 ```{r Figure_3}
@@ -6448,9 +6345,9 @@ mouse_p_trialwise_logreg <- ggplot() +
     subtitle = "B",
     color = "Congruence to"
   ) + theme(legend.position = "none", legend.box = "horizontal")  +  scale_x_continuous(
-    breaks = seq(-10, 0, by = 1),
-    labels = seq(-10, 0, by = 1),
-    limits = c(-10.5, 0)
+    breaks = seq(-25, 0, by = 1),
+    labels = seq(-25, 0, by = 1),
+    limits = c(-25.5, 0)
   )
 
 lay <- rbind(c(1), c(2))
@@ -7000,15 +6897,15 @@ As in humans, mice showed shorter TDs with increased exposure to the task ($\bet
 
 ```{r Supplemental_Figure_S9, cache = TRUE}
 p_distribution_Sum_Subj_Model_AIC <-
-  ggplot(Sum_Subj_Model_AIC[Sum_Subj_Model_AIC$type != "Model X: Only one amplitude", ],
+  ggplot(Sum_Subj_Model_AIC,
          aes(
-           x = round_any(AIC, 25),
+           x = round_any(AIC, 17.5),
            y = ..density..,
            color = type,
            fill = type
          )) +
   geom_histogram(position = "dodge", alpha = 0.5) +
-  theme_classic(base_size = 6) + xlim(-10, max(Sum_Subj_Model_AIC[Sum_Subj_Model_AIC$type != "Model X: Only one amplitude", ]$AIC)) +
+  theme_classic(base_size = 6) + xlim(-1, 250) +
   labs(x = "AIC (subject-level)", y = "Density", color = "Model", fill = "Model", subtitle = "B") +
   scale_color_brewer(palette = "Dark2", direction = +1) + scale_fill_brewer(palette = "Dark2", direction = +1) +
   theme(legend.position = "none") + facet_wrap( ~ species, ncol = 2)
@@ -8264,7 +8161,7 @@ We have deleted the section 5.8 and added a summary of our modeling approach to 
 
 - (...) Yet relying too strongly on serial dependencies may come at a cost: When accumulating over time, internal predictions may eventually override external information, leading to circular and false inferences about the state of the environment[@Jardri2017]. Akin to the wake-sleep-algorithm in machine learning[@Bengio2015], bimodal inference may help to determine whether errors result from external input or from internally-stored predictions: During internal mode, sensory processing is more strongly constrained by predictive processes that auto-encode the agent's environment. Conversely, during external mode, the network is driven predominantly by sensory inputs[@Honey2017]. Between-mode fluctuations may thus generate an unambiguous error signal that aligns internal predictions with the current state of the environment in iterative test-update-cycles[@Bengio2015]. On a broader scale, between-mode fluctuations may thus regulate the balance between feedforward versus feedback contributions to perception and thereby play a adaptive role in metacognition and reality monitoring[@Dijkstra2021].
 
-- From the perspective of the Bayesian brain hypothesis, we hypothesized that observers have certain hyperpriors that are apt for accommodating fluctuations in the predictability of their environment, i.e., people believe that their world is inherently volatile. To be Bayes optimal, it is therefore necessary to periodically re-evaluate posterior beliefs about the parameters that define an internal generative model of the external sensory environment. One way to do this is to periodically suspend the precision of prior beliefs and increase the precision afforded to sensory evidence, thus updating Bayesian beliefs about model parameters.
+- We hypothesized that observers have certain hyperpriors that are apt for accommodating fluctuations in the predictability of their environment, i.e., people believe that their world is inherently volatile. To be Bayes optimal, it is therefore necessary to periodically re-evaluate posterior beliefs about the parameters that define an internal generative model of the external sensory environment. One way to do this is to periodically suspend the precision of prior beliefs and increase the precision afforded to sensory evidence, thus updating Bayesian beliefs about model parameters.
 
 - The empirical evidence above suggests that the timescale of this periodic scheduling of evidence accumulation may be scale-invariant. This means that there may exist a timescale of periodic fluctuations in precision over every window or length of perceptual decision-making. Bimodal inference predicts perceptual decisions under a generative model (based upon a hazard function to model serial dependencies between subsequent trials) with periodic fluctuations in the precision of sensory evidence relative to prior beliefs at a particular timescale. Remarkably, a systematic model comparison based on AIC indicated that a model with fluctuating precisions has much greater evidence, relative to a model in the absence of fluctuating precisions. This ad-hoc addition of oscillations to a normative Bayesian model of evidence accumulation[@Glaze2015] allowed us to quantify the dominant timescale of periodic fluctuations mode at approximately 0.11 1/$N_{trials}$ in humans and mice that is appropriate for these kinds of paradigms.
 
@@ -8438,7 +8335,7 @@ We would like to thank the Reviewer for this important point. Regarding the rati
 
 At the same time, collapsing across diverse set of experiments means that the stimuli, the timing and the way that responses were collected differed between them. To account for this variability, we included individual experiments as random factors in linear mixed modeling. We also made sure that perceptual performance is comparable across studies (Supplemental Figure S1A-B). While our analysis of the IBL database was mainly motivated by investigating bimodal inference across species, it also allowed us to replicate our results in a highly standardized task that was collected across many individual subjects[@IBL2021]. We have added the rationale for collapsing across studies with its advantages and disadvantages to the *Open questions and limitations* subsection of the discussion:
 
-- Our results suggest bimodal inference as a pervasive aspect in perceptual decision-making in humans and mice. However, a number of limitations and open questions have to be considered: First, this work sought to understand whether fluctuations between internal and external mode, which we initially observed in an experiment on bistable perception in humans[@Weilnhammer2021a], are general phenomenon that occurs across a diverse set of perceptual decision-making tasks. Our analysis of the Confidence database[@Rahnev2020] therefore collapsed across all available experiments on binary perceptual decision-making. Individual experiments differed with respect to the stimuli, the manipulation of difficulty, the timing of trials, and the way responses were collected, but were highly comparable with respect to the central variables of stimulus- and history-congruence (Supplemental Figure S1A-B).
+- Our results suggest bimodal inference as a pervasive aspect of perceptual decision-making in humans and mice. However, a number of limitations and open questions have to be considered: First, this work sought to understand whether fluctuations between internal and external mode, which we initially observed in an experiment on bistable perception in humans[@Weilnhammer2021a], represent a general phenomenon that occurs across a diverse set of perceptual decision-making tasks. Our analysis of the Confidence database[@Rahnev2020] therefore collapsed across all available experiments on binary perceptual decision-making. Individual experiments differed with respect to the stimuli, the manipulation of difficulty, the timing of trials, and the way responses were collected, but were highly comparable with respect to the central variables of stimulus- and history-congruence (Supplemental Figure S1A-B).
 
 - The variability across experiments, which we considered as random effects in all statistical analyses, enabled us to assess whether bimodal inference represents a general phenomenon in perceptual decision-making, but limited the precision at which we were able to investigate the relation of mode to behavioral variables such as timing, task difficulty, RT or confidence. This issue is partially resolved by our analyses of the IBL database, which replicated our findings in an experiment that was highly standardized with respect to timing, task difficulty, and behavioral read-out[@IBL2021]. It will be an important task for future research to validate our results on bimodal inference in a standardized dataset of comparable volume in humans, which is, to our knowledge, not yet available.
 
@@ -8520,7 +8417,7 @@ We would like to thank the reviewer for pointing this out. We agree that both no
 
 - Of note, similar non-stationarities have been observed in descriptive models that assume continuous[@Roy2021] or discrete[@Ashwood2022] changes in the latent states that modulate perceptual decision-making at slow timescales. A recent computational study[@Ashwood2021] has used a Hidden Markov model to investigate perceptual decision-making in the IBL database[@IBL2021]. In analogy to our findings, the authors observed that mice switch between temporally extended *strategies* that last for more than 100 trials: During *engaged* states, perception was highly sensitive to external sensory information. During *disengaged* states, in turn, choice behavior was prone to errors due to enhanced biases toward one of the two perceptual outcomes[@Ashwood2021]. Despite the conceptual differences to our approach (discrete states in a Hidden Markov model that correspond to switches between distinct decision-making strategies[@Ashwood2021] vs. gradual changes in mode that emerge from sequential Bayesian inference and ongoing fluctuations in the impact of external relative to internal information), it is tempting to speculate that engaged/disengaged states and between-mode fluctuations might tap into the same underlying phenomenon.
 
-- A third open question concerns the computational underpinnings of bimodal inference. The addition of slow anti-phase oscillations to the integration of prior and likelihood represents an ad-hoc modification of a normative Bayesian model of evidence accumulation[@Glaze2015]. While the bimodal inference model is supported by formal model comparison, the successful prediction of out-of-training variables and the qualitative reproduction of our empirical data in simulations from posterior model parameters, it is an important task for future research to test whether between-mode fluctuations can emerge spontaneously in hierarchical models of Bayesian inference, whether modes are continuous[@Weilnhammer2021a] or discrete[@Ashwood2021], and whether bimodal inference can be causally manipulated by experimental variables. We speculate that between-mode fluctuations may separate the perceptual contribution of internal predictions and external sensory data in time, creating unambiguous learning signals that benefit inference about the precision of prior and likelihood, respectively. This proposition should be tested empirically by relating the phenomenon of bimodal inference to performance in, e.g., reversal learning, probabilistic reasoning, or metacognition.
+- A third open question concerns the computational underpinnings of bimodal inference. The addition of slow anti-phase oscillations to the integration of prior and likelihood represents an ad-hoc modification of a normative Bayesian model of evidence accumulation[@Glaze2015]. While the bimodal inference model is supported by formal model comparison, the successful prediction of out-of-training variables and the qualitative reproduction of our empirical data in simulations from posterior model parameters, it is an important task for future research to test (i), whether between-mode fluctuations can emerge spontaneously in hierarchical models of Bayesian inference, (ii), whether modes are continuous[@Weilnhammer2021a] or discrete[@Ashwood2021], and (iii), whether bimodal inference can be causally manipulated by experimental variables. We speculate that between-mode fluctuations may separate the perceptual contribution of internal predictions and external sensory data in time, creating unambiguous learning signals that benefit inference about the precision of prior and likelihood, respectively. This proposition should be tested empirically by relating the phenomenon of bimodal inference to performance in, e.g., reversal learning, probabilistic reasoning, or metacognition.
 
 ### Comment 4
 
@@ -8556,7 +8453,7 @@ Importantly, our central finding of autocorrelation in history-congruence does n
 
 We apologize for not having recognized this aspect in the previous version of the discussion. We have rewritten the paragraph on alternating and repeating biases in the discussion, referring to the plot below, which we have added to the Supplemental Materials. 
 
-- Second, our results point to an attraction of perception toward preceding choices. Previous work has shown that perceptual decision-making is concurrently affected by both attractive and repulsive serial biases that operate on distinct time-scales and serve complementary functions for sensory processing[@Fritsche2017; @Gekas2019; @Fritsche2020]: Short-term attraction may serve the decoding of noisy sensory inputs and increase the stability of perception, whereas long-term repulsion may enable efficient encoding and sensitivity to change[@Fritsche2020]. In the data analyzed here, history biases tended to be repetitive (Figure 2A, Figure 3A, Supplemental Figure S6 and S7), as only `r sum(Study_Behav$p < 0.05 & Study_Behav$estimate < 0, na.rm = TRUE)` of the `r nrow(Study_Behav)` experiments of the Confidence database[@Rahnev2020] showed significant alternating biases (Supplemental Figure S1). However, as we show in Supplemental Figure S14, fluctuations in both alternating and repeating history biases generate overlapping autocorrelation curves. Our analysis of between-mode fluctuations is therefore not tied exclusively to repeating biases, but accommodates alternating biases as well, such that both may lead to internally-biased processing and reduced sensitivity to external sensory information. Future work could apply our approach to paradigms that boost alternating as opposed to repeating biases, as this would help to better understand how repetition and alternation are linked in terms of their computational function and neural implementation[@Fritsche2020].
+- Second, our results point to an attraction of perception toward preceding choices. Previous work has shown that perceptual decision-making is concurrently affected by both attractive and repulsive serial biases that operate on distinct time-scales and serve complementary functions for sensory processing[@Fritsche2017; @Gekas2019; @Fritsche2020]: Short-term attraction may serve the decoding of noisy sensory inputs and increase the stability of perception, whereas long-term repulsion may enable efficient encoding and sensitivity to change[@Fritsche2020]. In the data analyzed here, history biases tended to be repetitive (Figure 2A, Figure 3A, Supplemental Figure S6 and S7), and only `r sum(Study_Behav$p < 0.05 & Study_Behav$estimate < 0, na.rm = TRUE)` of the `r nrow(Study_Behav)` experiments of the Confidence database[@Rahnev2020] showed significant alternating biases (Supplemental Figure S1). However, as we show in Supplemental Figure S14, fluctuations in both alternating and repeating history biases generate overlapping autocorrelation curves. Our analysis of between-mode fluctuations is therefore not tied exclusively to repeating biases, but accommodates alternating biases as well, such that both may lead to internally-biased processing and reduced sensitivity to external sensory information. Future work could apply our approach to paradigms that boost alternating as opposed to repeating biases, as this would help to better understand how repetition and alternation are linked in terms of their computational function and neural implementation[@Fritsche2020].
 
 **Supplemental Figure S14**
 ```{r Supplemental_Figure_S14_print, cache = TRUE}
@@ -8593,7 +8490,7 @@ Second, we have re-structured the section of defensive analyses, where we contra
 
 - To confirm that changes in the sensitivity to external information are indicative of internal mode processing, we estimated full and history-dependent psychometric curves during internal, external, and across modes. If, as we hypothesized, internal mode processing reflects an enhanced impact of perceptual history, one would expect a history-dependent increase in biases and lapses as well as a history-independent increase in threshold. Conversely, if internal mode processing were driven by random choices, one would expect a history-independent increase in lapses and threshold, and no change in bias. In line with our prediction, we found that internal mode processing was associated with a history-dependent increase in bias and lapse as well as a history-independent increase in threshold (Supplemental Section 9.3 and Supplemental Figure S6-7). This confirmed that internal mode processing is indeed driven by an enhanced impact of perceptual history.   
 
-- In line with this, the quadratic relationship between mode and confidence (Figure 2J) suggested that biases toward internal information do not reflect a post-perceptual strategy or repeating preceding choices when the subjective confidence in the perceptual decision is low. Moreover, while responses became faster with increased exposure to the experiments of the Confidence database, the frequency of history-congruent choices increased over time, speaking against the proposition that participants may stereotypically repeat preceding choices when not yet familiar with the experimental task (see Supplemental Section). 
+- In line with this, the quadratic relationship between mode and confidence (Figure 2J) suggested that biases toward internal information do not reflect a post-perceptual strategy or repeating preceding choices when the subjective confidence in the perceptual decision is low. Moreover, while responses became faster with longer exposure to the experiments of the Confidence database, the frequency of history-congruent choices increased over time, speaking against the proposition that participants may stereotypically repeat preceding choices when not yet familiar with the experimental task (see Supplemental Section). 
 
 - Taken together, our results thus argue against recurring intervals of low task engagement, which may be signaled by stereotypical or random responses, as an alternative explanation for the phenomenon that we identify as bimodal inference.
 
