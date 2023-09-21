@@ -3548,7 +3548,7 @@ In computational terms, serial dependencies may leverage the temporal autocorrel
 
 Yet relying too strongly on serial dependencies may come at a cost: When accumulating over time, internal predictions may eventually override external information, leading to circular and false inferences about the state of the environment[@Jardri2017]. Akin to the wake-sleep-algorithm in machine learning[@Bengio2015], bimodal inference may help to determine whether errors result from external input or from internally-stored predictions: During internal mode, sensory processing is more strongly constrained by predictive processes that auto-encode the agent's environment. Conversely, during external mode, the network is driven predominantly by sensory inputs[@Honey2017]. Between-mode fluctuations may thus generate an unambiguous error signal that aligns internal predictions with the current state of the environment in iterative test-update-cycles[@Bengio2015]. On a broader scale, between-mode fluctuations may thus regulate the balance between feedforward versus feedback contributions to perception and thereby play a adaptive role in metacognition and reality monitoring[@Dijkstra2021].
 
-**we hypothesized that observers have certain hyperpriors that are apt for accommodating fluctuations in the predictability of their environment, i.e., people believe that their world is inherently volatile. To be Bayes optimal, it is therefore necessary to periodically re-evaluate posterior beliefs about the parameters that define an internal generative model of the external sensory environment. One way to do this is to periodically suspend the precision of prior beliefs and increase the precision afforded to sensory evidence, thus updating Bayesian beliefs about model parameters.**
+**We hypothesized that observers have certain hyperpriors that are apt for accommodating fluctuations in the predictability of their environment, i.e., people believe that their world is inherently volatile. To be Bayes optimal, it is therefore necessary to periodically re-evaluate posterior beliefs about the parameters that define an internal generative model of the external sensory environment. One way to do this is to periodically suspend the precision of prior beliefs and increase the precision afforded to sensory evidence, thus updating Bayesian beliefs about model parameters.**
 
 **The empirical evidence above suggests that the timescale of this periodic scheduling of evidence accumulation may be scale-invariant. This means that there may exist a timescale of periodic fluctuations in precision over every window or length of perceptual decision-making. Bimodal inference predicts perceptual decisions under a generative model (based upon a hazard function to model serial dependencies between subsequent trials) with periodic fluctuations in the precision of sensory evidence relative to prior beliefs at a particular timescale. Remarkably, a systematic model comparison based on AIC indicated that a model with fluctuating precisions has much greater evidence, relative to a model in the absence of fluctuating precisions. This ad-hoc addition of oscillations to a normative Bayesian model of evidence accumulation[@Glaze2015] allowed us to quantify the dominant timescale of periodic fluctuations mode at approximately 0.11 1/$N_{trials}$ in humans and mice that is appropriate for these kinds of paradigms.**
 
@@ -5689,7 +5689,7 @@ Within individual session, longer task exposure was associated with an increase 
 
 \newpage
 ## Supplemental Figure S1
-```{r Supplememtal_Figure_S1}
+```{r Supplemental_Figure_S1}
 
 p_Accuracy <-
   ggplot() + geom_jitter(
@@ -5847,7 +5847,7 @@ D. In analogy to humans, mice that were less sensitive to external sensory infor
 
 \newpage
 ## Supplemental Figure S2
-```{r Supplememtal_Figure_S2}
+```{r Supplemental_Figure_S2}
 
 # STAT.Phase_History <- summary(lm(C_history ~ levels, data = Phase_Bins))
 # STAT.Phase_Stimulus <- summary(lm(C_stimulus ~ levels, data = Phase_Bins))
@@ -6211,7 +6211,7 @@ At the level of individual mice, autocorrelation coefficients for external stimu
 
 \newpage
 ## Supplemental Figure S3
-```{r Supplememtal_Figure_S3}
+```{r Supplemental_Figure_S3}
 
 y_min = -0.02
 p_trialwise_logreg <- ggplot() +
@@ -6369,7 +6369,7 @@ B. Following our results in human data, regression coefficients that predicted h
 \newpage
 ## Supplemental Figure S4
 
-```{r Supplememtal_Figure_S4}
+```{r Supplemental_Figure_S4}
 
 p_AIC <-
   ggplot() + geom_jitter(
@@ -6906,7 +6906,7 @@ p_distribution_Sum_Subj_Model_AIC <-
          )) +
   geom_histogram(position = "dodge", alpha = 0.5) +
   theme_classic(base_size = 6) + xlim(-1, 250) +
-  labs(x = "AIC (subject-level)", y = "Density", color = "Model", fill = "Model", subtitle = "B") +
+  labs(x = "AIC (subject-level)", y = "Density", fill = "Model", subtitle = "B") +
   scale_color_brewer(palette = "Dark2", direction = +1) + scale_fill_brewer(palette = "Dark2", direction = +1) +
   theme(legend.position = "none") + facet_wrap( ~ species, ncol = 2)
 
@@ -6918,7 +6918,7 @@ p_distribution_Sum_Model_AIC <-
            color = type,
            fill = type
          )) +
-  geom_col(alpha = 0.5, width = 0.1) +
+  geom_col(alpha = 0.5, width = 0.1, linewidth = 0.1) +
   theme_classic(base_size = 6) + 
   scale_y_discrete(labels=c(" M1", " M2", " M3", " M4", " M5"))+
   labs(x = "AIC (group-level)", y = "Model", color = "Model", fill = "Model", subtitle = "A") +
