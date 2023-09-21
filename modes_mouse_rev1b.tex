@@ -101,7 +101,7 @@
 \hypertarget{title-page}{%
 \section{Title Page}\label{title-page}}
 
-\textbf{Bimodal Inference in Mice and Men}\\
+\textbf{Bimodal Inference in Humans and Mice}\\
 \strut \\
 
 \textbf{Authors}:
@@ -537,7 +537,7 @@ internal mode processing reflects an enhanced impact of perceptual
 history, one would expect a history-dependent increase in biases and
 lapses as well as a history-independent increase in threshold.
 Conversely, if internal mode processing were driven by random choices,
-one would expect a history-independent increase in biases and threshold,
+one would expect a history-independent increase in lapses and threshold,
 and no change in bias. In line with our prediction, we found that
 internal mode processing was associated with a history-dependent
 increase in bias and lapse as well as a history-independent increase in
@@ -743,9 +743,9 @@ posterior ratio \(L\) of the two alternative states of the environment
 that participants learn about via noisy sensory
 information\textsuperscript{51}. We computed the posterior by combining
 the sensory evidence available at time-point \(t\) (i.e., the log
-likelihood ratio \(LLR\)) with the prior probability \(\psi\)\textbf{,
-weighted by the respective precision terms \(\omega_{LLR}\) and
-\(\omega_{\psi}\)}:
+likelihood ratio \(LLR\)) with the prior probability \(\psi\), weighted
+by the respective precision terms \(\omega_{LLR}\) and
+\(\omega_{\psi}\)**:
 
 \begin{equation}
 L_t = LLR_t * \omega_{LLR} + \psi_t(L_{t-1}, H) * \omega_{\psi}
@@ -811,9 +811,10 @@ P(y_t = 1) = 1 - P(y_t = 0) = \frac{1}{1 + exp(-\zeta * L_t)}
 inference model (M1, Figure 1F) to the behavioral data from the
 Confidence database\textsuperscript{20} and the IBL
 database\textsuperscript{21}, optimizing the parameters \(\alpha\),
-\(H\), \(amp_{LLR}\), \(amp_{\psi}\), \(f\) and \(p\) (see Methods for
-details and Supplemental Table T2 for a summary of the parameters of the
-bimodal inference model). We validated our model in three steps:}
+\(H\), \(amp_{LLR}\), \(amp_{\psi}\), \(f\), \(p\) and \(\zeta\) (see
+Methods for details and Supplemental Table T2 for a summary of the
+parameters of the bimodal inference model). We validated our model in
+three steps:}
 
 \textbf{First, to show that bimodal inference does not emerge
 spontaneously in normative Bayesian models of evidence accumulation, but
@@ -1133,10 +1134,10 @@ fluctuations might tap into the same underlying phenomenon.
 explanations for bimodal
 inference}\label{task-engagement-and-residual-motor-activation-as-alternative-explanations-for-bimodal-inference}}
 
-\textbf{As a functional explanation for bimodal inference, we propose
-that perception temporarily disengages from internal predictions to form
+As a functional explanation for bimodal inference, we propose that
+perception temporarily disengages from internal predictions to form
 stable inferences about the statistical properties of the sensory
-environment. Between-mode fluctuations may thus elude circular
+environment. \textbf{Between-mode fluctuations may thus elude circular
 inferences that occur when both the causes and the encoding of sensory
 stimuli are volatile\textsuperscript{19,57}.} By the same token, we
 suggest that fluctuations in mode occur at the level of perceptual
@@ -1151,13 +1152,13 @@ perceptual inference\textsuperscript{53}. From this perspective,
 fluctuations between external and internal mode can be understood as
 ongoing shifts in the attention afforded to either external sensory
 information (regulated via likelihood precision) or internal predictions
-(regulated via precision precision). When the precision of either
-likelihood or prior increases, posterior precision increases, which
-leads to faster RTs and higher confidence. Therefore, when defined from
-the perspective of predictive processing as the precision afforded to
-likelihood and prior\textsuperscript{53}, fluctuations in attention may
-provide a plausible explanation for the quadratic relationship of mode
-to RTs and confidence (Figure 2H and J; Figure 3I, Figure 4I)}.
+(regulated via prior precision). When the precision of either likelihood
+or prior increases, posterior precision increases, which leads to faster
+RTs and higher confidence. Therefore, when defined from the perspective
+of predictive processing as the precision afforded to likelihood and
+prior\textsuperscript{53}, fluctuations in attention may provide a
+plausible explanation for the quadratic relationship of mode to RTs and
+confidence (Figure 2H and J; Figure 3I, Figure 4I)}.
 
 \textbf{Outside of the predictive processing field, attention is often
 understood in the context of task engagement\textsuperscript{63}, which
@@ -1791,15 +1792,15 @@ including the anti-phase oscillations governed by \(a_{\psi}\),
 the characteristics of the empirical data. This enabled us to assess
 over- or under-fitting in the bimodal inference model and all reduced
 models M2-M5. We used the posterior model parameters observed for humans
-(\(H\), \(\alpha\), \(a_{\psi}\), \(a_{LLR}\), \(f\) and \(\zeta\)) to
-define individual parameters for simulation in 4317 simulated
-participants (i.e., equivalent to the number of human participants). For
-each participant, the number of simulated trials was drawn at random
-between 300 to 700. Inputs \(s\) were drawn at random for each trial,
-such that the sequence of inputs to the simulation did not contain any
-systematic seriality. Noisy observations \(u\) were generated by
-applying the posterior parameter \(\alpha\) to inputs \(s\), thus
-generating stimulus-congruent choices in \(71.36\) ±
+(\(H\), \(\alpha\), \(a_{\psi}\), \(a_{LLR}\), \(f\), \(p\) and
+\(\zeta\)) to define individual parameters for simulation in 4317
+simulated participants (i.e., equivalent to the number of human
+participants). For each participant, the number of simulated trials was
+drawn at random between 300 to 700. Inputs \(s\) were drawn at random
+for each trial, such that the sequence of inputs to the simulation did
+not contain any systematic seriality. Noisy observations \(u\) were
+generated by applying the posterior parameter \(\alpha\) to inputs
+\(s\), thus generating stimulus-congruent choices in \(71.36\) ±
 \(\ensuremath{2.6\times 10^{-3}}\)\% of trials. Choices were simulated
 based on the trial-wise choice probabilities \(y_{p}\) obtained from our
 model. Simulated data were analyzed in analogy to the human and mouse
@@ -1815,7 +1816,7 @@ decision certainty).}
 \hypertarget{figure-1}{%
 \subsection{Figure 1}\label{figure-1}}
 
-\includegraphics{modes_mouse_rev1b_files/figure-latex/revised_Figure_1-1.pdf}
+\includegraphics{modes_mouse_rev1b_files/figure-latex/Figure_1-1.pdf}
 
 \textbf{Figure 1. Concept.}
 
@@ -2256,7 +2257,7 @@ lapses (effects of perceptual history), and (ii), a history-independent
 increase in threshold (reduced sensitivity to external information).
 Conversely, if what we identified as internal mode processing was in
 fact driven by random choices, one would expect (i), a
-history-independent increase in lapse (choice randomness), (ii), no
+history-independent increase in lapses (choice randomness), (ii), no
 change in bias (no effect of perceptual history), and (iii), reduced
 thresholds (reduced sensitivity to external information).
 
@@ -3196,10 +3197,134 @@ biases.
 \hypertarget{supplemental-table-t1}{%
 \subsection{Supplemental Table T1}\label{supplemental-table-t1}}
 
+\begingroup\fontsize{7}{9}\selectfont
+
+\begin{longtable}[t]{llr}
+\toprule
+Authors & Journal & Year\\
+\midrule
+\endfirsthead
+\multicolumn{3}{@{}l}{\textit{(continued)}}\\
+\toprule
+Authors & Journal & Year\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+Bang, Shekhar, Rahnev & JEP:General & 2019\\
+Bang, Shekhar, Rahnev & JEP:General & 2019\\
+Calder-Travis, Charles,  Bogacz, Yeung & Unpublished & NA\\
+Clark \& Merfeld & Journal of Neurophysiology & 2018\\
+Clark & Unpublished & NA\\
+\addlinespace
+Faivre, Filevich, Solovey, Kuhn, Blanke & Journal of Neuroscience & 2018\\
+Faivre, Vuillaume, Blanke, Cleeremans & bioRxiv & 2018\\
+Filevich \& Fandakova & Unplublished & NA\\
+Gajdos, Fleming, Saez Garcia, Weindel, Davranche & Neuroscience of Consciousness & 2019\\
+Gherman \& Philiastides & eLife & 2018\\
+\addlinespace
+Haddara \& Rahnev & PsyArXiv & 2020\\
+Haddara \& Rahnev & PsyArXiv & 2020\\
+Hainguerlot, Vergnaud, \& de Gardelle & Scientific Reports & 2018\\
+Hainguerlot, Gajdos, Vergnaud, \& de Gardelle & Unpublished & NA\\
+Jachs, Blanco, Grantham-Hill, Soto & JEP:HPP & 2015\\
+\addlinespace
+Jachs, Blanco, Grantham-Hill, Soto & JEP:HPP & 2015\\
+Jachs, Blanco, Grantham-Hill, Soto & JEP:HPP & 2015\\
+Jaquiery, Yeung & Unpublished & NA\\
+Kvam, Pleskac, Yu, Busemeyer & PNAS & 2015\\
+Kvam, Pleskac, Yu, Busemeyer & PNAS & 2015\\
+\addlinespace
+Kvam and Pleskac & Cognition & 2016\\
+Law, Lee & Unpublished & NA\\
+Lebreton, et al. & Sci. Advances & 2018\\
+Lempert, Chen, \& Fleming & PlosOne & 2015\\
+Locke*, Gaffin-Cahn*, Hosseinizaveh, Mamassian, \& Landy & Attention, Perception, \& Psychophysics & 2020\\
+\addlinespace
+Maniscalco, McCurdy,Odegaard, \& Lau & J Neurosci & 2017\\
+Maniscalco, McCurdy,Odegaard, \& Lau & J Neurosci & 2017\\
+Maniscalco, McCurdy,Odegaard, \& Lau & J Neurosci & 2017\\
+Maniscalco, McCurdy,Odegaard, \& Lau & J Neurosci & 2017\\
+Martin, Hsu & Unpublished & NA\\
+\addlinespace
+Massoni \& Roux & Journal of Mathematical Psychology & 2017\\
+Massoni & Unpublished & NA\\
+Mazor, Friston \& Fleming & eLife & 2020\\
+Mei, Rankine,Olafsson, Soto & bioRxiv & 2019\\
+Mei, Rankine,Olafsson, Soto & bioRxiv & 2019\\
+\addlinespace
+O'Hora, Zgonnikov, Kenny, Wong-Lin & Fechner Day proceedings & 2017\\
+O'Hora, Zgonnikov, CiChocki & Unpublished & NA\\
+O'Hora, Zgonnikov, Neverauskaite & Unpublished & NA\\
+Palser et al & Consciousness \& Cognition & 2018\\
+Pereira, Faivre, Iturrate et al. & bioRxiv & 2018\\
+\addlinespace
+Prieto et al. & Submitted & NA\\
+Rahnev et al & J Neurophysiol & 2013\\
+Rausch \& Zehetleitner & Front Psychol & 2016\\
+Rausch et al & Attention, Perception, \& Psychophysics & 2018\\
+Rausch et al & Attention, Perception, \& Psychophysics & 2018\\
+\addlinespace
+Rausch, Zehetleitner, Steinhauser, \& Maier & NeuroImage & 2020\\
+Recht, de Gardelle \& Mamassian & Unpublished & NA\\
+Reyes et al. & PlosOne & 2015\\
+Reyes et al. & Submitted & NA\\
+Rouault, Seow, Gillan, Fleming & Biol. Psychiatry & 2018\\
+\addlinespace
+Rouault, Seow, Gillan, Fleming & Biol. Psychiatry & 2018\\
+Rouault, Dayan, Fleming & Nat Commun & 2019\\
+Sadeghi et al & Scientific Reports & 2017\\
+Schmidt et al. & Consc Cog & 2019\\
+Shekhar \& Rahnev & J Neuroscience & 2018\\
+\addlinespace
+Shekhar \& Rahnev & PsyArXiv & 2020\\
+Sherman et al & Journal of Neuroscience & 2016\\
+Sherman et al & Journal of Cognitive Neuroscience & 2016\\
+Sherman et al & Unpublished & NA\\
+Sherman et al & Unpublished & NA\\
+\addlinespace
+Siedlecka, Wereszczywski, Paulewicz, Wierzchon & bioRxiv & 2019\\
+Song et al & Consciousness \& Cognition & 2011\\
+van Boxtel, Orchard, Tsuchiya & bioRxiv & 2019\\
+van Boxtel, Orchard, Tsuchiya & bioRxiv & 2019\\
+Wierzchon, Paulewicz, Asanowicz, Timmermans \& Cleeremans & Consciousness and Cognition & 2014\\
+\addlinespace
+Wierzchon, Anzulewicz, Hobot, Paulewicz \& Sackur & Consciousness and Cognition & 2019\\*
+\end{longtable}
+\endgroup{}
+
 \newpage
 
 \hypertarget{supplemental-table-t2}{%
 \subsection{Supplemental Table T2}\label{supplemental-table-t2}}
+
+\begingroup\fontsize{7}{9}\selectfont
+
+\begin{longtable}[t]{ll}
+\toprule
+Parameters & Interpretation\\
+\midrule
+\endfirsthead
+\multicolumn{2}{@{}l}{\textit{(continued)}}\\
+\toprule
+Parameters & Interpretation\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\(\alpha\) & Sensitivity to sensory information\\
+H & Expected probability of a switch in the cause of sensory information (Hazard)\\
+\(a_{LLR}\) & Amplitude of fluctuations in likelihood precision \(\omega_{LLR}\)\\
+\(a_{\psi}\) & Amplitude of fluctuations in prior precision \(\omega_{\psi}\)\\
+f & Frequency of \(\omega_{LLR}\) and \(\omega_{\psi}\)\\
+p & Phase (p for \(\omega_{LLR}\); p + \(\pi\)  for \(\omega_{\psi}\))\\
+\(\zeta\) & Inverse decision temperature\\*
+\end{longtable}
+\endgroup{}
 
 \newpage
 
@@ -3293,10 +3418,10 @@ precision as a periodic function with one unique timescale (i.e., f).?}
 The reason for choosing a unique timescale \(f\) was to enable our model
 to depict the dominant timescale at which prior and likelihood precision
 fluctuate in their impact on perceptual decision-making, giving rise to
-what constitutes between-mode fluctuations. We think that identifying
-this timescale is important for planning future experiments targeted at
-between-mode fluctuations and their manipulation by causal interventions
-(e.g., pharmacology or TMS). The posterior value for \(f\) lies at
+between-mode fluctuations. We think that identifying this timescale is
+important for planning future experiments targeted at between-mode
+fluctuations and their manipulation by causal interventions (e.g.,
+pharmacology or TMS). The posterior value for \(f\) lies at
 approximately 0.11 1/\(N_{trials}\) in both humans and mice. The value
 of \(f\) approximately matches the transition probabilities between
 \emph{engaged} and \emph{disengaged} states in work assessing
@@ -3354,7 +3479,7 @@ used in your model of perceptual decisions in Equation 2.}
 In our model, the parameter \(\alpha\) controls the encoding precision
 by governing the transformation from sensory stimuli to the log
 likelihood ratio (LLR) via the equations (13-16) (the LLR ends up closer
-closer to zero when \(\alpha\) is low). Our simulations on the adaptive
+to zero when \(\alpha\) is low). Our simulations on the adaptive
 benefits of bimodal inference rest on the assumption that \(\alpha\) may
 change unpredictably. The construct \(M\) is a belief about \(\alpha\)
 that may be useful for, e.g., communicating the precision of sensory
@@ -3449,19 +3574,20 @@ defensive analysis against arousal:
 \item
   In what follows, we probe alternative explanations for between-mode
   fluctuations, test for the existence of modes in mice, and propose a
-  predictive processing model that explains fluctuations in mode ongoing
-  shifts in the precision afforded to external sensory information
-  relative to internal predictions driven by perceptual history.
+  predictive processing model that explains fluctuations in mode by
+  ongoing shifts in the precision afforded to external sensory
+  information relative to internal predictions driven by perceptual
+  history.
 \end{itemize}
 
 Second, we have re-written our discussion of the quadratic relationship
-of mode to RTs and Confidence, focusing on predictive coding models of
-attention: - As a functional explanation for bimodal inference, we
+of mode to RTs and Confidence, focusing on predictive processing models
+of attention: - As a functional explanation for bimodal inference, we
 propose that perception temporarily disengages from internal predictions
 to form stable inferences about the statistical properties of the
 sensory environment. Between-mode fluctuations may thus elude circular
 inferences that occur when both the causes and the encoding of sensory
-stimuli are volatile\textsuperscript{19,57}.** By the same token, we
+stimuli are volatile\textsuperscript{19,57}. By the same token, we
 suggest that fluctuations in mode occur at the level of perceptual
 processing\textsuperscript{26,30,46,47}, and are not a passive
 phenomenon that is primarily driven by factors situated up- or
@@ -3477,7 +3603,7 @@ downstream of sensory analysis.
   between external and internal mode can be understood as ongoing shifts
   in the attention afforded to either external sensory information
   (regulated via likelihood precision) or internal predictions
-  (regulated via precision precision). When the precision of either
+  (regulated via prior precision). When the precision of either
   likelihood or prior increases, posterior precision increases, which
   leads to faster RTs and higher confidence. Therefore, when defined
   from the perspective of predictive processing as the precision
@@ -3541,26 +3667,26 @@ correspond to fluctuations in sensory and prior precision. Why did you
 then consider attention as some additional or unrelated confound?}
 
 This point is closely related to the comment above. We realize that, in
-the predictive coding field, attention is equated with the precision of
-probability distributions that contribute to the perceptual decision,
+the predictive processing field, attention is equated with the precision
+of probability distributions that contribute to the perceptual decision,
 such that an observer can attend strongly to sensory information (high
 likelihood precision) or to internal predictions derived from the
 sequence of preceding percepts (high prior precision). Therefore, when
-following the above predictive coding definition, fluctuations in
+following the above predictive processing definition, fluctuations in
 attention can be equated with fluctuations in mode.
 
-However, we feel that outside of the predictive coding field, attention
-is not always conceived in that way, such that low attention is often
-considered as low engagement with the task, i.e., relating to low
-likelihood and low prior precision in the predictive coding sense. It is
-against these caveats that our control analysis (based on psychometric
-functions, training effects, RTs and confidence) defend our conclusions
-on bimodal inference.
+However, we feel that outside of the predictive processing field,
+attention is not always conceived in that way, such that low attention
+is often considered as low engagement with the task, i.e., relating to
+low likelihood and low prior precision in the predictive processing
+sense. It is against these caveats that our control analysis (based on
+psychometric functions, training effects, RTs and confidence) defend our
+conclusions on bimodal inference.
 
 We now provide a more nuanced interpretation of our findings of RTs and
 confidence in relation to attention, with a specific focus on predictive
-coding and precision. We hope that our responses to the comment above
-resolves the points raised in this comment.
+processing and precision. We hope that our responses to the comment
+above resolve the points raised in this comment.
 
 \hypertarget{comment-5}{%
 \subsubsection{Comment 5}\label{comment-5}}
@@ -3768,12 +3894,12 @@ added a description of our model comparison to the Method section:
   to assess over- or under-fitting in the bimodal inference model and
   all reduced models M2-M5. We used the posterior model parameters
   observed for humans (\(H\), \(\alpha\), \(a_{\psi}\), \(a_{LLR}\),
-  \(f\) and \(\zeta\)) to define individual parameters for simulation in
-  4317 simulated participants (i.e., equivalent to the number of human
-  participants). For each participant, the number of simulated trials
-  was drawn at random between 300 to 700. Inputs \(s\) were drawn at
-  random for each trial, such that the sequence of inputs to the
-  simulation did not contain any systematic seriality. Noisy
+  \(f\), \(p\) and \(\zeta\)) to define individual parameters for
+  simulation in 4317 simulated participants (i.e., equivalent to the
+  number of human participants). For each participant, the number of
+  simulated trials was drawn at random between 300 to 700. Inputs \(s\)
+  were drawn at random for each trial, such that the sequence of inputs
+  to the simulation did not contain any systematic seriality. Noisy
   observations \(u\) were generated by applying the posterior parameter
   \(\alpha\) to inputs \(s\), thus generating stimulus-congruent choices
   in \(71.36\) ± \(\ensuremath{2.6\times 10^{-3}}\)\% of trials. Choices
@@ -3790,7 +3916,7 @@ We have also added a graphical depiction of the model space to Figure 1
 \begin{figure}
 \centering
 \includegraphics{./Material/model_space.png}
-\caption{alt text}
+\caption{Figure 1 F-G}
 \end{figure}
 
 \begin{itemize}
@@ -3826,17 +3952,17 @@ distribution of observer-level AIC at the session-level (see below):
   model (M1, Figure 1F) to the behavioral data from the Confidence
   database\textsuperscript{20} and the IBL database\textsuperscript{21},
   optimizing the parameters \(\alpha\), \(H\), \(amp_{LLR}\),
-  \(amp_{\psi}\), \(f\) and \(p\) (see Methods for details and
-  Supplemental Table T2 for a summary of the parameters of the bimodal
-  inference model). We validated our model in three steps: First, to
-  show that bimodal inference does not emerge spontaneously in normative
-  Bayesian models of evidence accumulation, but requires the ad-hoc
-  addition of anti-phase oscillations in prior and likelihood precision,
-  we compared the bimodal inference model to four control models (M2-5,
-  Figure 1G). In these models, we successively removed the anti-phase
-  oscillations (M2-M4) and the integration of information across trials
-  (M5) from the bimodal inference model and performed a model comparison
-  based on AIC.
+  \(amp_{\psi}\), \(f\), \(p\), and \(\zeta\) (see Methods for details
+  and Supplemental Table T2 for a summary of the parameters of the
+  bimodal inference model). We validated our model in three steps:
+  First, to show that bimodal inference does not emerge spontaneously in
+  normative Bayesian models of evidence accumulation, but requires the
+  ad-hoc addition of anti-phase oscillations in prior and likelihood
+  precision, we compared the bimodal inference model to four control
+  models (M2-5, Figure 1G). In these models, we successively removed the
+  anti-phase oscillations (M2-M4) and the integration of information
+  across trials (M5) from the bimodal inference model and performed a
+  model comparison based on AIC.
 \item
   Model M2 (\(AIC_2\) = \(\ensuremath{5.7\times 10^{4}}\) in humans and
   \(\ensuremath{4.94\times 10^{4}}\) in mice) and Model M3 (\(AIC_3\) =
@@ -4114,14 +4240,14 @@ of the abstract and the last paragraph of the introduction:
 \item
   When less sensitive to external stimulus information, humans and mice
   did not behave more randomly, but showed stronger serial dependencies
-  in their perceptual choices\textsuperscript{22--33}.** These serial
+  in their perceptual choices\textsuperscript{22--33}. These serial
   dependencies may be understood as driven by internal predictions that
   reflect the autocorrelation of natural
   environments\textsuperscript{34} and bias perception toward preceding
   experiences\textsuperscript{30,31,35}. Computational modeling
   indicated that ongoing changes in perceptual performance may be driven
   by systematic fluctuations between externally- and internally-oriented
-  modes of sensory analysis. **We suggest that such \emph{bimodal
+  modes of sensory analysis. We suggest that such \emph{bimodal
   inference} may help to build stable internal representations of the
   sensory environment despite an ongoing stream of sensory information.
 \end{itemize}
@@ -4175,7 +4301,7 @@ have to be careful not to exhaust the reader by putting up a lot of
 auxiliary material before the important messages in your report.}
 
 We have followed this suggestion and move the following sections to the
-supplement: section 5.3 (Internal and external modes of processing
+Supplement: section 5.3 (Internal and external modes of processing
 facilitate response behavior and enhance confidence in human perceptual
 decision-making), section 5.4 (Fluctuations between internal and
 external mode modulate perceptual performance beyond the effect of
@@ -4192,7 +4318,13 @@ and to the Supplement.
 \textbf{I cannot resist suggesting that you change your title to
 ``Bimodal Inference in Mice and Men''}
 
-We thank you for this suggestion and have changed the title accordingly.
+We would like to thank the Reviewer for this suggestion and agree that
+this would indeed sound great. However, we are worried that changing the
+title to \emph{mice and men} would not be as gender-neutral as
+\emph{humans and mice}. We would therefore propose to stay with the
+current title. If we are mistaken and \emph{mice and men} can be
+considered gender-neutral (we are non-native speakers), we would be
+happy to change the title.
 
 \hypertarget{comment-14}{%
 \subsubsection{Comment 14}\label{comment-14}}
@@ -4277,7 +4409,7 @@ above):
   phenomenon that is primarily driven by factors situated up- or
   downstream of sensory analysis.
 \item
-  How does attention relate between-mode fluctuations? According to
+  How does attention relate to between-mode fluctuations? According to
   predictive processing, attention corresponds to the precision afforded
   to the probability distributions that underlie perceptual
   inference\textsuperscript{53}. As outlined above, between-mode
@@ -4350,9 +4482,9 @@ We have modified the introduction of equation 2 as follows:
   of the environment that participants learn about via noisy sensory
   information\textsuperscript{51}. We computed the posterior by
   combining the sensory evidence available at time-point \(t\) (i.e.,
-  the log likelihood ratio \(LLR\)) with the prior probability
-  \(\psi\)**, weighted by the respective precision terms
-  \(\omega_{LLR}\) and \(\omega_{\psi}\):
+  the log likelihood ratio \(LLR\)) with the prior probability \(\psi\),
+  weighted by the respective precision terms \(\omega_{LLR}\) and
+  \(\omega_{\psi}\):
 \end{itemize}
 
 \textbf{You can then motivate Equation 6 and 7 as implementing the
@@ -4414,14 +4546,14 @@ section:
   inference model (M1, Figure 1F) to the behavioral data from the
   Confidence database\textsuperscript{20} and the IBL
   database\textsuperscript{21}, optimizing the parameters \(\alpha\),
-  \(H\), \(amp_{LLR}\), \(amp_{\psi}\), \(f\) and \(p\) (see Methods for
-  details and Supplemental Table T2 for a summary of the parameters of
-  the bimodal inference model). We validated our model in three steps:
-  (\ldots).
+  \(H\), \(amp_{LLR}\), \(amp_{\psi}\), \(f\), \(p\), and \(\zeta\) (see
+  Methods for details and Supplemental Table T2 for a summary of the
+  parameters of the bimodal inference model). We validated our model in
+  three steps: (\ldots).
 \end{itemize}
 
 We furthermore included a table summarizing the model parameters in the
-Supplement:
+Supplement.
 
 \hypertarget{comment-23}{%
 \subsubsection{Comment 23}\label{comment-23}}
@@ -4587,7 +4719,7 @@ formal model comparison of the bimodal inference model to reduced
 models, including a normative models of Bayesian evidence accumulation.
 We have added null-hypothesis-testing for enhanced history-congruence
 during internal mode. We have also moved a number of defensive analyses
-to the supplement.
+to the Supplement.
 
 \textbf{Major comments:}
 
@@ -4782,9 +4914,9 @@ Humans:
   general response biases toward (\(\beta\) = \(15.19\) ± \(0.08\), z =
   \(184.98\), p < \(\ensuremath{2.2\times 10^{-308}}\)). When eliminating perceptual history as a
   predictor of individual choices at individual trials, AIC increased by
-  \(\delta_{AIC}\) = \ensuremath{1.64\times 10^{3}} (see Supplemental
-  Figure S4A-B for parameter- and model-level inference at the level of
-  individual observers).
+  \(\delta_{AIC}\) = \(\ensuremath{1.64\times 10^{3}}\) (see
+  Supplemental Figure S4A-B for parameter- and model-level inference at
+  the level of individual observers).
 \end{itemize}
 
 Mice:
@@ -4829,7 +4961,7 @@ higher AIC (providing model-level evidence against \(H0_1\) and
 \(H0_2\)). The section 5.4 or our original manuscript
 (\emph{Fluctuations between internal and external mode modulate
 perceptual performance beyond the effect of general response biases})
-complements these control analyses and has been moved to the supplement
+complements these control analyses and has been moved to the Supplement
 to stream-line the manuscript (following the Comment 12 by Reviewer 1
 and Comment 9 by Reviewer 3). We have modified the main manuscript in
 the following way:
@@ -4892,13 +5024,13 @@ one would expect (i) a history-dependent increase in biases and lapses
 increase in threshold (reduced sensitivity to external information).
 Conversely, if what we identified as internal mode processing was in
 fact driven by random choices, one would expect (i), a
-history-independent increase in lapse (choice randomness), (ii), no
+history-independent increase in lapses (choice randomness), (ii), no
 change in bias (no effect of perceptual history), and (iii), reduced
 thresholds (reduced sensitivity to external information). In both humans
 and mice, we observed the pattern predicted by H1. In response to the
 comments by Reviewer 1 and 3, we have significantly streamlined the
 manuscript and moved our assessment of psychometric functions to the
-supplement. We now provide a summary of our results in the main
+Supplement. We now provide a summary of our results in the main
 manuscript to make our reasoning with respect to \(H0_1\) and \(H1\)
 more explicit:
 
@@ -4915,7 +5047,7 @@ Humans:
   history-dependent increase in biases and lapses as well as a
   history-independent increase in threshold. Conversely, if internal
   mode processing were driven by random choices, one would expect a
-  history-independent increase in biases and threshold, and no change in
+  history-independent increase in lapses and threshold, and no change in
   bias. In line with our prediction, we found that internal mode
   processing was associated with a history-dependent increase in bias
   and lapse as well as a history-independent increase in threshold
@@ -4982,17 +5114,17 @@ nature of the bimodal inference model in the subsection
   model (M1, Figure 1F) to the behavioral data from the Confidence
   database\textsuperscript{20} and the IBL database\textsuperscript{21},
   optimizing the parameters \(\alpha\), \(H\), \(amp_{LLR}\),
-  \(amp_{\psi}\), \(f\) and \(p\) (see Methods for details and
-  Supplemental Table T2 for a summary of the parameters of the bimodal
-  inference model). We validated our model in three steps: First, to
-  show that bimodal inference does not emerge spontaneously in normative
-  Bayesian models of evidence accumulation, but requires the ad-hoc
-  addition of anti-phase oscillations in prior and likelihood precision,
-  we compared the bimodal inference model to four control models (M2-5,
-  Figure 1G). In these models, we successively removed the anti-phase
-  oscillations (M2-M4) and the integration of information across trials
-  (M5) from the bimodal inference model and performed a model comparison
-  based on AIC.
+  \(amp_{\psi}\), \(f\), \(p\), and \(\zeta\) (see Methods for details
+  and Supplemental Table T2 for a summary of the parameters of the
+  bimodal inference model). We validated our model in three steps:
+  First, to show that bimodal inference does not emerge spontaneously in
+  normative Bayesian models of evidence accumulation, but requires the
+  ad-hoc addition of anti-phase oscillations in prior and likelihood
+  precision, we compared the bimodal inference model to four control
+  models (M2-5, Figure 1G). In these models, we successively removed the
+  anti-phase oscillations (M2-M4) and the integration of information
+  across trials (M5) from the bimodal inference model and performed a
+  model comparison based on AIC.
 \item
   Model M2 (\(AIC_2\) = \(\ensuremath{5.7\times 10^{4}}\) in humans and
   \(\ensuremath{4.94\times 10^{4}}\) in mice) and Model M3 (\(AIC_3\) =
@@ -5227,10 +5359,10 @@ effects.
 Importantly, our central finding of autocorrelation in
 history-congruence does not distinguish between alternating and
 repetitive history biases. In the plot below, we show autocorrelation
-curves for fluctuations history-congruence for both alternation (hazard
-= 0.8) and repetition (hazard = 0.2). Both were simulated for 10 blocks
-of a random duration between 15 and 30 trials, interleaved with 10
-blocks with no history biases (hazard = 0.5). This simulation
+curves for fluctuations in history-congruence for both alternation
+(hazard = 0.8) and repetition (hazard = 0.2). Both were simulated for 10
+blocks of a random duration between 15 and 30 trials, interleaved with
+10 blocks with no history biases (hazard = 0.5). This simulation
 illustrates that the autocorrelation of alternating and repeating biases
 is identical for symmetric pairs of hazard rates. The autocorrelation of
 history-congruence and the associated internal mode processing is
@@ -5421,7 +5553,7 @@ by Reviewer 3).
   history-dependent increase in biases and lapses as well as a
   history-independent increase in threshold. Conversely, if internal
   mode processing were driven by random choices, one would expect a
-  history-independent increase in biases and threshold, and no change in
+  history-independent increase in lapses and threshold, and no change in
   bias. In line with our prediction, we found that internal mode
   processing was associated with a history-dependent increase in bias
   and lapse as well as a history-independent increase in threshold
@@ -5457,13 +5589,13 @@ Specifically, Bitzer et al.~relate likelihood precision to noise in the
 accumulation process, and prior precision to the amount of shift in the
 starting point\textsuperscript{60}. As a third response to this comment,
 we have re-written our discussion of the quadratic relationship of mode
-to RTs and Confidence, focusing on predictive coding models attention,
-which we relate to mechanistic drift diffusion models:
+to RTs and Confidence, focusing on predictive processing models
+attention, which we relate to mechanistic drift diffusion models:
 
 \begin{itemize}
 \tightlist
 \item
-  How does attention relate between-mode fluctuations? According to
+  How does attention relate to between-mode fluctuations? According to
   predictive processing, attention corresponds to the precision afforded
   to the probability distributions that underlie perceptual
   inference\textsuperscript{53}. As outlined above, between-mode
@@ -5603,19 +5735,19 @@ summarized here:
 \hypertarget{comment-8-1}{%
 \subsubsection{Comment 8}\label{comment-8-1}}
 
-The central empirical finding is potentially important but is currently
-shadowed by more speculative sections/ discussions. For instance, the
-section on the adaptive merits of the computational model is relatively
-weaker compared to the empirical results. In particular, the model is
-simulated without feedback (whereas most experiments employ trial by
-trial feedback) and does not outperform the baseline model in accuracy
-but in other secondary metrics.
+\textbf{The central empirical finding is potentially important but is
+currently shadowed by more speculative sections/ discussions. For
+instance, the section on the adaptive merits of the computational model
+is relatively weaker compared to the empirical results. In particular,
+the model is simulated without feedback (whereas most experiments employ
+trial by trial feedback) and does not outperform the baseline model in
+accuracy but in other secondary metrics}.
 
-\textbf{We agree with the Reviewer (see also a similar suggestion by
-Reviewer 1 in Comment 9). We have removed the section 5.8 and the
-associated subsection of the discussion from our manuscript. We will
-develop a model on the potential function of between-mode fluctuations
-in a separate publication.}
+We agree with the Reviewer (see also a similar suggestion by Reviewer 1
+in Comment 9). We have removed the section 5.8 and the associated
+subsection of the discussion from our manuscript. We will develop a
+model on the potential function of between-mode fluctuations in a
+separate publication.
 
 \textbf{Minor comments:}
 
@@ -5937,8 +6069,8 @@ dynamics}. \emph{Nature Physics} \textbf{6}, 744--750 (2010).}
 \CSLLeftMargin{39. }%
 \CSLRightInline{Wagenmakers, E. J. \emph{et al.}
 \href{https://doi.org/10.3758/BF03196615}{Estimation and interpretation
-of 1/f noise in human cognition}. \emph{Psychonomic Bulletin and
-Review} \textbf{11}, 579--615 (2004).}
+of 1/f noise in human cognition}. \emph{Psychonomic Bulletin and Review}
+\textbf{11}, 579--615 (2004).}
 
 \leavevmode\vadjust pre{\hypertarget{ref-VanOrden2005}{}}%
 \CSLLeftMargin{40. }%
