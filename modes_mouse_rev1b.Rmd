@@ -10,18 +10,18 @@ header-includes:
 - \usepackage{booktabs}
 always_allow_html: yes
 output:
-  pdf_document:
-    fig_caption: yes
-    keep_tex: yes
-    latex_engine: xelatex
-    number_sections: yes
+  word_document: default
   html_document:
     fig_caption: yes
     force_captions: yes
     highlight: pygments
     number_sections: yes
     theme: cerulean
-  word_document: default
+  pdf_document:
+    fig_caption: yes
+    keep_tex: yes
+    latex_engine: xelatex
+    number_sections: yes
 ---
 
 ```{r setup, include=FALSE}
