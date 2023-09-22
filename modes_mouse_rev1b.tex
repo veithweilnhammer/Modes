@@ -83,20 +83,6 @@
 \usepackage[labelformat=empty]{caption}
 \usepackage{longtable}
 \usepackage{booktabs}
-\usepackage{booktabs}
-\usepackage{longtable}
-\usepackage{array}
-\usepackage{multirow}
-\usepackage{wrapfig}
-\usepackage{float}
-\usepackage{colortbl}
-\usepackage{pdflscape}
-\usepackage{tabu}
-\usepackage{threeparttable}
-\usepackage{threeparttablex}
-\usepackage[normalem]{ulem}
-\usepackage{makecell}
-\usepackage{xcolor}
 \ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
@@ -759,9 +745,9 @@ posterior ratio \(L\) of the two alternative states of the environment
 that participants learn about via noisy sensory
 information\textsuperscript{51}. We computed the posterior by combining
 the sensory evidence available at time-point \(t\) (i.e., the log
-likelihood ratio \(LLR\)) with the prior probability \(\psi\), weighted
-by the respective precision terms \(\omega_{LLR}\) and
-\(\omega_{\psi}\)**:
+likelihood ratio \(LLR\)) with the prior probability \(\psi\),
+\textbf{weighted by the respective precision terms \(\omega_{LLR}\) and
+\(\omega_{\psi}\)}:
 
 \begin{equation}
 L_t = LLR_t * \omega_{LLR} + \psi_t(L_{t-1}, H) * \omega_{\psi}
