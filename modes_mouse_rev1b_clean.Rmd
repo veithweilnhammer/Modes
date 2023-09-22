@@ -4684,6 +4684,7 @@ and history-congruence ($\beta$ = $`r Sim_STAT.lmer_Confidence_Accuracy_History$
 
 H. In analogy to humans, the simulated data showed a quadratic relationship between the mode of perceptual processing and posterior certainty, which increased for stronger external and internal biases ($\beta_2$ = $`r Sim_STAT.Confidence_vs_mode$coefficients[3,1]`$ ± $`r Sim_STAT.Confidence_vs_mode$coefficients[3,2]`$, T($`r Sim_STAT.Confidence_vs_mode$coefficients[3,3]`$) = $`r Sim_STAT.Confidence_vs_mode$coefficients[3,4]`$, p = $`r Sim_STAT.Confidence_vs_mode$coefficients[3,5]`$). The horizontal and vertical dotted lines indicate minimum posterior certainty and the associated mode, respectively.
 
+\newpage
 # Supplemental Items
 
 ## Internal mode processing is driven by choice history as opposed to stimulus history
