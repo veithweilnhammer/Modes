@@ -234,8 +234,8 @@ if (load_data) {
     read.csv(
       paste(
         root,
-        "PwData_full_new_preproc_plus_slider_normalized_hardeasy_external_stimulus_history.csv",
-        #"PwData_corr.csv",
+        #"PwData_full_new_preproc_plus_slider_normalized_hardeasy_external_stimulus_history.csv",
+        "PwData_corr.csv",
         sep = ""
       )
     )
@@ -354,7 +354,6 @@ if (!load_summary_data) {
 if (load_data){  
   
   PwData <- PwData[PwData$study_id %in% Behav$study_id,]
-  
   
   n_trials_human = nrow(PwData)
   n_studies_human = length(unique(PwData$study_id))
