@@ -1,6 +1,9 @@
 # Sensory processing in humans and mice fluctuates between external and internal modes
 
-This repository (![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10019948.svg)](https://doi.org/10.5281/zenodo.10019948)) accompanies **Sensory processing in humans and mice fluctuates between external and internal modes** (PLOS Biology 2023), authored by Veith Weilnhammer, Heiner Stuke, Kai Standvoß and Philipp Sterzer.
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10019948.svg)](https://doi.org/10.5281/zenodo.10019948)
+
+This repository accompanies **Sensory processing in humans and mice fluctuates between external and internal modes** (PLOS Biology 2023), authored by Veith Weilnhammer, Heiner Stuke, Kai Standvoß and Philipp Sterzer.
 
 To reproduce our analyses, download this repository and run the file **modes_mouse_rev2.Rmd**. **modes_mouse_rev2.Rmd** contains the text of our manuscript, the supplement and our response to the reviews at PLOS Biology in markdown format. In addition, it contains the R code to perform the statistical analyses and generate the figures associated with our publication. 
 
