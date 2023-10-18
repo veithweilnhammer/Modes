@@ -359,10 +359,6 @@ if (load_data){
   n_trials_human = nrow(PwData)
   n_studies_human = length(unique(PwData$study_id))
   n_participants_human = length(unique(PwData$subject_id))
-  
-  PwData[PwData$study_id %in% c(72, 77, 78, 105, 106, 117, 125, 135, 137, 138, 144),]$Difficulty = -PwData[PwData$study_id %in% c(72, 77, 78, 105, 106, 117, 125, 135, 137, 138, 144),]$Difficulty
-  
-  PwData[PwData$study_id == 14,]$Difficulty <- scale(abs(PwData[PwData$study_id == 14,]$Difficulty))
 }
 ```
 
