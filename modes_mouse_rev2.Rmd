@@ -39,8 +39,8 @@ options(scipen = -1, digits = 2)
 ##
 ## ROOT
 ##
-root = "/home/veithweilnhammer/Desktop/Modes Data/"
-#root = "E:/Modes Data/"
+#root = "/home/veithweilnhammer/Desktop/Modes Data/"
+root = "E:/Modes Data/"
 #root = "C:/Users/Veith Weilnhammer/Downloads/"
 
 ##
@@ -48,6 +48,9 @@ root = "/home/veithweilnhammer/Desktop/Modes Data/"
 ##
 load_summary_data = TRUE
 save_summary_data = FALSE
+export_figure_data_as_excel = TRUE
+
+
 
 ##
 ## Human Data
@@ -60,7 +63,7 @@ sliding_window = 10
 
 additional_autocorrelations = FALSE
 
-load_data = TRUE
+load_data = FALSE
 
 compute_logreg = FALSE
 compute_Tw_LogReg = FALSE
@@ -161,7 +164,7 @@ library(plyr)
 
 library(e1071)
 library(readxl)
-
+library(writexl)
 # red: "#E41A1C"
 # blue: "#377EB8"
 # green: "#66C2A5"
@@ -3714,7 +3717,6 @@ We validated the bimodal inference model in three steps: a formal model comparis
 ## Timecourse plot
 ##
 Individual_TC_long <- read.csv("./Results/Individual_TC_long.csv")
-  
 p_Individual_TC_0 <- ggplot() +
 geom_step(
 data = Individual_TC_long[Individual_TC_long$Slider == "Input" | Individual_TC_long$Slider == "Response",],
@@ -3804,6 +3806,8 @@ p_Individual_TC_4,
 layout_matrix = lay,
 heights = c(0.75,0.75,1,1,1),
 widths = c(1))
+
+if (export_figure_data_as_excel){write_xlsx(Individual_TC_long,"./Summary_Data/Figure_1.xlsx")}  
 ```
 
 **Figure 1. Concept.** 
@@ -4115,6 +4119,12 @@ p_RT_mode, p_Confidence_mode, p_distribution_Behav_diff, p_RT, p_Confidence,
 layout_matrix = lay,
 heights = c(0.5, 0.5, 0.4,0.4),
 widths = c(0.3,0.2, 0.225,0.3))
+
+if (export_figure_data_as_excel){write_xlsx(Behav,"./Summary_Data/Figure_2A.xlsx")}  
+if (export_figure_data_as_excel){write_xlsx(Plot_Acf_Data,"./Summary_Data/Figure_2BC.xlsx")}  
+if (export_figure_data_as_excel){write_xlsx(Power_Frequency[Power_Frequency$r_freq > 0.01 & Power_Frequency$r_freq < 0.09,],"./Summary_Data/Figure_2D.xlsx")}  
+if (export_figure_data_as_excel){write_xlsx(Power_Spectra[Power_Spectra$r_freq > 0.01 & Power_Spectra$r_freq < 0.09,],"./Summary_Data/Figure_2EF.xlsx")}  
+if (export_figure_data_as_excel){write_xlsx(Post_Perceptual_Modes,"./Summary_Data/Figure_2GHIJ.xlsx")}
 ```
 
 **Figure 2. Internal and external modes in human perceptual decision-making.** 
@@ -4353,6 +4363,12 @@ p_mouse_RT_Congruency, mouse_p_RT_mode, mouse_p_distribution_Behav_diff, mouse_p
 layout_matrix = lay,
 heights = c(0.5, 0.5, 0.4,0.4),
 widths = c(0.3,0.2, 0.225,0.3))
+
+if (export_figure_data_as_excel){write_xlsx(M_Behav,"./Summary_Data/Figure_3A.xlsx")}  
+if (export_figure_data_as_excel){write_xlsx(Plot_Acf_Data,"./Summary_Data/Figure_3BC.xlsx")}  
+if (export_figure_data_as_excel){write_xlsx(M_Power_Frequency[M_Power_Frequency$r_freq > 0.01 & M_Power_Frequency$r_freq < 0.09,],"./Summary_Data/Figure_3D.xlsx")}  
+if (export_figure_data_as_excel){write_xlsx(M_Power_Spectra[M_Power_Spectra$r_freq > 0.01 & M_Power_Spectra$r_freq < 0.09,],"./Summary_Data/Figure_3EF.xlsx")}  
+if (export_figure_data_as_excel){write_xlsx(M_Post_Perceptual_Modes,"./Summary_Data/Figure_3GHIJ.xlsx")}  
 
 ```
 
@@ -4606,6 +4622,12 @@ sim_p_Confidence_mode, sim_p_distribution_Behav_diff, sim_p_Confidence,
 layout_matrix = lay,
 heights = c(0.5, 0.5, 0.4,0.4),
 widths = c(0.3,0.2, 0.225,0.3))
+
+if (export_figure_data_as_excel){write_xlsx(Sim_Behav,"./Summary_Data/Figure_4A.xlsx")}  
+if (export_figure_data_as_excel){write_xlsx(Plot_Acf_Data,"./Summary_Data/Figure_4BC.xlsx")}  
+if (export_figure_data_as_excel){write_xlsx(Sim_Power_Frequency[Sim_Power_Frequency$r_freq > 0.01 & Sim_Power_Frequency$r_freq < 0.09,],"./Summary_Data/Figure_4D.xlsx")}
+if (export_figure_data_as_excel){write_xlsx(Sim_Power_Spectra[Sim_Power_Spectra$r_freq > 0.01 & Sim_Power_Spectra$r_freq < 0.09,],"./Summary_Data/Figure_4EF.xlsx")}  
+if (export_figure_data_as_excel){write_xlsx(Sim_Post_Perceptual_Modes,"./Summary_Data/Figure_4GHIJ.xlsx")}
 ```
 
 **Figure 4. Internal and external modes in simulated perceptual decision-making.**
@@ -5779,6 +5801,9 @@ Global_History_vs_Accuracy, M_Global_History_vs_Accuracy,
 layout_matrix = lay,
 heights = c(2,2),
 widths = c(0.25,0.1,0.25, 0.1))
+
+if (export_figure_data_as_excel){write_xlsx(Behav,"./Summary_Data/Supplemental_Figure_S1AC.xlsx")}  
+if (export_figure_data_as_excel){write_xlsx(M_Behav,"./Summary_Data/Supplemental_Figure_S1BD.xlsx")}  
 ```
 
 **Supplemental Figure S1. Stimulus- and history-congruence.** 
@@ -6127,6 +6152,9 @@ mouse_p_exceed_acf_Difficulty, mouse_p_exceed_acf_External,
 layout_matrix = lay,
 heights = c(0.9,1.25,0.75,0.9,1.25,0.75),
 widths = c(1,1))
+
+if (export_figure_data_as_excel){write_xlsx(Summary_acf_2,"./Summary_Data/Supplemental_Figure_S2AB.xlsx")}  
+if (export_figure_data_as_excel){write_xlsx(M_Summary_acf_2,"./Summary_Data/Supplemental_Figure_S2CD.xlsx")} 
 ```
 
 **Supplemental Figure S2. Controlling for task difficulty and external stimulation.** 
@@ -6304,6 +6332,9 @@ grid.arrange(
   heights = c(1, 1),
   widths = c(1)
 )
+
+if (export_figure_data_as_excel){write_xlsx(Group_Tw_LogReg_long,"./Summary_Data/Supplemental_Figure_S3A.xlsx")}  
+if (export_figure_data_as_excel){write_xlsx(M_Group_Tw_LogReg_long,"./Summary_Data/Supplemental_Figure_S3B.xlsx")} 
 ```
 
 **Supplemental Figure S3. Reproducing group-level autocorrelations using logistic regression.**
@@ -6451,6 +6482,9 @@ p_AIC, p_study_AIC, p_distribution_logit, mouse_p_AIC, mouse_p_distribution_logi
 layout_matrix = lay,
 heights = c(1,1,1),
 widths = c(0.5, 0.5,0.25))
+
+if (export_figure_data_as_excel){write_xlsx(LogAggr_long,"./Summary_Data/Supplemental_Figure_S4AB.xlsx")}  
+if (export_figure_data_as_excel){write_xlsx(M_LogAggr_long,"./Summary_Data/Supplemental_Figure_S4CD.xlsx")} 
 ```
 
 **Supplemental Figure S4. History-congruence in logistic regression.**
@@ -6545,6 +6579,9 @@ labels = seq(1, 25, by = 4),
 limits = c(0, 25)
 ) + ylim(-0.01, 0.035) + facet_wrap( ~ bias_level)
 p_Sum_Bias_Sim
+
+Sum_Bias_Sim
+if (export_figure_data_as_excel){write_xlsx(Sum_Bias_Sim,"./Summary_Data/Supplemental_Figure_S5.xlsx")} 
 ```
 
 **Supplemental Figure S5. Correcting for general response biases.**
@@ -6639,9 +6676,7 @@ grid.arrange(
   widths = c(3, 1, 1, 1, 1)
 )
 
-
-
-
+if (export_figure_data_as_excel){write_xlsx(P_Behav_long,"./Summary_Data/Supplemental_Figure_S6.xlsx")} 
 ```
 
 **Supplemental Figure S6. Full and history-conditioned psychometric functions across modes in humans.** 
@@ -6749,6 +6784,8 @@ grid.arrange(
   heights = c(1),
   widths = c(2, 1, 1, 1, 1)
 )
+
+if (export_figure_data_as_excel){write_xlsx(P_M_Behav_long,"./Summary_Data/Supplemental_Figure_S7.xlsx")} 
 ```
 
 **Supplemental Figure S7. Full and history-conditioned psychometric functions across modes in mice.** 
@@ -6829,6 +6866,8 @@ p_training_mouse,p_training_mouse_RT,
 layout_matrix = lay,
 heights = c(1),
 widths = c(2, 1))
+
+if (export_figure_data_as_excel){write_xlsx(M_Behav_training_long,"./Summary_Data/Supplemental_Figure_S8.xlsx")} 
 ```
 
 **Supplemental Figure S8. History-/stimulus-congruence and TDs during training of the basic task.**
@@ -6878,6 +6917,11 @@ p_distribution_Sum_Subj_Model_AIC,
 layout_matrix = lay,
 heights = c(0.75,1),
 widths = c(1))
+
+Sum_Subj_Model_AIC
+
+if (export_figure_data_as_excel){write_xlsx(Sum_AIC_Models,"./Summary_Data/Supplemental_Figure_S9A.xlsx")}  
+if (export_figure_data_as_excel){write_xlsx(Sum_Subj_Model_AIC,"./Summary_Data/Supplemental_Figure_S9B.xlsx")} 
 ```
 **Supplemental Figure S9. Comparison of the bimodal inference model against reduced control models.** 
 
@@ -7873,6 +7917,8 @@ labels = seq(1, 25, by = 4),
 limits = c(0, 25)
 ) #+ ylim(-0.01, 0.035) 
 p_Sum_Rep_Alt_Sim
+
+if (export_figure_data_as_excel){write_xlsx(Sum_Rep_Alt_Sim,"./Summary_Data/Supplemental_Figure_S14.xlsx")}  
 ```
 
 **Supplemental Figure S14. Autocorrelation of history-congruence of alternating and repeating biases.** Here, we simulate the autocorrelation of history-congruence in $`r n_participants`$ synthetic participants. In the repeating regime (blue), history-congruence fluctuated between 50% and 80% (blue) in interleaved blocks (10 blocks per condition with a random duration between 15 and 30 trials). In the alternation regime (red), history-congruence fluctuated between 50% and 20%. The resulting autocorrelation curves for history-congruence overlap, indicating that our analysis is able to accommodate both repeating and alternating biases. 
