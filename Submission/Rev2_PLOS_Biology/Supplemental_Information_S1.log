@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2023.5.31)  2 NOV 2023 18:30
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2023.5.31)  10 NOV 2023 12:11
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -827,11 +827,11 @@ File: ts1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 ) [2] [3] [4] [5] [6] [7] [8] [9]
 (./Supplemental_Information_S1.aux) ) 
 Here is how much of TeX's memory you used:
- 17509 strings out of 478287
- 287028 string characters out of 5849289
+ 17515 strings out of 478287
+ 287086 string characters out of 5849289
  631168 words of memory out of 5000000
  35166 multiletter control sequences out of 15000+600000
- 517946 words of font info for 159 fonts, out of 8000000 for 9000
+ 518201 words of font info for 162 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  108i,5n,106p,1481b,342s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/lm/lm-ec
@@ -843,7 +843,7 @@ texmf/fonts/type1/public/lm/lmmi8.pfb></usr/share/texmf/fonts/type1/public/lm/l
 mr12.pfb></usr/share/texmf/fonts/type1/public/lm/lmr8.pfb></usr/share/texmf/fon
 ts/type1/public/lm/lmri12.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy10.pf
 b></usr/share/texmf/fonts/type1/public/lm/lmsy8.pfb>
-Output written on Supplemental_Information_S1.pdf (9 pages, 158101 bytes).
+Output written on Supplemental_Information_S1.pdf (9 pages, 158126 bytes).
 PDF statistics:
  155 PDF objects out of 1000 (max. 8388607)
  123 compressed objects within 2 object streams
