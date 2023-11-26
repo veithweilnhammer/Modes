@@ -1,6 +1,6 @@
 ---
 bibliography: References/library.bib
-csl: References/nature.csl
+csl: References/elsevier-vancouver.csl
 header-includes:
 - \usepackage{setspace}\doublespacing
 - \usepackage[fontsize=12pt]{scrextend}
@@ -10,18 +10,18 @@ header-includes:
 - \usepackage{booktabs}
 always_allow_html: yes
 output:
-  pdf_document:
-    fig_caption: yes
-    keep_tex: yes
-    latex_engine: xelatex
-    number_sections: yes
+  word_document: default
   html_document:
     fig_caption: yes
     force_captions: yes
     highlight: pygments
     number_sections: yes
     theme: cerulean
-  word_document: default
+  pdf_document:
+    fig_caption: yes
+    keep_tex: yes
+    latex_engine: xelatex
+    number_sections: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -389,8 +389,6 @@ $^{4}$ Department of Psychiatry (UPK), University of Basel, Switzerland\
 Veith Weilnhammer, Helen Wills Neuroscience Institute, University of California Berkeley, USA, email: veith.weilnhammer@gmail.com \
 
 \newpage
-
-\linenumbers
 
 # Abstract
 
@@ -6580,7 +6578,6 @@ limits = c(0, 25)
 ) + ylim(-0.01, 0.035) + facet_wrap( ~ bias_level)
 p_Sum_Bias_Sim
 
-Sum_Bias_Sim
 if (export_figure_data_as_excel){write_xlsx(Sum_Bias_Sim,"./Summary_Data/Supplemental_Figure_S5.xlsx")} 
 ```
 
@@ -6917,8 +6914,6 @@ p_distribution_Sum_Subj_Model_AIC,
 layout_matrix = lay,
 heights = c(0.75,1),
 widths = c(1))
-
-Sum_Subj_Model_AIC
 
 if (export_figure_data_as_excel){write_xlsx(Sum_AIC_Models,"./Summary_Data/Supplemental_Figure_S9A.xlsx")}  
 if (export_figure_data_as_excel){write_xlsx(Sum_Subj_Model_AIC,"./Summary_Data/Supplemental_Figure_S9B.xlsx")} 
